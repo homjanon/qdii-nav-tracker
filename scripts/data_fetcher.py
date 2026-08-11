@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""QDII 基金净值跟踪 - 数据获取模块
+"""QDII 基金净值跟踪 - 数据获取模块（多源降级版）
 
-所有接口均经本机实测（2026-08-11）：
-- F10 持仓：天天基金 FundArchivesDatas.aspx（十大 topline=10 / 年报半年报 topline=100）
-- 净值：akshare fund_open_fund_info_em（⚠️ period 参数失效，返回全量，需本地截取）
-- 美股：akshare stock_us_daily（新浪源，无日期参数，全量本地过滤）
-- 港股：akshare stock_hk_daily（新浪源，5位代码如 02513）
-- A股：akshare stock_zh_a_daily（新浪源，sh/sz 前缀）
-- 汇率：akshare forex_hist_em USDCNH（需 HTTP/2 补丁 curl_cffi）
-- 美股指数：akshare index_us_stock_sina(.NDX/.INX)
+数据源降级链（参考 homjanon/portfolio、douban-tracker、cmb-tracker 生产验证过的源）：
+
+- 净值：东财 f10/lsjz 直连（主，portfolio 验证）→ akshare fund_open_fund_info_em（备）
+- 汇率：中行牌价 currency_boc_safe（主，portfolio 验证，每日更新）→ 东财 push2his curl_cffi（备）→ yfinance（兜底）
+- 美股：akshare stock_us_daily 新浪源（主）→ 腾讯 qt.gtimg.cn 实时快照（当日兜底，仅预测用）
+- 港股：akshare stock_hk_daily（主）→ 腾讯 qt.gtimg.cn hk 快照（当日兜底）
+- A股：akshare stock_zh_a_daily（新浪）
+- 美股指数：akshare index_us_stock_sina（新浪）
 - 恒生指数：akshare stock_hk_index_daily_sina('HSI')
+- F10 持仓：天天基金 FundArchivesDatas.aspx（HTTP/1.1 直连）
 
-市场识别规则（F10 返回无市场前缀）：
+market 识别规则（F10 返回无市场前缀）：
 - 纯字母（MU/GOOGL/NVDA）→ 美股
 - 5位数字 0/1/2 开头（02513 智谱）→ 港股
 - 6位 3 开头（300408 三环集团）→ A股
@@ -31,21 +32,28 @@ def _ipv4(host, port, family=0, type=0, proto=0, flags=0):
     return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
 socket.getaddrinfo = _ipv4
 
-# HTTP/2 补丁：仅在获取东财数据（汇率）时临时启用，不做全局替换
-# 原因：全局替换 curl_cffi 在 GitHub Actions 云环境偶发 ConnectionError（<Future>），
-#      而新浪源（美股/港股/A股/指数）用标准 requests 即可，不需要 HTTP/2。
 import requests as requests_mod
 try:
     import curl_cffi.requests as cffi_requests
     _HAS_CFFI = True
 except ImportError:
     _HAS_CFFI = False
+try:
+    import yfinance as yf
+    _HAS_YF = True
+except ImportError:
+    _HAS_YF = False
 
 import akshare as ak
 
 F10_URL = "http://fundf10.eastmoney.com/FundArchivesDatas.aspx"
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-           "Referer": "http://fundf10.eastmoney.com/"}
+EM_LSJZ_URL = "https://api.fund.eastmoney.com/f10/lsjz"
+TX_URL = "https://qt.gtimg.cn/q="
+HEADERS_F10 = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+               "Referer": "http://fundf10.eastmoney.com/"}
+HEADERS_EM = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+              "Referer": "https://fundf10.eastmoney.com/"}
+HEADERS_TX = {"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"}
 
 # 全局行情缓存（多基金重仓股去重）
 _CACHE = {}
@@ -75,14 +83,27 @@ def _retry_call(fn, *args, attempts=3, wait=2.0, label=""):
         print(f"    !! {label} 失败: {repr(last_err)[:120]}")
     return None
 
+def fallback_chain(fetchers, label=""):
+    """多源降级链：依次尝试，返回首个非 None 结果"""
+    for name, fn in fetchers:
+        try:
+            r = fn()
+            if r is not None and (not isinstance(r, pd.DataFrame) or len(r) > 0):
+                return r
+        except Exception as e:
+            print(f"    !! [{label}/{name}] 失败: {repr(e)[:100]}")
+    return None
+
+# ============ 持仓 ============
+
 def fetch_f10(code, topline=10, year="", month=""):
-    """F10 持仓接口（HTTP/1.1 即可，无需 curl_cffi）"""
+    """F10 持仓接口（HTTP/1.1 直连，稳定）"""
     params = {"type": "jjcc", "code": code, "topline": topline}
     if year:
         params["year"], params["month"] = year, month
 
     def _fetch():
-        r = requests_mod.get(F10_URL, params=params, headers=HEADERS, timeout=20)
+        r = requests_mod.get(F10_URL, params=params, headers=HEADERS_F10, timeout=20)
         r.encoding = "utf-8"
         m = re.search(r'var apidata=\s*\{\s*content:"(.*?)",\s*arryear', r.text, re.S)
         return m.group(1) if m else r.text
@@ -111,60 +132,140 @@ def parse_holdings(html):
 def get_holdings(code, year="", month=""):
     """获取某期十大持仓（默认最新季报）"""
     html = fetch_f10(code, 10, year, month)
-    return parse_holdings(html)
+    return parse_holdings(html) if html else []
 
-def get_nav(code, start_date=None):
-    """基金净值（akshare period 参数失效，返回全量后本地截取）
-    start_date: 'YYYY-MM-DD' 或 None（返回全部）"""
+# ============ 净值（双源：东财 lsjz 直连主 → akshare 备）============
+
+def _em_lsjz(code, page_size=500):
+    """东财 f10/lsjz 净值直连（portfolio 生产验证，速度快）"""
+    def _fetch():
+        r = requests_mod.get(EM_LSJZ_URL,
+                             params={"fundCode": code, "pageIndex": 1, "pageSize": page_size},
+                             headers=HEADERS_EM, timeout=20)
+        d = r.json()
+        lst = ((d.get("Data") or {}).get("LSJZList")) or []
+        rows = [{"date": x["FSRQ"], "nav": float(x["DWJZ"]),
+                 "growth": float(x["JZZZL"]) if x.get("JZZZL") not in (None, "") else np.nan}
+                for x in lst]
+        return pd.DataFrame(rows)
+
+    return _retry_call(_fetch, label=f"东财lsjz {code}")
+
+def _ak_nav(code):
+    """akshare 净值（备源）"""
     def _fetch():
         return ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势", period="近1年")
-    df = _retry_call(_fetch, label=f"净值 {code}")
+    df = _retry_call(_fetch, label=f"akshare净值 {code}")
     if df is None or len(df) == 0:
-        return df
+        return None
     df = df.rename(columns={"净值日期": "date", "单位净值": "nav", "日增长率": "growth"})
     df["date"] = pd.to_datetime(df["date"])
     df["growth"] = pd.to_numeric(df["growth"], errors="coerce")
+    return df
+
+def get_nav(code, start_date=None):
+    """基金净值（东财 lsjz 直连主 → akshare 备）"""
+    df = fallback_chain([("em_lsjz", lambda: _em_lsjz(code)),
+                         ("akshare", lambda: _ak_nav(code))], label=f"净值{code}")
+    if df is None or len(df) == 0:
+        return None
+    df = df.rename(columns={c: c for c in df.columns})
+    if "date" not in df.columns:
+        return None
+    df["date"] = pd.to_datetime(df["date"])
     df = df.sort_values("date").drop_duplicates("date").reset_index(drop=True)
     if start_date:
         df = df[df["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
     return df
 
-def get_price_df(code, market):
-    """个股日线（带全局缓存），失败返回 None"""
+# ============ 个股行情（新浪主 → 腾讯快照兜底当日）============
+
+def _sina_price(code, market):
+    """akshare 新浪源日线"""
+    if market == "US":
+        return ak.stock_us_daily(symbol=code)
+    if market == "HK":
+        return ak.stock_hk_daily(symbol=code)
+    if market == "CN":
+        sym = ("sh" if code.startswith("6") else "sz") + code
+        return ak.stock_zh_a_daily(symbol=sym)
+    return None
+
+def _tencent_snapshot_df(code, market):
+    """腾讯实时快照 → 构造仅含「昨日收盘/最新收盘」两行的迷你日线（当日预测兜底）
+    腾讯 [3]=最新价 [4]=昨收 [32]=涨跌幅% → 构造 [昨日, 今日] 两日收盘序列"""
+    prefix = {"US": "us", "HK": "hk", "CN": ("sh" if code.startswith("6") else "sz")}.get(market)
+    if not prefix:
+        return None
+
+    def _fetch():
+        r = requests_mod.get(TX_URL + f"{prefix}{code}", headers=HEADERS_TX, timeout=15)
+        r.encoding = "gbk"
+        for line in r.text.strip().split("\n"):
+            if "=" not in line:
+                continue
+            parts = line.split("=", 1)[1].strip().strip('"').split("~")
+            if len(parts) < 33:
+                return None
+            try:
+                price = float(parts[3])
+                prev = float(parts[4])
+            except (ValueError, TypeError):
+                return None
+            today = pd.Timestamp.now().normalize()
+            prev_date = today - pd.Timedelta(days=1)
+            return pd.DataFrame({"date": [prev_date, today], "close": [prev, price]})
+        return None
+
+    return _retry_call(_fetch, label=f"腾讯快照 {code}", attempts=2, wait=1.0)
+
+def get_price_df(code, market, allow_snapshot=True):
+    """个股日线：新浪主源（完整历史）→ 腾讯快照兜底（仅当日，预测够用）
+    返回 DataFrame(date, close)；快照模式返回的只有最近两日。
+    """
     if code in _CACHE:
         return _CACHE[code]
 
+    df = fallback_chain([("sina", lambda: _sina_price(code, market))], label=f"行情{code}")
+    if df is not None and len(df) > 0:
+        df = df.rename(columns={"close": "close"})
+        df = df[["date", "close"]].copy()
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.sort_values("date").drop_duplicates("date")
+        _CACHE[code] = df
+        return df
+
+    # 新浪失败 → 腾讯快照兜底（仅当日预测用）
+    if allow_snapshot:
+        snap = _tencent_snapshot_df(code, market)
+        if snap is not None and len(snap) > 0:
+            print(f"    [{code}] 新浪源失败，使用腾讯快照兜底（仅当日）")
+            _CACHE[code] = snap
+            return snap
+
+    _CACHE[code] = None
+    return None
+
+# ============ 汇率（中行牌价主 → 东财 push2his 备 → yfinance 兜底）============
+
+def _boc_fx():
+    """中行牌价（portfolio 生产验证）：美元列 ÷100 = USD/CNY，每日更新，1994 至今"""
     def _fetch():
-        if market == "US":
-            return ak.stock_us_daily(symbol=code)
-        if market == "HK":
-            return ak.stock_hk_daily(symbol=code)
-        if market == "CN":
-            sym = ("sh" if code.startswith("6") else "sz") + code
-            return ak.stock_zh_a_daily(symbol=sym)
-        return None
+        df = ak.currency_boc_safe()
+        df = df[["日期", "美元"]].dropna()
+        df = df.rename(columns={"日期": "date", "美元": "usd"})
+        df["date"] = pd.to_datetime(df["date"])
+        df["close"] = df["usd"] / 100.0
+        return df[["date", "close"]]
 
-    df = _retry_call(_fetch, label=f"行情 {code}")
-    if df is None or len(df) == 0:
-        _CACHE[code] = None
-        return None
-    df = df.rename(columns={"close": "close"})
-    df = df[["date", "close"]].copy()
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.sort_values("date").drop_duplicates("date")
-    _CACHE[code] = df
-    return df
+    return _retry_call(_fetch, label="中行牌价")
 
-def get_usdcnh():
-    """USDCNH 日线（东财，需 HTTP/2 → curl_cffi 直连；失败降级为 None）"""
-    if "__FX__" in _CACHE:
-        return _CACHE["__FX__"]
+def _em_fx():
+    """东财 push2his USDCNH（备，需 HTTP/2）"""
     if not _HAS_CFFI:
-        _CACHE["__FX__"] = None
         return None
 
     def _fetch():
-        # 东财 push2 接口要求 HTTP/2：用 curl_cffi 直连，避免全局替换污染新浪源
         url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
         params = {
             "secid": "133.USDCNH", "fields1": "f1,f2,f3,f4,f5,f6",
@@ -180,15 +281,44 @@ def get_usdcnh():
             rows.append({"date": parts[0], "close": float(parts[2])})
         return pd.DataFrame(rows)
 
-    df = _retry_call(_fetch, label="USDCNH")
+    return _retry_call(_fetch, label="东财USDCNH")
+
+def _yf_fx():
+    """yfinance USDCNH=X（兜底，GitHub Actions 云端 IP 较干净）"""
+    if not _HAS_YF:
+        return None
+
+    def _fetch():
+        t = yf.Ticker("USDCNH=X")
+        hist = t.history(start="2025-06-01", end="2026-12-31", auto_adjust=False)
+        if hist is None or len(hist) == 0:
+            return None
+        df = hist.reset_index()[["Date", "Close"]].rename(
+            columns={"Date": "date", "Close": "close"})
+        df["date"] = pd.to_datetime(df["date"])
+        return df
+
+    return _retry_call(_fetch, label="yfinance USDCNH", attempts=2, wait=2.0)
+
+def get_usdcnh():
+    """USD/CNH 日线：中行牌价主 → 东财 push2his 备 → yfinance 兜底"""
+    if "__FX__" in _CACHE:
+        return _CACHE["__FX__"]
+
+    df = fallback_chain([("中行牌价", _boc_fx),
+                         ("东财USDCNH", _em_fx),
+                         ("yfinance", _yf_fx)], label="汇率")
     if df is None or len(df) == 0:
         _CACHE["__FX__"] = None
-        print("    !! 汇率源不可用，本次预测不含汇率因子")
+        print("    !! 汇率源全部不可用，本次预测不含汇率因子")
         return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
     _CACHE["__FX__"] = df
+    print(f"    汇率源: {len(df)} 行, 最新 {df['date'].max().date()} {df['close'].iloc[-1]:.4f}")
     return df
+
+# ============ 指数 ============
 
 def get_index(symbol):
     """美股指数（新浪，HTTP/1.1）"""
@@ -224,6 +354,8 @@ def get_hs_index():
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
     _CACHE["__HSI__"] = df
     return df
+
+# ============ 收益对齐 ============
 
 def asof_ret(prices, nav_dates, lag=0):
     """对每个净值日期 D，取美股 '交易日 <= D-lag' 的最新收盘计算当日收益"""

@@ -6,3 +6,4 @@ requests
 curl_cffi
 tenacity
 pandas-market-calendars
+yfinance
