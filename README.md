@@ -53,14 +53,16 @@ python scripts/run_daily.py --force --out output  # 强制运行（测试）
 
 ## 支持市场与数据源
 
-| 数据 | 来源 |
-|---|---|
-| 十大持仓 / 年报全持仓 | 天天基金 F10 |
-| 基金净值 | akshare（东财） |
-| 美股 / 港股 / A股日线 | akshare（新浪源） |
-| USDCNH 汇率 | akshare（东财，HTTP/2） |
-| NDX / INX / HSI 指数 | akshare（新浪） |
-| 美股交易日历 | pandas-market-calendars（NYSE） |
+| 数据 | 主源 | 备源/兜底 |
+|---|---|---|
+| 十大持仓 / 年报全持仓 | 天天基金 F10（HTTP/1.1 直连） | - |
+| 基金净值 | 东财 f10/lsjz 直连 | akshare（东财） |
+| 美股 / 港股 / A股日线 | akshare（新浪源） | 腾讯 qt.gtimg.cn 实时快照（当日预测兜底） |
+| USD/CNH 汇率 | 中行牌价 currency_boc_safe | 东财 push2his（curl_cffi）→ yfinance |
+| NDX / INX / HSI 指数 | akshare（新浪） | yfinance（兜底） |
+| 美股交易日历 | pandas-market-calendars（NYSE） | weekday 近似 |
+
+> 多源降级链参考 portfolio（净值/汇率）、douban-tracker（腾讯行情）、cmb-tracker（fallback_chain）生产验证经验。
 
 ## 局限
 
