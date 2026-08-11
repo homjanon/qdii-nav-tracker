@@ -42,9 +42,11 @@ def basket_returns(nav, holdings, price_map, fx_df, lag=0):
             b += wgt * r
         if not ok:
             continue
-        fxr = dfet.asof_ret(fx_df, [d], lag)[0]
-        if not np.isnan(fxr):
-            b += wsum * fxr
+        fxr = np.nan
+        if fx_df is not None:
+            fxr = dfet.asof_ret(fx_df, [d], lag)[0]
+            if not np.isnan(fxr):
+                b += wsum * fxr
         total[i] = b
     return total
 
@@ -67,12 +69,17 @@ def rolling_nnls(nav, holdings, price_map, fx_df, window=60, min_n=30):
     返回: preds Series + 最新权重 dict"""
     w0 = _weights(holdings)
     codes = [c for c in w0 if c in price_map]
+    if not codes:
+        return None, None, None
     fx_codes = codes + ["FX"]
     # 构建收益矩阵
     X = pd.DataFrame({"date": nav["date"]})
     for c in codes:
         X[c] = dfet.asof_ret(price_map[c], nav["date"])
-    X["FX"] = dfet.asof_ret(fx_df, nav["date"])
+    if fx_df is not None:
+        X["FX"] = dfet.asof_ret(fx_df, nav["date"])
+    else:
+        X["FX"] = 0.0
     X = X.set_index("date")
     Y = nav.set_index("date")["growth"] / 100
     full = pd.concat([Y, X], axis=1).dropna()
@@ -104,6 +111,8 @@ def rolling_nnls(nav, holdings, price_map, fx_df, window=60, min_n=30):
 
 def index_beta(nav, ndx_df, start_date=None):
     """净值对 NDX 的暴露（近6月 OLS 回归）"""
+    if ndx_df is None:
+        return None
     d = nav.copy()
     if start_date:
         d = d[d["date"] >= pd.Timestamp(start_date)]
@@ -161,9 +170,11 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
             continue
         b_static += wgt * r
         contributors.append({"code": code, "weight": wgt, "ret": r, "contrib": wgt * r})
-    fxr = dfet.asof_ret(fx_df, [next_d])[0]
-    if not np.isnan(fxr):
-        b_static += wsum * fxr
+    fxr = np.nan
+    if fx_df is not None:
+        fxr = dfet.asof_ret(fx_df, [next_d])[0]
+        if not np.isnan(fxr):
+            b_static += wsum * fxr
     contributors.sort(key=lambda x: x["contrib"], reverse=True)
 
     # 滚动 NNLS 权重预测
@@ -181,7 +192,7 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
                 continue
             b_nnls += wgt * r
         fxw = nnls_weight.get("FX", 0.0)
-        if not np.isnan(fxr):
+        if fx_df is not None and not np.isnan(fxr):
             b_nnls += fxw * fxr
 
     out = {"next_date": next_d, "last_date": last_date, "last_nav": last_nav,
@@ -198,8 +209,11 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
 def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     """单只基金全流程分析"""
     # 1. 持仓（Q1 当期 + Q2 当期）
-    h_q1 = dfet.get_holdings(code, year_q1, month_q1)
-    h_q2 = dfet.get_holdings(code)
+    h_q1 = dfet.get_holdings(code, year_q1, month_q1) or []
+    h_q2 = dfet.get_holdings(code) or []
+    if not h_q2:
+        print(f"[{code}] Q2 持仓获取失败")
+        return {"code": code, "error": "Q2 持仓获取失败"}
     q2_total = sum(x["pct"] for x in h_q2)
     us_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "US")
     hk_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "HK")
@@ -217,7 +231,13 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
 
     # 3. 净值 + 汇率 + 指数
     nav = dfet.get_nav(code, start_date)
+    if nav is None or len(nav) == 0:
+        print(f"[{code}] 净值获取失败")
+        return {"code": code, "error": "净值获取失败"}
     nav = nav[nav["growth"].notna()].reset_index(drop=True)
+    if len(nav) < 30:
+        print(f"[{code}] 净值样本不足")
+        return {"code": code, "error": "净值样本不足"}
     fx_df = dfet.get_usdcnh()
     ndx_df = dfet.get_index(".NDX")
 

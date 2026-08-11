@@ -31,21 +31,17 @@ def _ipv4(host, port, family=0, type=0, proto=0, flags=0):
     return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
 socket.getaddrinfo = _ipv4
 
-# HTTP/2 补丁（东财接口需要，curl_cffi 可选）
+# HTTP/2 补丁：仅在获取东财数据（汇率）时临时启用，不做全局替换
+# 原因：全局替换 curl_cffi 在 GitHub Actions 云环境偶发 ConnectionError（<Future>），
+#      而新浪源（美股/港股/A股/指数）用标准 requests 即可，不需要 HTTP/2。
+import requests as requests_mod
 try:
     import curl_cffi.requests as cffi_requests
-    import requests as _std_requests
-    _std_requests.get = cffi_requests.get
-    _std_requests.post = cffi_requests.post
-    _std_requests.request = cffi_requests.request
-    _std_requests.Session = cffi_requests.Session
-    _HTTP2 = True
+    _HAS_CFFI = True
 except ImportError:
-    _HTTP2 = False
+    _HAS_CFFI = False
 
-import requests as requests_mod
 import akshare as ak
-from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 
 F10_URL = "http://fundf10.eastmoney.com/FundArchivesDatas.aspx"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -66,16 +62,32 @@ def classify_market(code):
         return "SKIP"
     return "SKIP"
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(Exception))
+def _retry_call(fn, *args, attempts=3, wait=2.0, label=""):
+    """统一重试包装：异常全部吞掉，失败返回 None（不抛，避免拖垮整体）"""
+    last_err = None
+    for i in range(attempts):
+        try:
+            return fn(*args)
+        except Exception as e:
+            last_err = e
+            time.sleep(wait * (i + 1))
+    if label:
+        print(f"    !! {label} 失败: {repr(last_err)[:120]}")
+    return None
+
 def fetch_f10(code, topline=10, year="", month=""):
-    """F10 持仓接口"""
+    """F10 持仓接口（HTTP/1.1 即可，无需 curl_cffi）"""
     params = {"type": "jjcc", "code": code, "topline": topline}
     if year:
         params["year"], params["month"] = year, month
-    r = requests_mod.get(F10_URL, params=params, headers=HEADERS, timeout=20)
-    r.encoding = "utf-8"
-    m = re.search(r'var apidata=\s*\{\s*content:"(.*?)",\s*arryear', r.text, re.S)
-    return m.group(1) if m else r.text
+
+    def _fetch():
+        r = requests_mod.get(F10_URL, params=params, headers=HEADERS, timeout=20)
+        r.encoding = "utf-8"
+        m = re.search(r'var apidata=\s*\{\s*content:"(.*?)",\s*arryear', r.text, re.S)
+        return m.group(1) if m else r.text
+
+    return _retry_call(_fetch, label=f"F10 {code}")
 
 def parse_holdings(html):
     """取第一个 tbody（最新期）"""
@@ -104,7 +116,11 @@ def get_holdings(code, year="", month=""):
 def get_nav(code, start_date=None):
     """基金净值（akshare period 参数失效，返回全量后本地截取）
     start_date: 'YYYY-MM-DD' 或 None（返回全部）"""
-    df = ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势", period="近1年")
+    def _fetch():
+        return ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势", period="近1年")
+    df = _retry_call(_fetch, label=f"净值 {code}")
+    if df is None or len(df) == 0:
+        return df
     df = df.rename(columns={"净值日期": "date", "单位净值": "nav", "日增长率": "growth"})
     df["date"] = pd.to_datetime(df["date"])
     df["growth"] = pd.to_numeric(df["growth"], errors="coerce")
@@ -113,32 +129,24 @@ def get_nav(code, start_date=None):
         df = df[df["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
     return df
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2),
-       retry=retry_if_exception_type(Exception))
 def get_price_df(code, market):
-    """个股日线（带全局缓存）"""
+    """个股日线（带全局缓存），失败返回 None"""
     if code in _CACHE:
         return _CACHE[code]
-    df = None
-    last_err = None
-    for attempt in range(3):
-        try:
-            if market == "US":
-                df = ak.stock_us_daily(symbol=code)
-            elif market == "HK":
-                df = ak.stock_hk_daily(symbol=code)
-            elif market == "CN":
-                sym = ("sh" if code.startswith("6") else "sz") + code
-                df = ak.stock_zh_a_daily(symbol=sym)
-            if df is not None and len(df) > 0:
-                break
-        except Exception as e:
-            last_err = e
-            time.sleep(2 * (attempt + 1))
+
+    def _fetch():
+        if market == "US":
+            return ak.stock_us_daily(symbol=code)
+        if market == "HK":
+            return ak.stock_hk_daily(symbol=code)
+        if market == "CN":
+            sym = ("sh" if code.startswith("6") else "sz") + code
+            return ak.stock_zh_a_daily(symbol=sym)
+        return None
+
+    df = _retry_call(_fetch, label=f"行情 {code}")
     if df is None or len(df) == 0:
         _CACHE[code] = None
-        if last_err:
-            print(f"    [{code}] 行情获取失败: {repr(last_err)[:100]}")
         return None
     df = df.rename(columns={"close": "close"})
     df = df[["date", "close"]].copy()
@@ -147,25 +155,54 @@ def get_price_df(code, market):
     _CACHE[code] = df
     return df
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(Exception))
 def get_usdcnh():
-    """USDCNH 日线（东财，HTTP/2）"""
+    """USDCNH 日线（东财，需 HTTP/2 → curl_cffi 直连；失败降级为 None）"""
     if "__FX__" in _CACHE:
         return _CACHE["__FX__"]
-    df = ak.forex_hist_em(symbol="USDCNH")
-    df = df.rename(columns={"日期": "date", "最新价": "close"})
+    if not _HAS_CFFI:
+        _CACHE["__FX__"] = None
+        return None
+
+    def _fetch():
+        # 东财 push2 接口要求 HTTP/2：用 curl_cffi 直连，避免全局替换污染新浪源
+        url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+        params = {
+            "secid": "133.USDCNH", "fields1": "f1,f2,f3,f4,f5,f6",
+            "fields2": "f51,f52,f53,f54,f55,f56,f57",
+            "klt": "101", "fqt": "1", "beg": "20240101", "end": "20500101",
+        }
+        r = cffi_requests.get(url, params=params, timeout=20)
+        data = r.json()
+        kl = (data.get("data") or {}).get("klines") or []
+        rows = []
+        for line in kl:
+            parts = line.split(",")
+            rows.append({"date": parts[0], "close": float(parts[2])})
+        return pd.DataFrame(rows)
+
+    df = _retry_call(_fetch, label="USDCNH")
+    if df is None or len(df) == 0:
+        _CACHE["__FX__"] = None
+        print("    !! 汇率源不可用，本次预测不含汇率因子")
+        return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
     _CACHE["__FX__"] = df
     return df
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(Exception))
 def get_index(symbol):
-    """美股指数（新浪）"""
+    """美股指数（新浪，HTTP/1.1）"""
     key = f"__IDX_{symbol}__"
     if key in _CACHE:
         return _CACHE[key]
-    df = ak.index_us_stock_sina(symbol=symbol)
+
+    def _fetch():
+        return ak.index_us_stock_sina(symbol=symbol)
+
+    df = _retry_call(_fetch, label=f"指数 {symbol}")
+    if df is None or len(df) == 0:
+        _CACHE[key] = None
+        return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
     _CACHE[key] = df
@@ -175,7 +212,14 @@ def get_hs_index():
     """恒生指数（新浪港股）"""
     if "__HSI__" in _CACHE:
         return _CACHE["__HSI__"]
-    df = ak.stock_hk_index_daily_sina(symbol="HSI")
+
+    def _fetch():
+        return ak.stock_hk_index_daily_sina(symbol="HSI")
+
+    df = _retry_call(_fetch, label="HSI")
+    if df is None or len(df) == 0:
+        _CACHE["__HSI__"] = None
+        return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
     _CACHE["__HSI__"] = df
