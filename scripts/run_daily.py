@@ -3,10 +3,10 @@
 """QDII 基金净值跟踪 - 每日主入口
 
 流程（美股交易日北京时间 08:00 触发）：
-1. 判断美股交易日（NYX 日历 + 时区）——非交易日跳过
+1. 判断美股交易日（NYSE 日历 + 时区）——非交易日跳过
 2. 对每只基金：拉最新持仓 + 净值 + 美股行情 + 汇率
-3. 预测"今晚将公布"的净值涨跌（用昨日美股收盘，lag=0）
-4. 验证"昨晚已公布"的净值涨跌（与历史预测对比）
+3. ⭐ 前瞻预测：用今天凌晨美股收盘数据，预测「今晚将公布」的净值涨跌（lag=0）
+4. 验证历史预测：读取 predictions.jsonl，净值已公布的补记 actual，统计命中率
 5. 滚动 NNLS 动态权重 → 输出疑似调仓清单
 6. 生成 Markdown 报告 → output/
 """
@@ -23,7 +23,9 @@ FUNDS = ["002891", "008254", "014002", "015202", "016702", "018147", "021277", "
 FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
               "015202": "汇添富全球移动C", "016702": "银华海外数字C", "018147": "建信新兴C",
               "021277": "广发全球精选C", "021842": "国富全球科技C"}
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
+HIST_FILE = os.path.join(OUTPUT_DIR, "predictions.jsonl")
 
 def bj_now():
     BJ = datetime.timezone(datetime.timedelta(hours=8))
@@ -38,7 +40,6 @@ def is_us_trade_day_today():
     BJ = datetime.timezone(datetime.timedelta(hours=8))
     now_bj = datetime.datetime.now(BJ)
     today = now_bj.strftime("%Y-%m-%d")
-    # 美东昨天 = 北京今天 - 1 天（美东收盘在北京次日凌晨）
     us_prev = (now_bj - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     try:
         import pandas_market_calendars as mcal
@@ -46,7 +47,6 @@ def is_us_trade_day_today():
         sched = nyse.schedule(start_date=us_prev, end_date=us_prev)
         is_trade = len(sched) > 0
     except Exception:
-        # 兜底：周一到周五近似（无法识别节假日，但不至于静默失败）
         wd = datetime.datetime.strptime(today, "%Y-%m-%d").weekday()
         is_trade = wd < 5
     if is_trade:
@@ -54,6 +54,26 @@ def is_us_trade_day_today():
     else:
         print(f"✗ {today}：美东昨日 {us_prev} 非交易日（周末/节假日），跳过")
     return is_trade
+
+def load_history():
+    """读取预测历史（JSONL）"""
+    rows = []
+    if os.path.exists(HIST_FILE):
+        with open(HIST_FILE, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    try:
+                        rows.append(json.loads(line))
+                    except Exception:
+                        pass
+    return rows
+
+def save_history(rows):
+    os.makedirs(os.path.dirname(HIST_FILE), exist_ok=True)
+    with open(HIST_FILE, "w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 def main():
     ap = argparse.ArgumentParser()
@@ -72,6 +92,8 @@ def main():
             return 0
         print("✓ 美股交易日，执行分析")
 
+    history = load_history()
+
     results = {}
     for code in FUNDS:
         try:
@@ -81,9 +103,15 @@ def main():
             print(f"  [{code}] 失败: {repr(e)[:150]}")
             results[code] = {"code": code, "error": str(e)[:200]}
 
+    # 验证历史预测：预测净值日已公布 → 补记 actual + 命中率
+    verify_report = verify_history(history, results)
+
+    # 记录今日新预测（追加到历史）
+    append_predictions(history, results, today)
+
     # 保存当日结果
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
-              "funds": results}
+              "funds": results, "verify": verify_report}
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=str)
 
@@ -92,11 +120,118 @@ def main():
     print("DONE ->", os.path.join(args.out, "daily_report.json"))
     return 0
 
+def append_predictions(history, results, today):
+    """把今日预测追加到历史 JSONL（每条含预测净值日，供次日验证）"""
+    for code, r in results.items():
+        if "error" in r or "predict" not in r:
+            continue
+        p = r["predict"]
+        hist = next((h for h in history
+                     if h.get("code") == code and h.get("pred_date") == str(p["next_date"].date())), None)
+        if hist:
+            continue  # 同日已记录，防重复
+        history.append({
+            "code": code,
+            "name": FUND_NAMES.get(code, ""),
+            "run_date": today,
+            "pred_date": str(p["next_date"].date()),
+            "last_nav": p["last_nav"],
+            "pred_static": p["pred_static"],
+            "pred_nnls": p["pred_nnls"],
+            "pred_nav_static": p["pred_nav_static"],
+            "actual": None,       # 待净值公布后回填
+            "actual_nav": None,
+            "hit": None,          # 方向是否命中
+            "err": None,          # 静态预测误差
+        })
+    save_history(history)
+
+def verify_history(history, results):
+    """验证历史预测：预测净值日已公布的，补记 actual 并统计命中率"""
+    stats = {"n": 0, "dir_hit": 0, "mae_sum": 0.0}
+    for h in history:
+        if h.get("actual") is not None:
+            stats["n"] += 1
+            stats["dir_hit"] += 1 if h.get("hit") else 0
+            if h.get("err") is not None:
+                stats["mae_sum"] += abs(h["err"])
+            continue
+        code = h["code"]
+        pred_date = h["pred_date"]
+        r = results.get(code)
+        if r is None or "error" in r:
+            continue
+        # 检查该预测净值日是否已公布（净值数据已含该日）
+        nav = dfet.get_nav(code)
+        nav = nav[nav["date"] <= pd.Timestamp(pred_date)]
+        if len(nav) == 0:
+            continue
+        row = nav.iloc[-1]
+        if str(row["date"].date()) != pred_date:
+            continue  # 尚未公布
+        actual = row["growth"] / 100
+        h["actual"] = actual
+        h["actual_nav"] = float(row["nav"])
+        h["hit"] = bool(np.sign(h["pred_static"]) == np.sign(actual))
+        h["err"] = h["pred_static"] - actual
+        stats["n"] += 1
+        stats["dir_hit"] += 1 if h["hit"] else 0
+        stats["mae_sum"] += abs(h["err"])
+    save_history(history)
+    if stats["n"] > 0:
+        stats["dir_acc"] = stats["dir_hit"] / stats["n"] * 100
+        stats["mae"] = stats["mae_sum"] / stats["n"] * 100
+    else:
+        stats["dir_acc"], stats["mae"] = None, None
+    # 最近 5 条已验证记录
+    verified = [h for h in history if h.get("actual") is not None][-5:]
+    stats["recent"] = [{"code": h["code"], "pred_date": h["pred_date"],
+                        "pred_static": h["pred_static"], "actual": h["actual"],
+                        "hit": h["hit"], "err": h["err"]} for h in verified]
+    return stats
+
 def write_summary(report, out_dir):
     """生成对比摘要 Markdown"""
     lines = [f"# QDII 净值跟踪日报（{report['date']}）", "",
              f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：十大持仓静态 + 滚动NNLS动态",
              ""]
+
+    # ⭐ 核心板块：今晚净值预测（放最前面）
+    lines.append("## ⭐ 今晚净值预测（今日凌晨美股收盘 → 今晚公布）")
+    lines.append("")
+    lines.append("| 代码 | 基金 | 今日凌晨美股 | 静态预测 | 滚动NNLS | 预测净值(静态) | 最新净值 |")
+    lines.append("|------|------|:---:|:---:|:---:|:---:|:---:|")
+    for code, r in report["funds"].items():
+        name = FUND_NAMES.get(code, "")
+        if "error" in r or "predict" not in r:
+            lines.append(f"| {code} | {name} | - | 错误 | | | |")
+            continue
+        p = r["predict"]
+        pred_date = str(p["next_date"].date())
+        pn = p.get("pred_nnls")
+        pn_s = f"{pn*100:+.2f}%" if pn is not None else "-"
+        lines.append(f"| {code} | {name} | **{pred_date}** | **{p['pred_static']*100:+.2f}%** | {pn_s} | "
+                     f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} |")
+    lines.append("")
+    lines.append("> 规则：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。今日凌晨美股收盘 → 今晚公布净值。")
+    lines.append("")
+
+    # 历史预测验证
+    v = report.get("verify") or {}
+    if v.get("n"):
+        lines.append(f"## 历史预测验证（已公布 {v['n']} 条）")
+        lines.append("")
+        lines.append(f"**方向命中率 {v['dir_acc']:.1f}% ｜ MAE {v['mae']:.3f}pp**")
+        lines.append("")
+        lines.append("| 代码 | 预测日期 | 预测涨跌 | 实际涨跌 | 命中 | 误差 |")
+        lines.append("|------|---------|:---:|:---:|:---:|:---:|")
+        for rc in (v.get("recent") or [])[::-1]:
+            hit = "✓" if rc["hit"] else "✗"
+            lines.append(f"| {rc['code']} | {rc['pred_date']} | {rc['pred_static']*100:+.2f}% | "
+                         f"{rc['actual']*100:+.2f}% | {hit} | {rc['err']*100:+.2f}pp |")
+        lines.append("")
+
+    # 持仓真实性 + 美股含量
     lines.append("## 持仓真实性 + 美股含量")
     lines.append("")
     lines.append("| 代码 | 基金 | 披露美股% | NDXβ | 静态预测方向% | 静态MAE | 滚动MAE | 持仓R²(Q2) |")
@@ -114,6 +249,22 @@ def write_summary(report, out_dir):
         lines.append(f"| {code} | {name} | {us}% | {beta} | {s.get('dir_acc','-'):.1f}% | "
                      f"{s.get('mae','-'):.2f} | {rr.get('mae','-'):.2f} | {r2:.3f} |")
     lines.append("")
+
+    # 预测明细（每只基金持仓股贡献）
+    lines.append("## 今晚预测明细（静态披露权重 × 最新美股收益）")
+    lines.append("")
+    for code, r in report["funds"].items():
+        if "error" in r or "predict" not in r:
+            continue
+        p = r["predict"]
+        lines.append(f"### {code} {FUND_NAMES.get(code, '')} → 预测 {p['pred_static']*100:+.2f}%")
+        lines.append("")
+        lines.append("| 代码 | 权重 | 最新收益 | 贡献 |")
+        lines.append("|------|:---:|:---:|:---:|")
+        for c in p["contributors"]:
+            lines.append(f"| {c['code']} | {c['weight']*100:.2f}% | {c['ret']*100:+.2f}% | {c['contrib']*100:+.3f}pp |")
+        lines.append(f"| USDCNH | - | {p['fx_ret']*100:+.2f}% | 已计入 |")
+        lines.append("")
     lines.append("## 疑似调仓（滚动NNLS vs 披露）")
     lines.append("")
     for code, r in report["funds"].items():

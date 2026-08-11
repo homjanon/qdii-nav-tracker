@@ -124,6 +124,77 @@ def index_beta(nav, ndx_df, start_date=None):
     r2 = 1 - ((yv - yhat) ** 2).sum() / ((yv - yv.mean()) ** 2).sum()
     return {"ndx_beta": float(beta[1]), "r2": float(r2), "alpha": float(beta[0]), "n": len(m)}
 
+def next_nav_date(nav):
+    """下一个净值日：最新净值日期的下一个工作日（跳过周末）"""
+    last = nav["date"].iloc[-1]
+    nd = last + pd.Timedelta(days=1)
+    while nd.weekday() >= 5:
+        nd += pd.Timedelta(days=1)
+    return nd
+
+def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=None):
+    """前瞻预测：用最新美股收盘（≤下一净值日）预测今晚将公布的净值涨跌
+
+    时间对齐（用户验证过的规则）：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。
+    北京 D 日 08:00 运行时，美股 D-1 日已收盘（北京 D 日凌晨），今晚将公布净值日期 D。
+    因此「下一净值日」= 最新净值日期 + 1 工作日，其收益 = 美股最新可得收益。
+
+    返回 dict: {next_date, last_nav, last_date, pred_static, pred_nnls,
+                pred_nav_static, pred_nav_nnls, contributors, fx_ret}
+    """
+    next_d = next_nav_date(nav)
+    last_row = nav.iloc[-1]
+    last_date = last_row["date"]
+    last_nav = float(last_row["nav"])
+
+    # 静态披露权重预测
+    w = _weights(holdings)
+    wsum = sum(w.values())
+    b_static = 0.0
+    contributors = []
+    for code, wgt in w.items():
+        px = price_map.get(code)
+        if px is None:
+            continue
+        r = dfet.asof_ret(px, [next_d])[0]
+        if np.isnan(r):
+            continue
+        b_static += wgt * r
+        contributors.append({"code": code, "weight": wgt, "ret": r, "contrib": wgt * r})
+    fxr = dfet.asof_ret(fx_df, [next_d])[0]
+    if not np.isnan(fxr):
+        b_static += wsum * fxr
+    contributors.sort(key=lambda x: x["contrib"], reverse=True)
+
+    # 滚动 NNLS 权重预测
+    b_nnls = None
+    if nnls_weight:
+        b_nnls = 0.0
+        for code, wgt in nnls_weight.items():
+            if code == "FX":
+                continue
+            px = price_map.get(code)
+            if px is None:
+                continue
+            r = dfet.asof_ret(px, [next_d])[0]
+            if np.isnan(r):
+                continue
+            b_nnls += wgt * r
+        fxw = nnls_weight.get("FX", 0.0)
+        if not np.isnan(fxr):
+            b_nnls += fxw * fxr
+
+    out = {"next_date": next_d, "last_date": last_date, "last_nav": last_nav,
+           "pred_static": float(b_static), "pred_nnls": float(b_nnls) if b_nnls is not None else None,
+           "pred_nav_static": float(last_nav * (1 + b_static)),
+           "pred_nav_nnls": float(last_nav * (1 + b_nnls)) if b_nnls is not None else None,
+           "contributors": contributors, "fx_ret": float(fxr) if not np.isnan(fxr) else None}
+    if mae_static:
+        out["mae_static"] = mae_static
+        out["pred_range_low"] = float(last_nav * (1 + b_static - mae_static / 100))
+        out["pred_range_high"] = float(last_nav * (1 + b_static + mae_static / 100))
+    return out
+
 def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     """单只基金全流程分析"""
     # 1. 持仓（Q1 当期 + Q2 当期）
@@ -172,9 +243,17 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     # 6. 指数回归（近6月 NDX β）
     beta6 = index_beta(nav, ndx_df, start_date="2026-02-10")
 
+    # 7. 前瞻预测：今晚将公布的净值涨跌（用最新美股收盘）
+    mae_static = stat_static["mae"] if stat_static else None
+    pred_next = predict_next(nav, h_q2, price_map, fx_df,
+                             nnls_weight=last_w, mae_static=mae_static)
+    print(f"[{code}] 预测 {pred_next['next_date'].date()}: "
+          f"静态{pred_next['pred_static']*100:+.2f}% 滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}%")
+
     return {"code": code, "q2_total": round(q2_total, 1), "us_pct": round(us_q2, 1),
             "hk_pct": round(hk_q2, 1), "price_n": len(price_map),
             "holdings": h_q2,
             "static": stat_static, "roll": stat_roll,
             "nnls_weight": {k: round(v, 4) for k, v in last_w.items()} if last_w else None,
-            "ndx_beta": beta6, "skipped": [h["code"] for h in all_h if h["market"] == "SKIP"]}
+            "ndx_beta": beta6, "skipped": [h["code"] for h in all_h if h["market"] == "SKIP"],
+            "predict": pred_next}
