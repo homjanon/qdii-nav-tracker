@@ -73,9 +73,13 @@ jobs:
         if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
         run: python scripts/run_daily.py --out output
 
+      - name: Render static HTML
+        if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
+        run: python scripts/render_html.py --json output/daily_report.json --history output/predictions.jsonl --out docs/index.html
+
       - name: Commit outputs
         if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: daily QDII nav update (${{ github.run_id }})"
-          file_pattern: "output/*"
+          file_pattern: "output/* docs/*"
