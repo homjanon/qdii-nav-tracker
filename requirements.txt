@@ -1,0 +1,8 @@
+akshare==1.18.64
+pandas
+numpy
+scipy
+requests
+curl_cffi
+tenacity
+pandas-market-calendars

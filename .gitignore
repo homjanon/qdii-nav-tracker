@@ -1,0 +1,5 @@
+# 输出目录只保留最新报告，历史由 git 累积
+output/*
+!output/.gitkeep
+__pycache__/
+*.pyc
