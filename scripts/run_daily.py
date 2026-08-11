@@ -163,6 +163,8 @@ def verify_history(history, results):
             continue
         # 检查该预测净值日是否已公布（净值数据已含该日）
         nav = dfet.get_nav(code)
+        if nav is None or len(nav) == 0:
+            continue
         nav = nav[nav["date"] <= pd.Timestamp(pred_date)]
         if len(nav) == 0:
             continue
@@ -263,7 +265,8 @@ def write_summary(report, out_dir):
         lines.append("|------|:---:|:---:|:---:|")
         for c in p["contributors"]:
             lines.append(f"| {c['code']} | {c['weight']*100:.2f}% | {c['ret']*100:+.2f}% | {c['contrib']*100:+.3f}pp |")
-        lines.append(f"| USDCNH | - | {p['fx_ret']*100:+.2f}% | 已计入 |")
+        lines.append(f"| USDCNH | - | {p['fx_ret']*100 if p['fx_ret'] is not None else 0.0:+.2f}% | "
+                     f"{'已计入' if p['fx_ret'] is not None else '源不可用'} |")
         lines.append("")
     lines.append("## 疑似调仓（滚动NNLS vs 披露）")
     lines.append("")
