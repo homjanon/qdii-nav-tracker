@@ -1,5 +1,4 @@
-# 输出目录只保留最新报告，历史由 git 累积
-output/*
-!output/.gitkeep
+# 缓存与临时文件
 __pycache__/
 *.pyc
+.DS_Store

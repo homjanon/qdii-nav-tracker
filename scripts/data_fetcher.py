@@ -113,21 +113,32 @@ def get_nav(code, start_date=None):
         df = df[df["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
     return df
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(Exception))
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2),
+       retry=retry_if_exception_type(Exception))
 def get_price_df(code, market):
     """个股日线（带全局缓存）"""
     if code in _CACHE:
         return _CACHE[code]
     df = None
-    if market == "US":
-        df = ak.stock_us_daily(symbol=code)
-    elif market == "HK":
-        df = ak.stock_hk_daily(symbol=code)
-    elif market == "CN":
-        sym = ("sh" if code.startswith("6") else "sz") + code
-        df = ak.stock_zh_a_daily(symbol=sym)
+    last_err = None
+    for attempt in range(3):
+        try:
+            if market == "US":
+                df = ak.stock_us_daily(symbol=code)
+            elif market == "HK":
+                df = ak.stock_hk_daily(symbol=code)
+            elif market == "CN":
+                sym = ("sh" if code.startswith("6") else "sz") + code
+                df = ak.stock_zh_a_daily(symbol=sym)
+            if df is not None and len(df) > 0:
+                break
+        except Exception as e:
+            last_err = e
+            time.sleep(2 * (attempt + 1))
     if df is None or len(df) == 0:
         _CACHE[code] = None
+        if last_err:
+            print(f"    [{code}] 行情获取失败: {repr(last_err)[:100]}")
         return None
     df = df.rename(columns={"close": "close"})
     df = df[["date", "close"]].copy()
