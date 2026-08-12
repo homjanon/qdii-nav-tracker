@@ -99,32 +99,58 @@ def render(report, history, out_path):
     verify = report.get("verify", {})
     hist_verified = [h for h in history if h.get("actual") is not None]
 
-    # ---- 今晚预测卡片 ----
+    # ---- 今晚预测卡片（保留全部基金：待验证显示预测，已公布显示预测vs实际）----
     pred_cards = []
     for code, r in funds.items():
-        if "error" in r or "predict" not in r or r.get("predict") is None:
+        if "error" in r:
             continue
-        p = r["predict"]
-        pn = p.get("pred_nnls")
-        pred_cards.append({
-            "code": code, "name": FUND_NAMES.get(code, code),
-            "pred": p["pred_static"], "pred_nnls": pn,
-            "pred_nav": p["pred_nav_static"], "last_nav": p["last_nav"],
-            "next_date": str(p["next_date"])[:10],
-        })
-    pred_cards.sort(key=lambda x: x["pred"], reverse=True)
+        p = r.get("predict")
+        if p is not None:
+            # 有预测：待验证
+            pn = p.get("pred_nnls")
+            pred_cards.append({
+                "code": code, "name": FUND_NAMES.get(code, code),
+                "pred": p["pred_static"], "pred_nnls": pn,
+                "pred_nav": p["pred_nav_static"], "last_nav": p["last_nav"],
+                "next_date": str(p["next_date"])[:10],
+                "status": "pending", "actual": None, "hit": None, "err": None,
+            })
+        else:
+            # 已公布：从 history 找该基金最新已验证记录（预测 vs 实际对照）
+            recs = [h for h in history if h.get("code") == code and h.get("actual") is not None]
+            if recs:
+                rec = recs[-1]
+                pred_cards.append({
+                    "code": code, "name": FUND_NAMES.get(code, code),
+                    "pred": rec["pred_static"], "pred_nnls": rec.get("pred_nnls"),
+                    "pred_nav": rec.get("pred_nav_static"), "last_nav": rec.get("actual_nav"),
+                    "next_date": rec["pred_date"],
+                    "status": "verified", "actual": rec["actual"], "hit": rec.get("hit"),
+                    "err": rec.get("err"),
+                })
+    pred_cards.sort(key=lambda x: (0 if x["status"] == "pending" else 1, -x["pred"]))
 
     cards_html = []
     for c in pred_cards:
         cls = pred_color(c["pred"])
         arrow = "▲" if c["pred"] > 0 else ("▼" if c["pred"] < 0 else "—")
         nnls_s = fmt_pct(c["pred_nnls"]) if c["pred_nnls"] is not None else "-"
+        if c["status"] == "pending":
+            status_badge = '<span class="badge">待公布</span>'
+            actual_html = f'<div class="meta"><span>最新净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>'
+        else:
+            hit = c.get("hit")
+            mark = '<span class="ok">✓</span>' if hit else '<span class="no">✗</span>'
+            status_badge = f'<span class="badge" style="background:#f0fdf4;color:#166534">已公布 {mark}</span>'
+            actual_html = (f'<div class="meta"><span>实际 {fmt_pct(c["actual"])}</span>'
+                           f'<span>误差 {fmt_pp(c["err"])}</span></div>'
+                           f'<div class="meta"><span>实际净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>')
         cards_html.append(f"""
         <div class="fund-card">
-          <div class="fname">{esc(c['name'])} <span class="fcode">{c['code']}</span></div>
+          <div class="fname">{esc(c['name'])} <span class="fcode">{c['code']}</span> {status_badge}</div>
           <div class="pred {cls}">{arrow} {fmt_pct(c['pred'])}</div>
           <div class="meta"><span>滚动NNLS {nnls_s}</span><span>预测净值<br/><b>{c['pred_nav']:.4f}</b></span></div>
-          <div class="meta"><span>最新净值 {c['last_nav']:.4f}</span><span>{esc(c['next_date'])}公布</span></div>
+          {actual_html}
         </div>""")
     pred_block = "\n".join(cards_html) if cards_html else "<p class='sub'>暂无预测数据</p>"
 
@@ -223,7 +249,8 @@ def render(report, history, out_path):
   <div class="legend">
     <span><i style="background:var(--up)"></i>预测上涨</span>
     <span><i style="background:var(--down)"></i>预测下跌</span>
-    <span class="sub">静态=披露权重 · 滚动=60日NNLS动态权重 · 基于美股最新收盘（lag=0）</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;padding:1px 6px;border-radius:99px;background:#f0fdf4;color:#166534">已公布</span>已公布净值的显示预测 vs 实际对照</span>
+    <span class="sub">静态=披露权重 · 滚动=60日NNLS · 基于美股最新收盘（lag=0）</span>
   </div>
   <div class="grid">{pred_block}</div>
 </div>

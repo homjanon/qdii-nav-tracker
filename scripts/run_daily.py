@@ -116,7 +116,7 @@ def main():
         json.dump(report, f, ensure_ascii=False, indent=1, default=str)
 
     # 生成 Markdown 摘要
-    write_summary(report, args.out)
+    write_summary(report, args.out, history)
     print("DONE ->", os.path.join(args.out, "daily_report.json"))
     return 0
 
@@ -230,30 +230,44 @@ def verify_history(history, results):
                         "hit": h["hit"], "err": h["err"]} for h in verified]
     return stats
 
-def write_summary(report, out_dir):
+def write_summary(report, out_dir, history=None):
     """生成对比摘要 Markdown"""
+    history = history or []
     lines = [f"# QDII 净值跟踪日报（{report['date']}）", "",
              f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：十大持仓静态 + 滚动NNLS动态",
              ""]
 
-    # ⭐ 核心板块：今晚净值预测（放最前面）
-    lines.append("## ⭐ 今晚净值预测（今日凌晨美股收盘 → 今晚公布）")
+    # ⭐ 核心板块：今晚净值预测（保留全部基金：待验证显示预测，已公布显示预测vs实际）
+    lines.append("## ⭐ 今晚净值预测（今日凌晨美股收盘 → 对应净值日）")
     lines.append("")
-    lines.append("| 代码 | 基金 | 预测净值日 | 静态预测 | 滚动NNLS | 预测净值(静态) | 最新净值 |")
-    lines.append("|------|------|:---:|:---:|:---:|:---:|:---:|")
+    lines.append("| 代码 | 基金 | 预测净值日 | 静态预测 | 滚动NNLS | 预测净值 | 最新净值 | 状态 |")
+    lines.append("|------|------|:---:|:---:|:---:|:---:|:---:|:---:|")
     for code, r in report["funds"].items():
         name = FUND_NAMES.get(code, "")
-        if "error" in r or "predict" not in r or r["predict"] is None:
-            lines.append(f"| {code} | {name} | - | 已公布(走验证) | | | |")
+        if "error" in r:
+            lines.append(f"| {code} | {name} | - | 错误 | | | | |")
             continue
-        p = r["predict"]
-        pred_date = str(p["next_date"].date())
-        pn = p.get("pred_nnls")
-        pn_s = f"{pn*100:+.2f}%" if pn is not None else "-"
-        lines.append(f"| {code} | {name} | **{pred_date}** | **{p['pred_static']*100:+.2f}%** | {pn_s} | "
-                     f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} |")
+        p = r.get("predict")
+        if p is not None:
+            pred_date = str(p["next_date"].date())
+            pn = p.get("pred_nnls")
+            pn_s = f"{pn*100:+.2f}%" if pn is not None else "-"
+            lines.append(f"| {code} | {name} | **{pred_date}** | **{p['pred_static']*100:+.2f}%** | {pn_s} | "
+                         f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} | 待公布 |")
+        else:
+            # 已公布：从 history 找最新已验证记录显示预测 vs 实际
+            recs = [h for h in history if h.get("code") == code and h.get("actual") is not None]
+            if recs:
+                rec = recs[-1]
+                hit = "✓" if rec.get("hit") else "✗"
+                lines.append(f"| {code} | {name} | {rec['pred_date']} | **{rec['pred_static']*100:+.2f}%** | "
+                             f"{rec.get('pred_nnls')*100 if rec.get('pred_nnls') is not None else 0:+.2f}% | "
+                             f"{rec.get('pred_nav_static', 0):.4f} | {rec.get('actual_nav', 0):.4f} | "
+                             f"已公布 实际{rec['actual']*100:+.2f}% {hit} |")
+            else:
+                lines.append(f"| {code} | {name} | - | - | | | | 无记录 |")
     lines.append("")
-    lines.append("> 规则：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。预测对象=美股最近收盘日，各基金统一。")
+    lines.append("> 规则：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。预测对象=美股最近收盘日，各基金统一；已公布净值的基金显示预测 vs 实际对照。")
     lines.append("")
 
     # 历史预测验证
