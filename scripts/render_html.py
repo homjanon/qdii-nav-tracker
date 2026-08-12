@@ -105,6 +105,8 @@ def render(report, history, out_path):
         if "error" in r:
             continue
         p = r.get("predict")
+        diverge = bool(p.get("diverge")) if p else False
+        src_cache = bool((r.get("holdings_source") or {}).get("q2") == "cache")
         if p is not None:
             # 有预测：待验证
             pn = p.get("pred_nnls")
@@ -114,6 +116,7 @@ def render(report, history, out_path):
                 "pred_nav": p["pred_nav_static"], "last_nav": p["last_nav"],
                 "next_date": str(p["next_date"])[:10],
                 "status": "pending", "actual": None, "hit": None, "err": None,
+                "diverge": diverge, "src_cache": src_cache,
             })
         else:
             # 已公布：从 history 找该基金最新已验证记录（预测 vs 实际对照）
@@ -126,7 +129,7 @@ def render(report, history, out_path):
                     "pred_nav": rec.get("pred_nav_static"), "last_nav": rec.get("actual_nav"),
                     "next_date": rec["pred_date"],
                     "status": "verified", "actual": rec["actual"], "hit": rec.get("hit"),
-                    "err": rec.get("err"),
+                    "err": rec.get("err"), "diverge": diverge, "src_cache": src_cache,
                 })
     pred_cards.sort(key=lambda x: (0 if x["status"] == "pending" else 1, -x["pred"]))
 
@@ -135,13 +138,15 @@ def render(report, history, out_path):
         cls = pred_color(c["pred"])
         arrow = "▲" if c["pred"] > 0 else ("▼" if c["pred"] < 0 else "—")
         nnls_s = fmt_pct(c["pred_nnls"]) if c["pred_nnls"] is not None else "-"
+        diverge_note = '<span style="color:var(--warn);font-size:11px">⚠️与大盘背离</span>' if c.get("diverge") else ""
+        cache_note = '<span style="color:var(--sub);font-size:11px">持仓缓存</span>' if c.get("src_cache") else ""
         if c["status"] == "pending":
-            status_badge = '<span class="badge">待公布</span>'
+            status_badge = f'<span class="badge">待公布</span> {diverge_note} {cache_note}'
             actual_html = f'<div class="meta"><span>最新净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>'
         else:
             hit = c.get("hit")
             mark = '<span class="ok">✓</span>' if hit else '<span class="no">✗</span>'
-            status_badge = f'<span class="badge" style="background:#f0fdf4;color:#166534">已公布 {mark}</span>'
+            status_badge = f'<span class="badge" style="background:#f0fdf4;color:#166534">已公布 {mark}</span> {cache_note}'
             actual_html = (f'<div class="meta"><span>实际 {fmt_pct(c["actual"])}</span>'
                            f'<span>误差 {fmt_pp(c["err"])}</span></div>'
                            f'<div class="meta"><span>实际净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>')

@@ -19,7 +19,7 @@ market 识别规则（F10 返回无市场前缀）：
 - 6位 3 开头（300408 三环集团）→ A股
 - 其他（285A KIOXIA、005930 三星、000660 SK海力士）→ 无行情源，跳过
 """
-import os, re, time, json
+import os, re, time, json, datetime
 import numpy as np
 import pandas as pd
 
@@ -129,10 +129,59 @@ def parse_holdings(html):
                     "market": classify_market(code)})
     return out
 
+# 持仓缓存（F10 偶发超时兜底）：output/holdings_cache.json
+# key = f"{code}-{year}-{month}（默认最新期 year='' month='' → key 带 current 标记）"
+HOLDINGS_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", "holdings_cache.json")
+HOLDINGS_CACHE_MAX_AGE_DAYS = 90  # 持仓披露季度更新，90 天缓存足够
+
+def _load_holdings_cache():
+    try:
+        if os.path.exists(HOLDINGS_CACHE_PATH):
+            with open(HOLDINGS_CACHE_PATH, encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+def _save_holdings_cache(cache):
+    try:
+        os.makedirs(os.path.dirname(HOLDINGS_CACHE_PATH), exist_ok=True)
+        with open(HOLDINGS_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(cache, f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass
+
 def get_holdings(code, year="", month=""):
-    """获取某期十大持仓（默认最新季报）"""
+    """获取某期十大持仓（F10 实时 → 失败读缓存兜底）
+    返回 (holdings, source)：source='live' 实时 / 'cache' 缓存
+    """
+    cache_key = f"{code}|{year or 'current'}|{month or ''}"
+    cache = _load_holdings_cache()
+
+    # 实时获取
     html = fetch_f10(code, 10, year, month)
-    return parse_holdings(html) if html else []
+    if html:
+        h = parse_holdings(html)
+        if h:
+            # 成功 → 更新缓存（含时间戳）
+            cache[cache_key] = {"ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+                                "year": year, "month": month, "holdings": h}
+            _save_holdings_cache(cache)
+            return h, "live"
+
+    # 实时失败 → 缓存兜底
+    entry = cache.get(cache_key)
+    if entry and entry.get("holdings"):
+        # 检查缓存时效（默认最新期缓存 90 天内有效）
+        try:
+            ts = datetime.datetime.strptime(entry["ts"], "%Y-%m-%d %H:%M:%S")
+            age_days = (datetime.datetime.now() - ts).days
+            if age_days <= HOLDINGS_CACHE_MAX_AGE_DAYS:
+                print(f"    !! {code} F10 实时失败，使用持仓缓存（{entry['ts']}，{age_days}天前）")
+                return entry["holdings"], "cache"
+        except Exception:
+            return entry["holdings"], "cache"
+    return [], "none"
 
 # ============ 净值（双源：东财 lsjz 直连主 → akshare 备）============
 

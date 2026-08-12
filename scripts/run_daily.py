@@ -252,8 +252,14 @@ def write_summary(report, out_dir, history=None):
             pred_date = str(p["next_date"].date())
             pn = p.get("pred_nnls")
             pn_s = f"{pn*100:+.2f}%" if pn is not None else "-"
+            # 方向背离提示 + 持仓缓存标注
+            diverge_note = " ⚠️与大盘背离" if p.get("diverge") else ""
+            src_note = ""
+            hs = r.get("holdings_source") or {}
+            if hs.get("q2") == "cache":
+                src_note = " (持仓缓存)"
             lines.append(f"| {code} | {name} | **{pred_date}** | **{p['pred_static']*100:+.2f}%** | {pn_s} | "
-                         f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} | 待公布 |")
+                         f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} | 待公布{diverge_note}{src_note} |")
         else:
             # 已公布：从 history 找最新已验证记录显示预测 vs 实际
             recs = [h for h in history if h.get("code") == code and h.get("actual") is not None]

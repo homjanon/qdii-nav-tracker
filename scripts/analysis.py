@@ -142,7 +142,7 @@ def next_nav_date(nav):
     return nd
 
 def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=None,
-                 us_last=None):
+                 us_last=None, ndx_df=None):
     """前瞻预测：用美股最近收盘（统一基准 us_last）预测对应净值日涨跌
 
     时间对齐（用户验证过的规则）：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。
@@ -150,6 +150,7 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
     分流逻辑：
       - 该基金最新净值日期 < us_last → 该期净值未公布 → 生成预测（待验证）
       - 该基金最新净值日期 >= us_last → 该期已公布 → 返回 None（由 verify 分支验证）
+    方向背离检测：预测方向与 NDX 指数方向相反 → 标注 diverge=True（提示谨慎）
 
     返回 dict 或 None（已公布时）
     """
@@ -186,6 +187,14 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
             b_static += wsum * fxr
     contributors.sort(key=lambda x: x["contrib"], reverse=True)
 
+    # 方向背离检测：NDX 当日收益与预测方向相反 → 提示谨慎
+    ndx_ret = np.nan
+    diverge = False
+    if ndx_df is not None:
+        ndx_ret = dfet.asof_ret(ndx_df, [next_d])[0]
+        if not np.isnan(ndx_ret) and not np.isnan(b_static):
+            diverge = np.sign(b_static) != np.sign(ndx_ret)
+
     # 滚动 NNLS 权重预测
     b_nnls = None
     if nnls_weight:
@@ -209,7 +218,8 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
            "pred_nav_static": float(last_nav * (1 + b_static)),
            "pred_nav_nnls": float(last_nav * (1 + b_nnls)) if b_nnls is not None else None,
            "contributors": contributors, "fx_ret": float(fxr) if not np.isnan(fxr) else None,
-           "us_last": us_last}
+           "us_last": us_last, "ndx_ret": float(ndx_ret) if not np.isnan(ndx_ret) else None,
+           "diverge": diverge}
     if mae_static:
         out["mae_static"] = mae_static
         out["pred_range_low"] = float(last_nav * (1 + b_static - mae_static / 100))
@@ -218,16 +228,17 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
 
 def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     """单只基金全流程分析"""
-    # 1. 持仓（Q1 当期 + Q2 当期）
-    h_q1 = dfet.get_holdings(code, year_q1, month_q1) or []
-    h_q2 = dfet.get_holdings(code) or []
+    # 1. 持仓（Q1 当期 + Q2 当期）——get_holdings 返回 (holdings, source)，F10 失败时用缓存兜底
+    h_q1, src_q1 = dfet.get_holdings(code, year_q1, month_q1)
+    h_q2, src_q2 = dfet.get_holdings(code)
     if not h_q2:
-        print(f"[{code}] Q2 持仓获取失败")
+        print(f"[{code}] Q2 持仓获取失败（实时+缓存均不可用）")
         return {"code": code, "error": "Q2 持仓获取失败"}
     q2_total = sum(x["pct"] for x in h_q2)
     us_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "US")
     hk_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "HK")
-    print(f"[{code}] Q2十大 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%)")
+    src_note = f" 持仓来源: Q2={'缓存' if src_q2=='cache' else '实时'} Q1={'缓存' if src_q1=='cache' else '实时'}"
+    print(f"[{code}] Q2十大 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%){src_note}")
 
     # 2. 行情（Q1+Q2 并集）
     price_map = {}
@@ -277,7 +288,8 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     mae_static = stat_static["mae"] if stat_static else None
     us_last = dfet.us_last_trade_date()
     pred_next = predict_next(nav, h_q2, price_map, fx_df,
-                             nnls_weight=last_w, mae_static=mae_static, us_last=us_last)
+                             nnls_weight=last_w, mae_static=mae_static, us_last=us_last,
+                             ndx_df=ndx_df)
     if pred_next is not None:
         print(f"[{code}] 预测 {pred_next['next_date'].date()}(US基准{us_last}): "
               f"静态{pred_next['pred_static']*100:+.2f}% 滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}%")
@@ -286,7 +298,7 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
 
     return {"code": code, "q2_total": round(q2_total, 1), "us_pct": round(us_q2, 1),
             "hk_pct": round(hk_q2, 1), "price_n": len(price_map),
-            "holdings": h_q2,
+            "holdings": h_q2, "holdings_source": {"q2": src_q2, "q1": src_q1},
             "static": stat_static, "roll": stat_roll,
             "nnls_weight": {k: round(v, 4) for k, v in last_w.items()} if last_w else None,
             "ndx_beta": beta6, "skipped": [h["code"] for h in all_h if h["market"] == "SKIP"],
