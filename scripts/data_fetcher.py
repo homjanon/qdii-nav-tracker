@@ -58,8 +58,15 @@ HEADERS_TX = {"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"}
 # 全局行情缓存（多基金重仓股去重）
 _CACHE = {}
 
+# 日韩股代码映射（东财 secid 市场号）：JP=176, KR=177
+# 东财搜索实测：铠侠 285A → 176(JPX)、三星 005930 → 177(KRX)、SK海力士 000660 → 177(KRX)
+JP_CODES = {"285A": "KIOXIA"}          # 铠侠 KIOXIA Holdings
+KR_CODES = {"005930": "三星电子", "000660": "SK海力士"}
+EM_MKT = {"JP": 176, "KR": 177}
+TX_PREFIX = {"JP": "jp", "KR": "kr"}
+
 def classify_market(code):
-    """代码 → 市场：US / HK / CN / SKIP"""
+    """代码 → 市场：US / HK / CN / JP / KR / SKIP"""
     if re.fullmatch(r"[A-Za-z]+", code):
         return "US"
     if code.isdigit():
@@ -67,7 +74,11 @@ def classify_market(code):
             return "HK"
         if len(code) == 6 and code.startswith("3"):
             return "CN"
+        if code in KR_CODES:
+            return "KR"
         return "SKIP"
+    if code in JP_CODES:
+        return "JP"
     return "SKIP"
 
 def _retry_call(fn, *args, attempts=3, wait=2.0, label=""):
@@ -240,6 +251,89 @@ def _sina_price(code, market):
         return ak.stock_zh_a_daily(symbol=sym)
     return None
 
+# ============ 日韩股行情（东财 push2his 主 → yfinance 备 → 腾讯快照兜底）============
+
+def _em_jpkr(code, market):
+    """东财 push2his 日韩股历史K线（secid=市场号.代码：JP=176 / KR=177）
+    返回 DataFrame(date, close) 或 None"""
+    secid = f"{EM_MKT[market]}.{code}"
+    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://quote.eastmoney.com/"}
+
+    def _fetch():
+        # 尝试多个 push2his 域名（个别偶发断连）
+        for host in ("push2his.eastmoney.com", "22.push2his.eastmoney.com",
+                     "19.push2his.eastmoney.com"):
+            try:
+                r = requests_mod.get(
+                    f"https://{host}/api/qt/stock/kline/get",
+                    params={"secid": secid, "fields1": "f1,f2,f3,f4,f5,f6",
+                            "fields2": "f51,f52,f53,f54,f55,f56,f57",
+                            "klt": "101", "fqt": "1", "beg": "20240101", "end": "20500101"},
+                    headers=headers, timeout=15)
+                if r.status_code != 200:
+                    continue
+                d = r.json()
+                kl = ((d.get("data") or {}).get("klines")) or []
+                if kl:
+                    rows = []
+                    for line in kl:
+                        parts = line.split(",")
+                        rows.append({"date": parts[0], "close": float(parts[2])})
+                    return pd.DataFrame(rows)
+            except Exception:
+                continue
+        return None
+
+    return _retry_call(_fetch, label=f"东财{market} {code}", attempts=2, wait=1.5)
+
+def _yf_jpkr(code, market):
+    """yfinance 日韩股（云端备源：285A.T / 005930.KS / 000660.KS）"""
+    if not _HAS_YF:
+        return None
+    suffix = ".T" if market == "JP" else ".KS"
+    sym = code + suffix
+
+    def _fetch():
+        t = yf.Ticker(sym)
+        hist = t.history(start="2025-06-01", end="2026-12-31", auto_adjust=False)
+        if hist is None or len(hist) == 0:
+            return None
+        df = hist.reset_index()[["Date", "Close"]].rename(
+            columns={"Date": "date", "Close": "close"})
+        df["date"] = pd.to_datetime(df["date"])
+        return df
+
+    return _retry_call(_fetch, label=f"yf{market} {code}", attempts=2, wait=2.0)
+
+def _tencent_jpkr_snapshot(code, market):
+    """腾讯日韩股快照（当日预测兜底，kr005930 / jp285A）"""
+    prefix = TX_PREFIX.get(market)
+    if not prefix:
+        return None
+
+    def _fetch():
+        r = requests_mod.get(TX_URL + f"{prefix}{code}", headers=HEADERS_TX, timeout=15)
+        r.encoding = "gbk"
+        for line in r.text.strip().split("\n"):
+            if "=" not in line:
+                continue
+            parts = line.split("=", 1)[1].strip().strip('"').split("~")
+            if len(parts) < 5:
+                return None
+            try:
+                price = float(parts[3])
+                prev = float(parts[4])
+            except (ValueError, TypeError):
+                return None
+            if price <= 0:
+                return None
+            today = pd.Timestamp.now().normalize()
+            prev_date = today - pd.Timedelta(days=1)
+            return pd.DataFrame({"date": [prev_date, today], "close": [prev, price]})
+        return None
+
+    return _retry_call(_fetch, label=f"腾讯{market} {code}", attempts=2, wait=1.0)
+
 def _tencent_snapshot_df(code, market):
     """腾讯实时快照 → 构造仅含「昨日收盘/最新收盘」两行的迷你日线（当日预测兜底）
     腾讯 [3]=最新价 [4]=昨收 [32]=涨跌幅% → 构造 [昨日, 今日] 两日收盘序列"""
@@ -269,13 +363,20 @@ def _tencent_snapshot_df(code, market):
     return _retry_call(_fetch, label=f"腾讯快照 {code}", attempts=2, wait=1.0)
 
 def get_price_df(code, market, allow_snapshot=True):
-    """个股日线：新浪主源（完整历史）→ 腾讯快照兜底（仅当日，预测够用）
+    """个股日线：
+    - US/HK/CN: 新浪主源（完整历史）→ 腾讯快照兜底（仅当日，预测够用）
+    - JP/KR:     东财 push2his 主（历史K线）→ yfinance 备 → 腾讯快照兜底（当日）
     返回 DataFrame(date, close)；快照模式返回的只有最近两日。
     """
     if code in _CACHE:
         return _CACHE[code]
 
-    df = fallback_chain([("sina", lambda: _sina_price(code, market))], label=f"行情{code}")
+    if market in ("JP", "KR"):
+        df = fallback_chain([("em", lambda: _em_jpkr(code, market)),
+                             ("yf", lambda: _yf_jpkr(code, market))],
+                            label=f"日韩{code}")
+    else:
+        df = fallback_chain([("sina", lambda: _sina_price(code, market))], label=f"行情{code}")
     if df is not None and len(df) > 0:
         df = df.rename(columns={"close": "close"})
         df = df[["date", "close"]].copy()
@@ -284,11 +385,12 @@ def get_price_df(code, market, allow_snapshot=True):
         _CACHE[code] = df
         return df
 
-    # 新浪失败 → 腾讯快照兜底（仅当日预测用）
+    # 主源失败 → 腾讯快照兜底（仅当日预测用）
     if allow_snapshot:
-        snap = _tencent_snapshot_df(code, market)
+        snap = _tencent_jpkr_snapshot(code, market) if market in ("JP", "KR") \
+            else _tencent_snapshot_df(code, market)
         if snap is not None and len(snap) > 0:
-            print(f"    [{code}] 新浪源失败，使用腾讯快照兜底（仅当日）")
+            print(f"    [{code}] 主源失败，使用腾讯快照兜底（仅当日）")
             _CACHE[code] = snap
             return snap
 
