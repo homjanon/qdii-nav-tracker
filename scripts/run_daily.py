@@ -326,24 +326,29 @@ def write_summary(report, out_dir, history=None):
         lines.append(f"| USDCNH | - | {p['fx_ret']*100 if p['fx_ret'] is not None else 0.0:+.2f}% | "
                      f"{'已计入' if p['fx_ret'] is not None else '源不可用'} |")
         lines.append("")
-    lines.append("## 疑似调仓（滚动NNLS vs 披露）")
+    lines.append("## 疑似调仓（滚动NNLS vs 披露 · 全部十大持仓）")
     lines.append("")
     for code, r in report["funds"].items():
-        if "error" in r or not r.get("nnls_weight"):
+        if "error" in r:
             continue
         lines.append(f"### {code} {FUND_NAMES.get(code, '')}")
         lines.append("")
-        lines.append("| 代码 | 披露% | NNLS估计% | 差异 |")
-        lines.append("|------|:---:|:---:|:---:|")
+        lines.append("| 代码 | 名称 | 披露% | NNLS估计% | 差异 |")
+        lines.append("|------|------|:---:|:---:|:---:|")
         h_q2 = r.get("holdings", [])
         disc = {x["code"]: x["pct"] for x in h_q2}
-        for c, w in sorted(r["nnls_weight"].items(), key=lambda kv: kv[1], reverse=True):
-            if c == "FX":
-                continue
-            d = disc.get(c, 0)
+        names = {x["code"]: x["name"] for x in h_q2}
+        nnls = r.get("nnls_weight") or {}
+        # 按披露权重降序展示全部十大持仓（NNLS 未估计到的显示 0）
+        for x in sorted(h_q2, key=lambda v: v["pct"], reverse=True):
+            c = x["code"]
+            d = x["pct"]
+            w = nnls.get(c, 0)
+            if w is None:
+                w = 0
             diff = w * 100 - d
             flag = "▲加仓" if diff > 2 else ("▼减仓" if diff < -2 else "")
-            lines.append(f"| {c} | {d:.1f}% | {w*100:.1f}% | {diff:+.1f}% {flag} |")
+            lines.append(f"| {c} | {names.get(c, '-')} | {d:.1f}% | {w*100:.1f}% | {diff:+.1f}% {flag} |")
         lines.append("")
     path = os.path.join(out_dir, "summary.md")
     with open(path, "w", encoding="utf-8") as f:

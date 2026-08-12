@@ -537,16 +537,19 @@ def us_trade_dates(start, end):
 def us_last_trade_date():
     """美股最近一个已收盘交易日（美东视角，统一预测基准）
     规则：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。
-    所有基金统一用「美股最近收盘日」作为预测对象，不依赖各基金净值更新进度。
+    先检查「美东今天」是否已收盘（UTC 视角：美东收盘=UTC 20:00），
+    是则返回今天；否则往前找最近已收盘交易日。
     返回: datetime.date
     """
     import datetime as _dt
     import pandas_market_calendars as mcal
     nyse = mcal.get_calendar("NYSE")
     now_utc = _dt.datetime.now(_dt.timezone.utc)
-    # 往前看 5 天覆盖周末，取最近一个「已收盘」的交易日
-    for i in range(1, 6):
-        d = (now_utc - _dt.timedelta(days=i)).date()
+
+    # 先看美东今天（UTC 日期，美股收盘于 UTC 20:00 → 当天 UTC 若已过 20:00 即已收盘）
+    today = now_utc.date()
+    for offset in range(0, 6):  # 0=今天, 1=昨天, ... 覆盖周末
+        d = (now_utc - _dt.timedelta(days=offset)).date()
         try:
             sched = nyse.schedule(start_date=str(d), end_date=str(d))
             if len(sched) > 0:

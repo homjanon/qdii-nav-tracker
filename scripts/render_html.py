@@ -208,26 +208,32 @@ def render(report, history, out_path):
                "<th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead>"
                f"<tbody>{''.join(q_rows)}</tbody></table>")
 
-    # ---- 疑似调仓折叠 ----
+    # ---- 疑似调仓折叠（展示全部十大持仓，无变化标0）----
     adj_details = []
     for code, r in funds.items():
-        if "error" in r or not r.get("nnls_weight"):
+        if "error" in r:
             continue
-        w = r["nnls_weight"]
-        disc = {x["code"]: x["pct"] for x in r.get("holdings", [])}
+        w = r.get("nnls_weight") or {}
+        holdings = r.get("holdings", [])
+        disc = {x["code"]: x["pct"] for x in holdings}
+        names = {x["code"]: x["name"] for x in holdings}
         rows = []
-        for c, wt in sorted(w.items(), key=lambda kv: kv[1], reverse=True):
-            if c == "FX":
-                continue
-            d = disc.get(c, 0)
+        changed = 0
+        for x in sorted(holdings, key=lambda v: v["pct"], reverse=True):
+            c = x["code"]
+            d = x["pct"]
+            wt = w.get(c, 0) or 0
             diff = wt * 100 - d
+            if abs(diff) > 2:
+                changed += 1
             flag = '<span class="ok">▲加仓</span>' if diff > 2 else ('<span class="no">▼减仓</span>' if diff < -2 else "")
-            rows.append(f"<tr><td>{esc(c)}</td><td>{d:.1f}%</td><td>{wt*100:.1f}%</td>"
+            nm = names.get(c, "")
+            rows.append(f"<tr><td>{esc(c)}</td><td>{esc(nm)}</td><td>{d:.1f}%</td><td>{wt*100:.1f}%</td>"
                         f"<td>{diff:+.1f}% {flag}</td></tr>")
         adj_details.append(f"""
         <details>
-          <summary>{FUND_NAMES.get(code, code)}（{code}）— 疑似调仓 {sum(1 for v in w.values() if v != 0)} 项</summary>
-          <table style="margin-top:8px"><thead><tr><th>代码</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— 十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项</summary>
+          <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
           <tbody>{''.join(rows)}</tbody></table>
         </details>""")
     adj_block = "\n".join(adj_details) if adj_details else "<p class='sub'>暂无数据</p>"

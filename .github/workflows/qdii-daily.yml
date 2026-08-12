@@ -1,26 +1,31 @@
 name: QDII Nav Daily
 
-# 每日自动运行（美股交易日 · 盘后 · 北京时间 08:00）
+# 每日自动运行（美股交易日 · 盘后 · 北京时间 06:00）
 # =====================================================================
 # 设计依据 —— QDII 净值数据更新节奏（北京时间）：
 #   美东 T 日 16:00 收盘 = 北京 T+1 日凌晨 4~5 点 → 北京 T+1 日晚
 #   公布净值（净值日期 T+1，对应美股 ≤T+1 最新收盘 = 美股 T 日收盘）。
 #
-# 因此：北京 T+1 日 08:00 运行时，美股 T 日已收盘，今晚净值将更新，
+# 因此：北京 T+1 日 06:00 运行时，美股 T 日已收盘，今晚净值将更新，
 # 可用美股 T 日收盘数据预测今晚净值（lag=0 对齐，用户已验证）。
 #
+# 触发时间对齐 portfolio 仓（参考）：
+#   cron "0 22 * * 1-5" = 北京 06:00（UTC 22:00 前日），叠加 GitHub
+#   Actions 调度延迟（实测约 30~60min）→ 实际约 06:30~07:00 完成，
+#   用户可在早上 7 点前看到最新预测。
+#
 # 三道闸门（参照 xiaoxu-fear 仓的时间门控设计）：
-#   1) cron 仅覆盖周一至五："0 0 * * 1-5" = 北京 08:00（UTC 00:00）
+#   1) cron 仅覆盖周一至五："0 22 * * 1-5" = 北京 06:00（UTC 22:00）
 #   2) 美股交易日判断：NYX 日历（pandas_market_calendars）精确排除
 #      美东节假日/周末（美东昨日是否为交易日）
-#   3) 盘后判断：北京 08:00 必然已过美股收盘（美东 16:00 = 北京 4~5 点）
+#   3) 盘后判断：北京 06:00 必然已过美股收盘（美东 16:00 = 北京 4~5 点）
 #      —— 保留时区校验代码以防执行时段变化
 #
 # 手动触发（workflow_dispatch）：任意时间强制运行（取最近交易日数据）
 # =====================================================================
 on:
   schedule:
-    - cron: "0 0 * * 1-5"
+    - cron: "0 22 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -41,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 交易日 & 盘后窗口判断（北京时间 08:00 → 美东昨日收盘）
+      # 交易日 & 盘后窗口判断（北京时间 06:00 → 美东当日已收盘：美东16:00=北京次日4-5点）
       # 非交易日（美东节假日/周末）→ trade=0 跳过
       - name: 判断美股交易日与盘后窗口
         id: check
@@ -52,6 +57,7 @@ jobs:
           BJ = datetime.timezone(datetime.timedelta(hours=8))
           now_bj = datetime.datetime.now(BJ)
           today = now_bj.strftime("%Y-%m-%d")
+          # 北京 06:00 = 美东前一日 18:00 → 美东昨日已收盘。判断美东昨日是否交易日
           us_prev = (now_bj - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
           nyse = mcal.get_calendar("NYSE")
           sched = nyse.schedule(start_date=us_prev, end_date=us_prev)
@@ -60,7 +66,7 @@ jobs:
               print(f"{today} 美东昨日({us_prev})非交易日（节假日/周末），跳过")
               open(os.environ["GITHUB_OUTPUT"], "a").write("trade=0\n")
               raise SystemExit(0)
-          # 盘后校验：美东收盘 = 北京 4~5 点，08:00 必已收盘（防御性检查）
+          # 盘后校验：美东收盘 = 北京 4~5 点，06:00 必已收盘（防御性检查）
           if now_bj.hour < 5:
               print(f"{today} 美股尚未收盘（{now_bj.strftime('%H:%M')} 北京时间），跳过")
               open(os.environ["GITHUB_OUTPUT"], "a").write("trade=0\n")
