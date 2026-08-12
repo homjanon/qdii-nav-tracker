@@ -59,8 +59,8 @@ HEADERS_TX = {"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"}
 _CACHE = {}
 
 # 日韩股代码映射（东财 secid 市场号）：JP=176, KR=177
-# 东财搜索实测：铠侠 285A → 176(JPX)、三星 005930 → 177(KRX)、SK海力士 000660 → 177(KRX)
-JP_CODES = {"285A": "KIOXIA"}          # 铠侠 KIOXIA Holdings
+# 东财搜索实测：铠侠 285A → 176(JPX)、爱德万测试 6857 → 176(JPX)、三星 005930 → 177(KRX)、SK海力士 000660 → 177(KRX)
+JP_CODES = {"285A": "KIOXIA", "6857": "爱德万测试"}
 KR_CODES = {"005930": "三星电子", "000660": "SK海力士"}
 EM_MKT = {"JP": 176, "KR": 177}
 TX_PREFIX = {"JP": "jp", "KR": "kr"}
@@ -69,16 +69,17 @@ def classify_market(code):
     """代码 → 市场：US / HK / CN / JP / KR / SKIP"""
     if re.fullmatch(r"[A-Za-z]+", code):
         return "US"
+    # 日韩股优先（如 285A/6857 日股、005930/000660 韩股）
+    if code in JP_CODES:
+        return "JP"
+    if code in KR_CODES:
+        return "KR"
     if code.isdigit():
         if len(code) == 5 and code.startswith(("0", "1", "2")):
             return "HK"
         if len(code) == 6 and code.startswith("3"):
             return "CN"
-        if code in KR_CODES:
-            return "KR"
         return "SKIP"
-    if code in JP_CODES:
-        return "JP"
     return "SKIP"
 
 def _retry_call(fn, *args, attempts=3, wait=2.0, label=""):
