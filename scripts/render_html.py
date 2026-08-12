@@ -102,7 +102,7 @@ def render(report, history, out_path):
     # ---- 今晚预测卡片 ----
     pred_cards = []
     for code, r in funds.items():
-        if "error" in r or "predict" not in r:
+        if "error" in r or "predict" not in r or r.get("predict") is None:
             continue
         p = r["predict"]
         pn = p.get("pred_nnls")

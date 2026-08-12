@@ -121,33 +121,71 @@ def main():
     return 0
 
 def append_predictions(history, results, today):
-    """把今日预测追加到历史 JSONL（每条含预测净值日，供次日验证）"""
+    """把今日预测写入历史 JSONL（按 (code, pred_date) 去重 + 覆盖更新）
+    - 已存在 (code, pred_date) → 覆盖更新为最新预测（保留 actual 等验证字段）
+    - 不存在 → 追加新记录
+    """
     for code, r in results.items():
-        if "error" in r or "predict" not in r:
+        if "error" in r or "predict" not in r or r["predict"] is None:
             continue
         p = r["predict"]
-        hist = next((h for h in history
-                     if h.get("code") == code and h.get("pred_date") == str(p["next_date"].date())), None)
-        if hist:
-            continue  # 同日已记录，防重复
-        history.append({
-            "code": code,
-            "name": FUND_NAMES.get(code, ""),
-            "run_date": today,
-            "pred_date": str(p["next_date"].date()),
-            "last_nav": p["last_nav"],
-            "pred_static": p["pred_static"],
-            "pred_nnls": p["pred_nnls"],
-            "pred_nav_static": p["pred_nav_static"],
-            "actual": None,       # 待净值公布后回填
-            "actual_nav": None,
-            "hit": None,          # 方向是否命中
-            "err": None,          # 静态预测误差
-        })
+        pred_date = str(p["next_date"].date())
+        # 清理同 (code, pred_date) 的重复旧记录（只保留第一条）
+        dups = [i for i, h in enumerate(history)
+                if h.get("code") == code and h.get("pred_date") == pred_date]
+        if dups:
+            # 覆盖更新第一条，删除其余重复
+            idx = dups[0]
+            old = history[idx]
+            for j in sorted(dups[1:], reverse=True):
+                history.pop(j)
+            history[idx] = {
+                "code": code,
+                "name": FUND_NAMES.get(code, ""),
+                "run_date": today,
+                "pred_date": pred_date,
+                "last_nav": p["last_nav"],
+                "pred_static": p["pred_static"],
+                "pred_nnls": p["pred_nnls"],
+                "pred_nav_static": p["pred_nav_static"],
+                "actual": old.get("actual"),   # 保留已验证结果
+                "actual_nav": old.get("actual_nav"),
+                "hit": old.get("hit"),
+                "err": old.get("err"),
+            }
+        else:
+            history.append({
+                "code": code,
+                "name": FUND_NAMES.get(code, ""),
+                "run_date": today,
+                "pred_date": pred_date,
+                "last_nav": p["last_nav"],
+                "pred_static": p["pred_static"],
+                "pred_nnls": p["pred_nnls"],
+                "pred_nav_static": p["pred_nav_static"],
+                "actual": None,       # 待净值公布后回填
+                "actual_nav": None,
+                "hit": None,          # 方向是否命中
+                "err": None,          # 静态预测误差
+            })
     save_history(history)
 
 def verify_history(history, results):
-    """验证历史预测：预测净值日已公布的，补记 actual 并统计命中率"""
+    """验证历史预测：预测净值日已公布的，补记 actual 并统计命中率
+    自动收敛：验证前清理同 (code, pred_date) 的重复记录（保留第一条/已验证的）
+    """
+    # ---- 自动收敛重复 ----
+    seen = set()
+    keep_idx = []
+    for i, h in enumerate(history):
+        key = (h.get("code"), h.get("pred_date"))
+        if key in seen:
+            continue
+        seen.add(key)
+        keep_idx.append(i)
+    if len(keep_idx) != len(history):
+        history[:] = [history[i] for i in keep_idx]
+
     stats = {"n": 0, "dir_hit": 0, "mae_sum": 0.0}
     for h in history:
         if h.get("actual") is not None:
@@ -201,12 +239,12 @@ def write_summary(report, out_dir):
     # ⭐ 核心板块：今晚净值预测（放最前面）
     lines.append("## ⭐ 今晚净值预测（今日凌晨美股收盘 → 今晚公布）")
     lines.append("")
-    lines.append("| 代码 | 基金 | 今日凌晨美股 | 静态预测 | 滚动NNLS | 预测净值(静态) | 最新净值 |")
+    lines.append("| 代码 | 基金 | 预测净值日 | 静态预测 | 滚动NNLS | 预测净值(静态) | 最新净值 |")
     lines.append("|------|------|:---:|:---:|:---:|:---:|:---:|")
     for code, r in report["funds"].items():
         name = FUND_NAMES.get(code, "")
-        if "error" in r or "predict" not in r:
-            lines.append(f"| {code} | {name} | - | 错误 | | | |")
+        if "error" in r or "predict" not in r or r["predict"] is None:
+            lines.append(f"| {code} | {name} | - | 已公布(走验证) | | | |")
             continue
         p = r["predict"]
         pred_date = str(p["next_date"].date())
@@ -215,7 +253,7 @@ def write_summary(report, out_dir):
         lines.append(f"| {code} | {name} | **{pred_date}** | **{p['pred_static']*100:+.2f}%** | {pn_s} | "
                      f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} |")
     lines.append("")
-    lines.append("> 规则：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。今日凌晨美股收盘 → 今晚公布净值。")
+    lines.append("> 规则：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。预测对象=美股最近收盘日，各基金统一。")
     lines.append("")
 
     # 历史预测验证
@@ -256,7 +294,7 @@ def write_summary(report, out_dir):
     lines.append("## 今晚预测明细（静态披露权重 × 最新美股收益）")
     lines.append("")
     for code, r in report["funds"].items():
-        if "error" in r or "predict" not in r:
+        if "error" in r or "predict" not in r or r["predict"] is None:
             continue
         p = r["predict"]
         lines.append(f"### {code} {FUND_NAMES.get(code, '')} → 预测 {p['pred_static']*100:+.2f}%")

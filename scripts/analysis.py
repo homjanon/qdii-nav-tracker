@@ -141,21 +141,30 @@ def next_nav_date(nav):
         nd += pd.Timedelta(days=1)
     return nd
 
-def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=None):
-    """前瞻预测：用最新美股收盘（≤下一净值日）预测今晚将公布的净值涨跌
+def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=None,
+                 us_last=None):
+    """前瞻预测：用美股最近收盘（统一基准 us_last）预测对应净值日涨跌
 
     时间对齐（用户验证过的规则）：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。
-    北京 D 日 08:00 运行时，美股 D-1 日已收盘（北京 D 日凌晨），今晚将公布净值日期 D。
-    因此「下一净值日」= 最新净值日期 + 1 工作日，其收益 = 美股最新可得收益。
+    us_last = 美股最近一个已收盘交易日（所有基金统一）。
+    分流逻辑：
+      - 该基金最新净值日期 < us_last → 该期净值未公布 → 生成预测（待验证）
+      - 该基金最新净值日期 >= us_last → 该期已公布 → 返回 None（由 verify 分支验证）
 
-    返回 dict: {next_date, last_nav, last_date, pred_static, pred_nnls,
-                pred_nav_static, pred_nav_nnls, contributors, fx_ret}
+    返回 dict 或 None（已公布时）
     """
-    next_d = next_nav_date(nav)
+    if us_last is None:
+        us_last = dfet.us_last_trade_date()
     last_row = nav.iloc[-1]
     last_date = last_row["date"]
     last_nav = float(last_row["nav"])
 
+    # 分流：若该期净值已公布（最新净值日期 >= us_last），不再预测
+    if last_date.date() >= us_last:
+        print(f"    净值已更新至 {last_date.date()} ≥ US基准 {us_last}，该期已公布，走验证")
+        return None
+
+    next_d = pd.Timestamp(us_last)
     # 静态披露权重预测
     w = _weights(holdings)
     wsum = sum(w.values())
@@ -199,7 +208,8 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
            "pred_static": float(b_static), "pred_nnls": float(b_nnls) if b_nnls is not None else None,
            "pred_nav_static": float(last_nav * (1 + b_static)),
            "pred_nav_nnls": float(last_nav * (1 + b_nnls)) if b_nnls is not None else None,
-           "contributors": contributors, "fx_ret": float(fxr) if not np.isnan(fxr) else None}
+           "contributors": contributors, "fx_ret": float(fxr) if not np.isnan(fxr) else None,
+           "us_last": us_last}
     if mae_static:
         out["mae_static"] = mae_static
         out["pred_range_low"] = float(last_nav * (1 + b_static - mae_static / 100))
@@ -263,12 +273,16 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     # 6. 指数回归（近6月 NDX β）
     beta6 = index_beta(nav, ndx_df, start_date="2026-02-10")
 
-    # 7. 前瞻预测：今晚将公布的净值涨跌（用最新美股收盘）
+    # 7. 前瞻预测：用美股最近收盘（统一 us_last）预测对应净值日涨跌
     mae_static = stat_static["mae"] if stat_static else None
+    us_last = dfet.us_last_trade_date()
     pred_next = predict_next(nav, h_q2, price_map, fx_df,
-                             nnls_weight=last_w, mae_static=mae_static)
-    print(f"[{code}] 预测 {pred_next['next_date'].date()}: "
-          f"静态{pred_next['pred_static']*100:+.2f}% 滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}%")
+                             nnls_weight=last_w, mae_static=mae_static, us_last=us_last)
+    if pred_next is not None:
+        print(f"[{code}] 预测 {pred_next['next_date'].date()}(US基准{us_last}): "
+              f"静态{pred_next['pred_static']*100:+.2f}% 滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}%")
+    else:
+        print(f"[{code}] 该期净值已公布（US基准 {us_last}），无新预测")
 
     return {"code": code, "q2_total": round(q2_total, 1), "us_pct": round(us_q2, 1),
             "hk_pct": round(hk_q2, 1), "price_n": len(price_map),
@@ -276,4 +290,4 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
             "static": stat_static, "roll": stat_roll,
             "nnls_weight": {k: round(v, 4) for k, v in last_w.items()} if last_w else None,
             "ndx_beta": beta6, "skipped": [h["code"] for h in all_h if h["market"] == "SKIP"],
-            "predict": pred_next}
+            "us_last": str(us_last), "predict": pred_next}
