@@ -294,15 +294,21 @@ def write_summary(report, out_dir, history=None):
     # 历史预测验证
     v = report.get("verify") or {}
     if v.get("n"):
-        lines.append(f"## 历史预测验证（已公布 {v['n']} 条）")
+        lines.append(f"## 历史预测验证（已验证 {v['n']} 条）")
         lines.append("")
         lines.append(f"**方向命中率 {v['dir_acc']:.1f}% ｜ MAE {v['mae']:.3f}pp**")
         lines.append("")
-        lines.append("| 代码 | 预测日期 | 预测涨跌 | 实际涨跌 | 命中 | 误差 |")
-        lines.append("|------|---------|:---:|:---:|:---:|:---:|")
+        lines.append("> 闭环：早上预测 → 当晚净值公布 → 次日早上自动验证回填。")
+        lines.append("")
+        lines.append("| 代码 | 预测来源日 | 预测净值日 | 预测涨跌 | 实际涨跌 | 命中 | 误差 |")
+        lines.append("|------|---------|---------|:---:|:---:|:---:|:---:|")
+        # 用 history 补 run_date
+        hist_by_key = {(h.get("code"), h.get("pred_date")): h for h in history}
         for rc in (v.get("recent") or [])[::-1]:
             hit = "✓" if rc["hit"] else "✗"
-            lines.append(f"| {rc['code']} | {rc['pred_date']} | {rc['pred_static']*100:+.2f}% | "
+            hk = hist_by_key.get((rc["code"], rc["pred_date"]), {})
+            run_date = str(hk.get("run_date", ""))[:10]
+            lines.append(f"| {rc['code']} | {run_date} | {rc['pred_date']} | {rc['pred_static']*100:+.2f}% | "
                          f"{rc['actual']*100:+.2f}% | {hit} | {rc['err']*100:+.2f}pp |")
         lines.append("")
 

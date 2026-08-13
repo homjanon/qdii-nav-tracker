@@ -170,16 +170,45 @@ def render(report, history, out_path):
     v_n = verify.get("n", 0)
     v_dir = verify.get("dir_acc")
     v_mae = verify.get("mae")
-    v_recent = verify.get("recent", [])[::-1]  # 最新在前
-    v_rows = []
-    for v in v_recent:
+    # 待验证：预测净值日已过但尚未回填（今晚将公布）
+    pending_verify = [h for h in history if h.get("actual") is None]
+    pv_count = len(pending_verify)
+    # 已验证记录全部（按验证顺序：pred_date 升序），默认显示最近 5 条，可展开全部
+    hist_by_key = {(h.get("code"), h.get("pred_date")): h for h in history}
+    verified_all = [h for h in history if h.get("actual") is not None]
+    verified_all.sort(key=lambda x: (x.get("pred_date", ""), x.get("code", "")))
+    verified_recent = verified_all[-5:][::-1]  # 最近 5 条，最新在前
+
+    def _vrow(v):
         hit = v.get("hit")
         mark = '<span class="ok">✓</span>' if hit else '<span class="no">✗</span>'
-        v_rows.append(f"<tr><td>{FUND_NAMES.get(v['code'], v['code'])}</td><td>{esc(v['pred_date'])}</td>"
-                      f"<td>{fmt_pct(v['pred_static'])}</td><td>{fmt_pct(v.get('actual'))}</td>"
-                      f"<td>{mark}</td><td>{fmt_pp(v.get('err'))}</td></tr>")
-    v_table = ("<table><thead><tr><th>基金</th><th>净值日</th><th>预测</th><th>实际</th><th>命中</th><th>误差</th></tr></thead>"
-               f"<tbody>{''.join(v_rows)}</tbody></table>") if v_rows else "<p class='sub'>暂无已公布验证记录，明日起自动累积</p>"
+        hk = hist_by_key.get((v["code"], v["pred_date"]), {})
+        run_date = str(hk.get("run_date", ""))[:10]
+        return (f"<tr><td>{FUND_NAMES.get(v['code'], v['code'])}</td><td>{esc(run_date)}</td>"
+                f"<td>{esc(v['pred_date'])}</td>"
+                f"<td>{fmt_pct(v['pred_static'])}</td><td>{fmt_pct(v.get('actual'))}</td>"
+                f"<td>{mark}</td><td>{fmt_pp(v.get('err'))}</td></tr>")
+
+    v_rows_show = "".join(_vrow(v) for v in verified_recent)
+    # 查看更多：最多 16 条（8 基金 × 2 天），避免一年后无限增长
+    v_rows_all = "".join(_vrow(v) for v in verified_all[::-1][:16])
+    v_table_head = ("<table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th>"
+                    "<th>实际</th><th>命中</th><th>误差</th></tr></thead>")
+    if v_rows_show:
+        if len(verified_all) > 5:
+            v_table = (v_table_head
+                       + f"<tbody id='v-rows-show'>{v_rows_show}</tbody>"
+                       + f"<tbody id='v-rows-all' style='display:none'>{v_rows_all}</tbody></table>"
+                       + "<div style='margin-top:8px;text-align:center'>"
+                       + "<button onclick=\"var a=document.getElementById('v-rows-all'),s=document.getElementById('v-rows-show'),b=this;"
+                       + "if(a.style.display==='none'){a.style.display='';s.style.display='none';b.textContent='收起';}"
+                       + "else{a.style.display='none';s.style.display='';b.textContent='查看更多';}\" "
+                       + "style='cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--accent);"
+                       + "border-radius:8px;padding:4px 16px;font-size:12px'>查看更多</button></div>")
+        else:
+            v_table = v_table_head + f"<tbody>{v_rows_show}</tbody></table>"
+    else:
+        v_table = "<p class='sub'>暂无已公布验证记录，明日起自动累积</p>"
 
     # ---- 美股含量图表数据 ----
     chart_labels, chart_us, chart_beta = [], [], []
@@ -274,12 +303,15 @@ def render(report, history, out_path):
 </div>
 
 <div class="card">
-  <h2>历史预测验证 <span class="badge">{v_n} 条已公布</span></h2>
+  <h2>历史预测验证 <span class="badge">{v_n} 条已验证</span></h2>
+  <div class="legend">
+    <span class="sub">闭环：早上预测 → 当晚净值公布 → 次日早上自动验证回填</span>
+  </div>
   <div class="stat-grid">
     <div class="stat"><div class="num">{f"{v_dir:.1f}%" if v_dir is not None else "-"}</div><div class="lbl">方向命中率</div></div>
     <div class="stat"><div class="num">{f"{v_mae:.2f}" if v_mae is not None else "-"}</div><div class="lbl">MAE（pp）</div></div>
     <div class="stat"><div class="num">{sum(1 for h in hist_verified if h.get("hit"))}/{len(hist_verified) if hist_verified else 0}</div><div class="lbl">累计命中</div></div>
-    <div class="stat"><div class="num">{len([h for h in history if h.get("actual") is None])}</div><div class="lbl">待验证</div></div>
+    <div class="stat"><div class="num">{pv_count}</div><div class="lbl">待验证（今晚公布后回填）</div></div>
   </div>
   {v_table}
 </div>
