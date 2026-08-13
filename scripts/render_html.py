@@ -76,6 +76,13 @@ def pred_color(v):
         return ""
     return "up" if v > 0 else ("down" if v < 0 else "")
 
+def _as_bool(v):
+    """安全布尔转换：兼容 JSON 里的原生 bool 和字符串 'True'/'False'
+    ⚠️ 曾因 default=str 把 np.bool_ 序列化成 'False'，bool('False')==True 误判背离"""
+    if isinstance(v, str):
+        return v.strip().lower() == "true"
+    return bool(v)
+
 def esc(s):
     return html.escape(str(s))
 
@@ -105,8 +112,8 @@ def render(report, history, out_path):
         if "error" in r:
             continue
         p = r.get("predict")
-        diverge = bool(p.get("diverge")) if p else False
-        src_cache = bool((r.get("holdings_source") or {}).get("q2") == "cache")
+        diverge = _as_bool(p.get("diverge")) if p else False
+        src_cache = (r.get("holdings_source") or {}).get("q2") == "cache"
         if p is not None:
             # 有预测：待验证
             pn = p.get("pred_nnls")

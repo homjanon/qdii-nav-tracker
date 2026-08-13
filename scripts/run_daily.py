@@ -113,7 +113,22 @@ def main():
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
               "funds": results, "verify": verify_report}
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
-        json.dump(report, f, ensure_ascii=False, indent=1, default=str)
+        json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
+
+def _json_default(o):
+    """json 序列化兜底：numpy 类型转原生（bool 保持布尔，不转字符串）
+    ⚠️ 曾用 default=str 导致 np.bool_ 序列化成字符串 "False"，
+       render_html 里 bool("False")==True → 8 个基金全误判"与大盘背离"（2026-08-13）"""
+    import numpy as _np
+    if isinstance(o, (_np.bool_,)):
+        return bool(o)
+    if isinstance(o, (_np.integer,)):
+        return int(o)
+    if isinstance(o, (_np.floating,)):
+        return float(o)
+    if isinstance(o, (_np.ndarray,)):
+        return o.tolist()
+    return str(o)
 
     # 生成 Markdown 摘要
     write_summary(report, args.out, history)
