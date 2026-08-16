@@ -36,6 +36,8 @@ GitHub Actions 每日北京时间 06:00 自动运行（仅美股交易日盘后�
 
 ```
 ├── .github/workflows/qdii-daily.yml   # 每日自动运行（北京 06:00 · 仅美股交易日）
+├── config/
+│   └── funds.json                     # ⭐ 基金清单（新增/移除基金在此维护，见下）
 ├── scripts/
 │   ├── data_fetcher.py    # 数据获取（F10持仓/净值/美股/港股/A股/日韩股/汇率/指数）
 │   ├── analysis.py        # 核心分析（静态/滚动NNLS/指数暴露/前瞻预测）
@@ -46,6 +48,25 @@ GitHub Actions 每日北京时间 06:00 自动运行（仅美股交易日盘后�
 ├── requirements.txt
 └── README.md
 ```
+
+## 基金清单维护（config/funds.json）
+
+跟踪的场外 QDII 基金清单统一在 **`config/funds.json`** 维护（2026-08-16 起由代码内硬编码改为外部配置），`run_daily.py` 与 `render_html.py` 均读取该文件，**新增/移除基金无需改任何代码**：
+
+```json
+{
+  "funds": [
+    {"code": "002891", "name": "华夏移动互联"},
+    {"code": "021842", "name": "国富全球科技C"}
+  ]
+}
+```
+
+- **增**：追加一个 `{"code": "6位基金代码", "name": "基金名称"}` 项
+- **删**：删除对应项
+- 修改后推送到 `main`，下一个美股交易日 CI 自动纳入/剔除
+- 文件缺失或格式错误时回退内置默认清单（向后兼容，不报错）
+- 也可用本地图形面板 `github-data-maintainer.html`（GitHub 数据维护面板）编辑本文件
 
 ## 本地运行
 
@@ -60,7 +81,7 @@ python scripts/render_html.py --json output/daily_report.json --history output/p
 
 GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.github.io/qdii-nav-tracker/`
 
-页面区块：⭐今晚净值预测（8 基金卡片，待公布显示预测、已公布显示预测vs实际对照）→ 历史预测验证（命中率/MAE/对照表）→ 美股含量总览（Chart.js 条形图）→ 持仓质量表 → 疑似调仓（全部十大持仓+中文名）
+页面区块：⭐今晚净值预测（基金卡片数随 `config/funds.json` 清单，待公布显示预测、已公布显示预测vs实际对照）→ 历史预测验证（命中率/MAE/对照表）→ 美股含量总览（Chart.js 条形图）→ 持仓质量表 → 疑似调仓（全部十大持仓+中文名）
 
 ## 输出示例（summary.md）
 
