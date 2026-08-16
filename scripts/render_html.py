@@ -15,9 +15,27 @@ import datetime
 
 CST = datetime.timezone(datetime.timedelta(hours=8))
 
-FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
+DEFAULT_FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
               "015202": "汇添富全球移动C", "016702": "银华海外数字C", "018147": "建信新兴C",
               "021277": "广发全球精选C", "021842": "国富全球科技C"}
+
+def load_fund_names():
+    """从 config/funds.json 读取基金名称映射；文件缺失/格式错误时回退内置默认（与 run_daily 一致）。"""
+    cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "funds.json")
+    try:
+        with open(cfg_path, encoding="utf-8") as f:
+            cfg = json.load(f)
+        items = cfg.get("funds") or []
+        names = {str(x["code"]): str(x.get("name", "")) for x in items if x.get("code")}
+        if names:
+            return names
+    except FileNotFoundError:
+        pass
+    except Exception:
+        pass
+    return DEFAULT_FUND_NAMES
+
+FUND_NAMES = load_fund_names()
 
 CSS = """
 :root{--bg:#f3f5f9;--card:#fff;--ink:#1f2937;--sub:#64748b;--line:#e5eaf1;

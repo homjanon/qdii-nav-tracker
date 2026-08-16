@@ -19,13 +19,35 @@ import data_fetcher as dfet
 import analysis as ana
 
 # 关注的 QDII 基金（A/C 份额已合并选择）
-FUNDS = ["002891", "008254", "014002", "015202", "016702", "018147", "021277", "021842"]
-FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
+# 配置化（2026-08-16）：优先读仓库 config/funds.json（GUI 可维护），缺失时回退内置默认
+DEFAULT_FUNDS = ["002891", "008254", "014002", "015202", "016702", "018147", "021277", "021842"]
+DEFAULT_FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
               "015202": "汇添富全球移动C", "016702": "银华海外数字C", "018147": "建信新兴C",
               "021277": "广发全球精选C", "021842": "国富全球科技C"}
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
 HIST_FILE = os.path.join(OUTPUT_DIR, "predictions.jsonl")
+
+def load_funds_config():
+    """从 config/funds.json 读取基金清单；文件缺失/格式错误时回退内置默认（向后兼容）。"""
+    cfg_path = os.path.join(BASE_DIR, "..", "config", "funds.json")
+    try:
+        with open(cfg_path, encoding="utf-8") as f:
+            cfg = json.load(f)
+        items = cfg.get("funds") or []
+        funds = [str(x["code"]) for x in items if x.get("code")]
+        names = {str(x["code"]): str(x.get("name", "")) for x in items if x.get("code")}
+        if funds:
+            print(f"[funds] 已从 config/funds.json 加载 {len(funds)} 只基金")
+            return funds, names
+        print(f"[funds] config/funds.json 为空，回退内置默认")
+    except FileNotFoundError:
+        print(f"[funds] 未找到 config/funds.json，回退内置默认（{len(DEFAULT_FUNDS)} 只）")
+    except Exception as e:
+        print(f"[funds] 读取 config/funds.json 失败（{e}），回退内置默认")
+    return DEFAULT_FUNDS, DEFAULT_FUND_NAMES
+
+FUNDS, FUND_NAMES = load_funds_config()
 
 def bj_now():
     BJ = datetime.timezone(datetime.timedelta(hours=8))
