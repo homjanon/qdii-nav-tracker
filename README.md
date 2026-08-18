@@ -52,14 +52,6 @@ GitHub Actions 每日北京时间 06:00 自动运行（仅美股交易日盘后�
 
 
 
-### 申购限额展示（2026-08-18 新增）
-
-基金卡片底部新增**申购限额**行（虚线分隔，仅显示金额）：
-
-- 数据源：`ak.fund_purchase_em()`（akshare 东方财富全市场基金申购数据），随每日 workflow 自动刷新
-- 展示：**日累计限定金额**（如 `1000元` / `3000元`），蓝色加粗；**暂停申购**的基金显示灰字删除线「暂停」；开放申购且无限制显示「不限购」
-- 实现：`data_fetcher.get_fund_purchase(codes)` → report 顶层 `purchase` 字段 → `render_html.py` 注入卡片（接口失败返回空，不影响主流程）
-
 ### 实测结论（021842 国富全球科技C，2026-08-11）
 
 - 静态披露权重预测：**方向准确率 95.5%**，MAE 1.08pp，相关性 0.943
@@ -88,11 +80,11 @@ GitHub Actions 每日北京时间 06:00 自动运行（仅美股交易日盘后�
 
 ├── scripts/
 
-│   ├── data_fetcher.py    # 数据获取（F10持仓/净值/美股/港股/A股/日韩股/汇率/指数/申购限额）
+│   ├── data_fetcher.py    # 数据获取（F10持仓/净值/美股/港股/A股/日韩股/汇率/指数）
 
 │   ├── analysis.py        # 核心分析（静态/滚动NNLS/指数暴露/前瞻预测）
 
-│   ├── run_daily.py       # 每日主入口（预测+验证+历史记录+申购限额采集）
+│   ├── run_daily.py       # 每日主入口（预测+验证+历史记录）
 
 │   └── render_html.py     # 渲染静态网页 docs/index.html
 
@@ -200,7 +192,8 @@ GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.g
 
 | 基金净值 | 东财 f10/lsjz 直连 | akshare（东财） |
 
-| 美股 / 港股 / A股日线 | akshare（新浪源） | 腾讯 qt.gtimg.cn 实时快照（当日预测兜底） |
+| 美股日线 | **yfinance（Yahoo，含当天实时，2026-08-19 首选）** | akshare 新浪源（历史兜底）→ 腾讯快照 |
+| 港股 / A股日线 | akshare（新浪源） | 腾讯 qt.gtimg.cn 实时快照（当日预测兜底） |
 
 | 日股 / 韩股 | 东财 push2his（JP=176/KR=177 secid） | yfinance（.T/.KS）→ 腾讯快照（kr/jp 前缀，当日） |
 
@@ -213,6 +206,8 @@ GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.g
 
 
 > 多源降级链参考 portfolio（净值/汇率）、douban-tracker（腾讯行情）、cmb-tracker（fallback_chain）生产验证经验。
+
+> ⚠️ **美股日线必须用 yfinance（2026-08-19 修复）**：新浪美股日线 `ak.stock_us_daily` 滞后一天（收盘后次晨才更新），曾导致 8/18 美股大跌日预测仍用 8/17 大涨数据、10 个基金 9 个方向错误。yfinance `period="1y"` 含当天实时价（美东收盘后即更新），GitHub Actions 北京 06:00 运行时美股已收盘，预测方向与实际一致。
 
 
 
