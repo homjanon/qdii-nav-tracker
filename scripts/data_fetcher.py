@@ -563,3 +563,23 @@ def us_last_trade_date():
     while d.weekday() >= 5:
         d -= _dt.timedelta(days=1)
     return d
+
+
+def get_fund_purchase(codes):
+    """场外基金申购限额（东财 fund_purchase_em，akshare）。
+    返回 {code: {"status": str, "limit": float|None}}；接口失败返回 {}（不影响主流程）。
+    字段：申购状态（开放申购/限大额/暂停申购/场内交易）、日累计限定金额（元，NaN 表示不限购）。"""
+    def _fetch():
+        df = ak.fund_purchase_em()
+        out = {}
+        for _, r in df.iterrows():
+            c = str(r["基金代码"])
+            if c in codes:
+                lim = r.get("日累计限定金额")
+                out[c] = {
+                    "status": str(r.get("申购状态", "")),
+                    "limit": float(lim) if lim is not None and str(lim) not in ("nan", "") else None,
+                }
+        return out
+    return _retry_call(_fetch, attempts=2, wait=1.0, label="fund_purchase_em")
+
