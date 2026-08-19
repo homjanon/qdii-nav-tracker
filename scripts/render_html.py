@@ -878,11 +878,11 @@ def render(report, history, out_path):
 
 
 
-    # 查看更多：最多 20 条（10 基金 × 2 天），避免一年后无限增长
+    # 查看更多：最多 2N 条（N=len(funds) 基金 × 2 天），自动随基金数变化，避免一年后无限增长
 
 
 
-    v_rows_all = "".join(_vrow(v) for v in verified_all[::-1][:20])
+    v_rows_all = "".join(_vrow(v) for v in verified_all[::-1][:2 * len(funds)])  # 展开全部：2N 条（N 基金 × 2 天），自动随基金数变化
 
 
 
