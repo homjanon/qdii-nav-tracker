@@ -1,522 +1,1025 @@
 <!DOCTYPE html>
 
+
+
 <html lang="zh-CN">
+
+
 
 <head>
 
+
+
 <meta charset="UTF-8">
+
+
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
+
+
 <title>QDII 净值跟踪 · 2026-08-19</title>
+
+
 
 <style>
 
+
+
 :root{--bg:#f3f5f9;--card:#fff;--ink:#1f2937;--sub:#64748b;--line:#e5eaf1;
+
+
 
 --accent:#2563eb;--up:#dc2626;--down:#16a34a;--warn:#d97706;
 
+
+
 --shadow:0 1px 3px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.06);}
+
+
 
 *{box-sizing:border-box;margin:0;padding:0}
 
+
+
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+
+
 
 background:var(--bg);color:var(--ink);line-height:1.6;padding:28px 16px;-webkit-font-smoothing:antialiased;}
 
+
+
 .wrap{max-width:960px;margin:0 auto;}
+
+
 
 header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
 
+
+
 h1{font-size:22px;font-weight:800;letter-spacing:-.3px;}
+
+
 
 .sub{color:var(--sub);font-size:13px;}
 
+
+
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;
+
+
 
 box-shadow:var(--shadow);margin-bottom:18px;}
 
+
+
 .card h2{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+
+
 
 .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#eef2ff;color:var(--accent);}
 
+
+
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+
+
 
 .fund-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fafbfe;}
 
+
+
 .fund-card .fname{font-size:13px;font-weight:600;color:var(--ink);}
+
+
 
 .fund-card .fcode{font-size:11px;color:var(--sub);margin-top:1px;}
 
+
+
 .fund-card .pred{font-size:26px;font-weight:800;margin:8px 0 2px;letter-spacing:-.5px;}
 
+
+
 .fund-card .purchase{font-size:11px;color:var(--sub);display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
+
 .fund-card .purchase .amt{font-weight:700;color:var(--blue);}
+
 .fund-card .purchase .amt.paused{color:var(--sub);text-decoration:line-through;}
+
 .fund-card .meta{font-size:12px;color:var(--sub);display:flex;justify-content:space-between;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line);}
+
+
 
 .up{color:var(--up);} .down{color:var(--down);}
 
+
+
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px;}
+
+
 
 .stat{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 16px;text-align:center;}
 
+
+
 .stat .num{font-size:24px;font-weight:800;}
+
+
 
 .stat .lbl{font-size:12px;color:var(--sub);margin-top:2px;}
 
+
+
 table{width:100%;border-collapse:collapse;font-size:13px;}
+
+
 
 th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
 
+
+
 th:first-child,td:first-child{text-align:left;}
+
+
 
 th{color:var(--sub);font-weight:600;font-size:12px;background:#f8fafc;}
 
+
+
 tr:hover td{background:#f8fafc;}
+
+
 
 .ok{color:var(--down);font-weight:700;} .no{color:var(--up);font-weight:700;}
 
+
+
 .legend{display:flex;gap:16px;font-size:12px;color:var(--sub);margin-bottom:8px;}
+
+
 
 .legend span{display:flex;align-items:center;gap:5px;}
 
+
+
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+
 
 details{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fafbfe;}
 
+
+
 summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
+
+
 
 .chart-box{position:relative;width:100%;height:320px;}
 
+
+
 @media(max-width:640px){.fund-card .pred{font-size:22px;}}
+
+
 
 </style>
 
+
+
 </head>
+
+
 
 <body>
 
+
+
 <div class="wrap">
+
+
 
 <header>
 
+
+
   <div><h1>QDII 净值跟踪</h1><div class="sub">十大持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
 
-  <div class="sub">报告日 2026-08-19<br>更新 2026-08-19 07:06:05</div>
+
+
+  <div class="sub">报告日 2026-08-19<br>更新 2026-08-19 21:57:26</div>
+
+
 
 </header>
 
 
 
+
+
+
+
 <div class="card">
+
+
 
   <h2>今晚净值预测 <span class="badge">2026-08-19</span></h2>
 
+
+
   <div class="legend">
+
+
 
     <span><i style="background:var(--up)"></i>预测上涨</span>
 
+
+
     <span><i style="background:var(--down)"></i>预测下跌</span>
+
+
 
     <span style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;padding:1px 6px;border-radius:99px;background:#f0fdf4;color:#166534">已公布</span>已公布净值的显示预测 vs 实际对照</span>
 
+
+
     <span class="sub">静态=披露权重 · 滚动=60日NNLS · 基于美股最新收盘（lag=0）</span>
 
+
+
   </div>
+
+
 
   <div class="grid">
 
+
+
         <div class="fund-card">
 
-          <div class="fname">汇添富全球移动C <span class="fcode">015202</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">汇添富全球移动C <span class="fcode">015202</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -1.12%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -2.62%</span><span>预测净值<br/><b>5.2261</b></span></div>
 
-          <div class="meta"><span>最新净值 5.2855</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -2.85%</span><span>误差 0.02pp</span></div><div class="meta"><span>实际净值 5.1350</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt paused">暂停</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">银华海外数字C <span class="fcode">016702</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">银华海外数字C <span class="fcode">016702</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -1.37%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -2.35%</span><span>预测净值<br/><b>2.0988</b></span></div>
 
-          <div class="meta"><span>最新净值 2.1280</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -2.62%</span><span>误差 0.01pp</span></div><div class="meta"><span>实际净值 2.0723</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">1000元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">富国全球互联网C <span class="fcode">022184</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">富国全球互联网C <span class="fcode">022184</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -1.69%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -2.70%</span><span>预测净值<br/><b>5.4608</b></span></div>
 
-          <div class="meta"><span>最新净值 5.5546</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -2.79%</span><span>误差 0.01pp</span></div><div class="meta"><span>实际净值 5.3997</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">1000元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">易方达全球成长C <span class="fcode">012922</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">易方达全球成长C <span class="fcode">012922</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -1.74%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -2.97%</span><span>预测净值<br/><b>3.9383</b></span></div>
 
-          <div class="meta"><span>最新净值 4.0082</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -4.25%</span><span>误差 0.03pp</span></div><div class="meta"><span>实际净值 3.8379</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt paused">暂停</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">建信新兴C <span class="fcode">018147</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">建信新兴C <span class="fcode">018147</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -2.57%</div>
+
+
 
           <div class="meta"><span>滚动NNLS -4.72%</span><span>预测净值<br/><b>2.4104</b></span></div>
 
-          <div class="meta"><span>最新净值 2.4740</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -4.45%</span><span>误差 0.02pp</span></div><div class="meta"><span>实际净值 2.3640</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">500元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">华宝致远C <span class="fcode">008254</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">华宝致远C <span class="fcode">008254</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -2.57%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -3.86%</span><span>预测净值<br/><b>1.7294</b></span></div>
 
-          <div class="meta"><span>最新净值 1.7751</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -5.19%</span><span>误差 0.03pp</span></div><div class="meta"><span>实际净值 1.6830</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">1000元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">广发全球精选C <span class="fcode">021277</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">广发全球精选C <span class="fcode">021277</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -2.80%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -3.21%</span><span>预测净值<br/><b>6.3383</b></span></div>
 
-          <div class="meta"><span>最新净值 6.5209</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -2.72%</span><span>误差 -0.00pp</span></div><div class="meta"><span>实际净值 6.3438</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">2000元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">国富全球科技C <span class="fcode">021842</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">国富全球科技C <span class="fcode">021842</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -2.90%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -4.18%</span><span>预测净值<br/><b>6.9055</b></span></div>
 
-          <div class="meta"><span>最新净值 7.1115</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -4.02%</span><span>误差 0.01pp</span></div><div class="meta"><span>实际净值 6.8259</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">200元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">华夏移动互联 <span class="fcode">002891</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">华夏移动互联 <span class="fcode">002891</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -3.32%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -5.76%</span><span>预测净值<br/><b>2.7951</b></span></div>
 
-          <div class="meta"><span>最新净值 2.8910</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -6.02%</span><span>误差 0.03pp</span></div><div class="meta"><span>实际净值 2.7170</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">1000元</span></div>
+
+
 
         </div>
 
 
+
+
         <div class="fund-card">
 
-          <div class="fname">浦银全球智能C <span class="fcode">014002</span> <span class="badge">待公布</span>  </div>
+
+
+          <div class="fname">浦银全球智能C <span class="fcode">014002</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+
+
 
           <div class="pred down">▼ -3.68%</div>
 
+
+
           <div class="meta"><span>滚动NNLS -5.75%</span><span>预测净值<br/><b>3.5183</b></span></div>
 
-          <div class="meta"><span>最新净值 3.6528</span><span>2026-08-18公布</span></div>
+
+
+          <div class="meta"><span>实际 -4.78%</span><span>误差 0.01pp</span></div><div class="meta"><span>实际净值 3.4783</span><span>2026-08-18公布</span></div>
+
           <div class="purchase"><span>申购限额</span><span class="amt">3000元</span></div>
+
+
 
         </div></div>
 
+
+
 </div>
+
+
+
+
 
 
 
 <div class="card">
 
-  <h2>历史预测验证 <span class="badge">47 条已验证</span></h2>
+
+
+  <h2>历史预测验证 <span class="badge">57 条已验证</span></h2>
+
+
 
   <div class="legend">
+
+
 
     <span class="sub">闭环：早上预测 → 当晚净值公布 → 次日早上自动验证回填</span>
 
+
+
   </div>
+
+
 
   <div class="stat-grid">
 
-    <div class="stat"><div class="num">89.4%</div><div class="lbl">方向命中率</div></div>
 
-    <div class="stat"><div class="num">0.76</div><div class="lbl">MAE（pp）</div></div>
 
-    <div class="stat"><div class="num">42/47</div><div class="lbl">累计命中</div></div>
+    <div class="stat"><div class="num">91.2%</div><div class="lbl">方向命中率</div></div>
 
-    <div class="stat"><div class="num">10</div><div class="lbl">待验证（今晚公布后回填）</div></div>
+
+
+    <div class="stat"><div class="num">0.91</div><div class="lbl">MAE（pp）</div></div>
+
+
+
+    <div class="stat"><div class="num">52/57</div><div class="lbl">累计命中</div></div>
+
+
+
+    <div class="stat"><div class="num">0</div><div class="lbl">待验证（今晚公布后回填）</div></div>
+
+
 
   </div>
 
-  <table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th><th>实际</th><th>命中</th><th>误差</th></tr></thead><tbody id='v-rows-show'><tr><td>富国全球互联网C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.14%</td><td>+2.51%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.47%</td><td>+1.22%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.51%</td><td>+1.62%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>建信新兴C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.42%</td><td>+2.19%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.04%</td><td>+0.37%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr></tbody><tbody id='v-rows-all' style='display:none'><tr><td>富国全球互联网C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.14%</td><td>+2.51%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.47%</td><td>+1.22%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.51%</td><td>+1.62%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>建信新兴C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.42%</td><td>+2.19%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.04%</td><td>+0.37%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr><tr><td>汇添富全球移动C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.05%</td><td>+0.34%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-18</td><td>2026-08-17</td><td>+2.09%</td><td>+3.32%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>易方达全球成长C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.18%</td><td>+3.20%</td><td><span class="ok">✓</span></td><td>-0.02pp</td></tr><tr><td>华宝致远C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.59%</td><td>+1.46%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.55%</td><td>+3.47%</td><td><span class="ok">✓</span></td><td>-0.02pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-15</td><td>2026-08-14</td><td>+1.13%</td><td>+0.59%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-15</td><td>2026-08-14</td><td>+0.65%</td><td>+0.28%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr><tr><td>建信新兴C</td><td>2026-08-15</td><td>2026-08-14</td><td>+1.17%</td><td>+1.81%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-15</td><td>2026-08-14</td><td>+0.64%</td><td>-0.11%</td><td><span class="no">✗</span></td><td>0.01pp</td></tr><tr><td>汇添富全球移动C</td><td>2026-08-15</td><td>2026-08-14</td><td>+0.50%</td><td>-0.04%</td><td><span class="no">✗</span></td><td>0.01pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-15</td><td>2026-08-14</td><td>+2.25%</td><td>+1.89%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr></tbody></table><div style='margin-top:8px;text-align:center'><button onclick="var a=document.getElementById('v-rows-all'),s=document.getElementById('v-rows-show'),b=this;if(a.style.display==='none'){a.style.display='';s.style.display='none';b.textContent='收起';}else{a.style.display='none';s.style.display='';b.textContent='查看更多';}" style='cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--accent);border-radius:8px;padding:4px 16px;font-size:12px'>查看更多</button></div>
+
+
+  <table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th><th>实际</th><th>命中</th><th>误差</th></tr></thead><tbody id='v-rows-show'><tr><td>富国全球互联网C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.69%</td><td>-2.79%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.90%</td><td>-4.02%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.80%</td><td>-2.72%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr><tr><td>建信新兴C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.57%</td><td>-4.45%</td><td><span class="ok">✓</span></td><td>0.02pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.37%</td><td>-2.62%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr></tbody><tbody id='v-rows-all' style='display:none'><tr><td>富国全球互联网C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.69%</td><td>-2.79%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.90%</td><td>-4.02%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.80%</td><td>-2.72%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr><tr><td>建信新兴C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.57%</td><td>-4.45%</td><td><span class="ok">✓</span></td><td>0.02pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.37%</td><td>-2.62%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>汇添富全球移动C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.12%</td><td>-2.85%</td><td><span class="ok">✓</span></td><td>0.02pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-19</td><td>2026-08-18</td><td>-3.68%</td><td>-4.78%</td><td><span class="ok">✓</span></td><td>0.01pp</td></tr><tr><td>易方达全球成长C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.74%</td><td>-4.25%</td><td><span class="ok">✓</span></td><td>0.03pp</td></tr><tr><td>华宝致远C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.57%</td><td>-5.19%</td><td><span class="ok">✓</span></td><td>0.03pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-19</td><td>2026-08-18</td><td>-3.32%</td><td>-6.02%</td><td><span class="ok">✓</span></td><td>0.03pp</td></tr><tr><td>富国全球互联网C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.14%</td><td>+2.51%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.47%</td><td>+1.22%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.51%</td><td>+1.62%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>建信新兴C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.42%</td><td>+2.19%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.04%</td><td>+0.37%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr><tr><td>汇添富全球移动C</td><td>2026-08-18</td><td>2026-08-17</td><td>+0.05%</td><td>+0.34%</td><td><span class="ok">✓</span></td><td>-0.00pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-18</td><td>2026-08-17</td><td>+2.09%</td><td>+3.32%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>易方达全球成长C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.18%</td><td>+3.20%</td><td><span class="ok">✓</span></td><td>-0.02pp</td></tr><tr><td>华宝致远C</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.59%</td><td>+1.46%</td><td><span class="ok">✓</span></td><td>0.00pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-18</td><td>2026-08-17</td><td>+1.55%</td><td>+3.47%</td><td><span class="ok">✓</span></td><td>-0.02pp</td></tr></tbody></table><div style='margin-top:8px;text-align:center'><button onclick="var a=document.getElementById('v-rows-all'),s=document.getElementById('v-rows-show'),b=this;if(a.style.display==='none'){a.style.display='';s.style.display='none';b.textContent='收起';}else{a.style.display='none';s.style.display='';b.textContent='查看更多';}" style='cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--accent);border-radius:8px;padding:4px 16px;font-size:12px'>查看更多</button></div>
+
+
 
 </div>
 
 
 
+
+
+
+
 <div class="card">
+
+
 
   <h2>美股含量总览</h2>
 
+
+
   <div class="legend">
+
+
 
     <span><i style="background:var(--accent)"></i>披露美股占比 %（十大）</span>
 
+
+
     <span class="sub">NDX β 见右侧标签，>1 表示对纳指放大暴露</span>
+
+
 
   </div>
 
+
+
   <div class="chart-box"><canvas id="usChart" role="img" aria-label="美股含量对比条形图">美股含量对比</canvas></div>
+
+
 
 </div>
 
 
 
+
+
+
+
 <div class="card">
+
+
 
   <h2>持仓质量（历史回测）</h2>
 
-  <table><thead><tr><th>基金</th><th>披露美股%</th><th>NDX β</th><th>方向准确率</th><th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead><tbody><tr><td>银华海外数字C<br/><span class='sub'>016702</span></td><td>55.0%</td><td>1.24</td><td>88.8%</td><td>0.76pp</td><td>0.46pp</td><td>0.862</td></tr><tr><td>国富全球科技C<br/><span class='sub'>021842</span></td><td>49.8%</td><td>1.83</td><td>95.7%</td><td>1.00pp</td><td>0.60pp</td><td>0.892</td></tr><tr><td>浦银全球智能C<br/><span class='sub'>014002</span></td><td>48.9%</td><td>2.05</td><td>88.3%</td><td>1.33pp</td><td>0.83pp</td><td>0.849</td></tr><tr><td>华夏移动互联<br/><span class='sub'>002891</span></td><td>47.0%</td><td>2.08</td><td>91.5%</td><td>1.44pp</td><td>0.87pp</td><td>0.862</td></tr><tr><td>建信新兴C<br/><span class='sub'>018147</span></td><td>45.5%</td><td>1.64</td><td>83.1%</td><td>1.58pp</td><td>1.00pp</td><td>0.741</td></tr><tr><td>汇添富全球移动C<br/><span class='sub'>015202</span></td><td>45.4%</td><td>1.35</td><td>91.5%</td><td>0.94pp</td><td>0.46pp</td><td>0.894</td></tr><tr><td>华宝致远C<br/><span class='sub'>008254</span></td><td>42.7%</td><td>1.86</td><td>90.4%</td><td>1.25pp</td><td>0.83pp</td><td>0.803</td></tr><tr><td>广发全球精选C<br/><span class='sub'>021277</span></td><td>29.5%</td><td>1.29</td><td>88.3%</td><td>0.78pp</td><td>0.74pp</td><td>0.856</td></tr><tr><td>易方达全球成长C<br/><span class='sub'>012922</span></td><td>29.0%</td><td>1.48</td><td>88.3%</td><td>1.58pp</td><td>0.88pp</td><td>0.803</td></tr><tr><td>富国全球互联网C<br/><span class='sub'>022184</span></td><td>17.8%</td><td>1.06</td><td>87.2%</td><td>1.35pp</td><td>0.97pp</td><td>0.596</td></tr></tbody></table>
+
+
+  <table><thead><tr><th>基金</th><th>披露美股%</th><th>NDX β</th><th>方向准确率</th><th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead><tbody><tr><td>银华海外数字C<br/><span class='sub'>016702</span></td><td>55.0%</td><td>1.25</td><td>88.9%</td><td>0.77pp</td><td>0.46pp</td><td>0.865</td></tr><tr><td>国富全球科技C<br/><span class='sub'>021842</span></td><td>49.8%</td><td>1.83</td><td>95.8%</td><td>1.00pp</td><td>0.60pp</td><td>0.892</td></tr><tr><td>浦银全球智能C<br/><span class='sub'>014002</span></td><td>48.9%</td><td>2.06</td><td>88.4%</td><td>1.33pp</td><td>0.84pp</td><td>0.852</td></tr><tr><td>华夏移动互联<br/><span class='sub'>002891</span></td><td>47.0%</td><td>2.10</td><td>90.5%</td><td>1.46pp</td><td>0.88pp</td><td>0.859</td></tr><tr><td>建信新兴C<br/><span class='sub'>018147</span></td><td>45.5%</td><td>1.65</td><td>83.3%</td><td>1.59pp</td><td>1.00pp</td><td>0.746</td></tr><tr><td>汇添富全球移动C<br/><span class='sub'>015202</span></td><td>45.4%</td><td>1.35</td><td>91.6%</td><td>0.94pp</td><td>0.45pp</td><td>0.895</td></tr><tr><td>华宝致远C<br/><span class='sub'>008254</span></td><td>42.7%</td><td>1.88</td><td>90.5%</td><td>1.26pp</td><td>0.83pp</td><td>0.805</td></tr><tr><td>广发全球精选C<br/><span class='sub'>021277</span></td><td>29.5%</td><td>1.30</td><td>88.4%</td><td>0.77pp</td><td>0.74pp</td><td>0.857</td></tr><tr><td>易方达全球成长C<br/><span class='sub'>012922</span></td><td>29.0%</td><td>1.50</td><td>88.4%</td><td>1.59pp</td><td>0.88pp</td><td>0.807</td></tr><tr><td>富国全球互联网C<br/><span class='sub'>022184</span></td><td>17.8%</td><td>1.07</td><td>87.4%</td><td>1.35pp</td><td>0.97pp</td><td>0.603</td></tr></tbody></table>
+
+
 
 </div>
+
+
+
+
 
 
 
 <div class="card">
 
+
+
   <h2>疑似调仓（滚动NNLS vs 披露）</h2>
+
+
 
   
 
+
+
         <details>
+
+
 
           <summary>华夏移动互联（002891）— 十大持仓 10 项 · 疑似调仓 8 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>MU</td><td>美光科技</td><td>8.2%</td><td>11.8%</td><td>+3.6% <span class="ok">▲加仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>6.5%</td><td>9.0%</td><td>+2.5% <span class="ok">▲加仓</span></td></tr><tr><td>ONTO</td><td>Onto Innovation Inc</td><td>5.5%</td><td>7.7%</td><td>+2.2% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>5.3%</td><td>5.9%</td><td>+0.6% </td></tr><tr><td>INTC</td><td>英特尔</td><td>4.9%</td><td>8.7%</td><td>+3.8% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>LITE</td><td>Lumentum Holdings Inc</td><td>4.4%</td><td>11.8%</td><td>+7.3% <span class="ok">▲加仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>4.3%</td><td>13.5%</td><td>+9.2% <span class="ok">▲加仓</span></td></tr><tr><td>STM</td><td>意法半导体</td><td>4.3%</td><td>10.2%</td><td>+5.9% <span class="ok">▲加仓</span></td></tr><tr><td>ALAB</td><td>Astera Labs Inc</td><td>3.5%</td><td>3.1%</td><td>-0.4% </td></tr></tbody></table>
+
+
+          <tbody><tr><td>MU</td><td>美光科技</td><td>8.2%</td><td>11.5%</td><td>+3.3% <span class="ok">▲加仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>6.5%</td><td>10.1%</td><td>+3.6% <span class="ok">▲加仓</span></td></tr><tr><td>ONTO</td><td>Onto Innovation Inc</td><td>5.5%</td><td>7.1%</td><td>+1.5% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>5.3%</td><td>1.9%</td><td>-3.4% <span class="no">▼减仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>4.9%</td><td>8.5%</td><td>+3.5% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>LITE</td><td>Lumentum Holdings Inc</td><td>4.4%</td><td>13.3%</td><td>+8.8% <span class="ok">▲加仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>4.3%</td><td>15.7%</td><td>+11.4% <span class="ok">▲加仓</span></td></tr><tr><td>STM</td><td>意法半导体</td><td>4.3%</td><td>8.0%</td><td>+3.7% <span class="ok">▲加仓</span></td></tr><tr><td>ALAB</td><td>Astera Labs Inc</td><td>3.5%</td><td>4.9%</td><td>+1.5% </td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>华宝致远C（008254）— 十大持仓 10 项 · 疑似调仓 10 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>SNDK</td><td>闪迪</td><td>9.1%</td><td>1.1%</td><td>-8.1% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>8.5%</td><td>17.4%</td><td>+8.9% <span class="ok">▲加仓</span></td></tr><tr><td>LRCX</td><td>拉姆研究</td><td>3.7%</td><td>0.0%</td><td>-3.7% <span class="no">▼减仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>3.6%</td><td>12.7%</td><td>+9.0% <span class="ok">▲加仓</span></td></tr><tr><td>MKSI</td><td>MKS Inc</td><td>3.6%</td><td>7.5%</td><td>+3.9% <span class="ok">▲加仓</span></td></tr><tr><td>AMAT</td><td>应用材料</td><td>3.5%</td><td>6.0%</td><td>+2.4% <span class="ok">▲加仓</span></td></tr><tr><td>ASML</td><td>阿斯麦</td><td>3.5%</td><td>18.3%</td><td>+14.8% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>2.4%</td><td>8.1%</td><td>+5.7% <span class="ok">▲加仓</span></td></tr><tr><td>NBIS</td><td>Nebius Group NV-A</td><td>2.4%</td><td>0.0%</td><td>-2.4% <span class="no">▼减仓</span></td></tr><tr><td>NVDA</td><td>英伟达</td><td>2.4%</td><td>11.6%</td><td>+9.2% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>SNDK</td><td>闪迪</td><td>9.1%</td><td>0.4%</td><td>-8.7% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>8.5%</td><td>17.0%</td><td>+8.6% <span class="ok">▲加仓</span></td></tr><tr><td>LRCX</td><td>拉姆研究</td><td>3.7%</td><td>0.0%</td><td>-3.7% <span class="no">▼减仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>3.6%</td><td>11.3%</td><td>+7.6% <span class="ok">▲加仓</span></td></tr><tr><td>MKSI</td><td>MKS Inc</td><td>3.6%</td><td>8.9%</td><td>+5.3% <span class="ok">▲加仓</span></td></tr><tr><td>AMAT</td><td>应用材料</td><td>3.5%</td><td>6.4%</td><td>+2.9% <span class="ok">▲加仓</span></td></tr><tr><td>ASML</td><td>阿斯麦</td><td>3.5%</td><td>17.6%</td><td>+14.2% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>2.4%</td><td>8.0%</td><td>+5.6% <span class="ok">▲加仓</span></td></tr><tr><td>NBIS</td><td>Nebius Group NV-A</td><td>2.4%</td><td>0.0%</td><td>-2.4% <span class="no">▼减仓</span></td></tr><tr><td>NVDA</td><td>英伟达</td><td>2.4%</td><td>13.2%</td><td>+10.9% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>浦银全球智能C（014002）— 十大持仓 10 项 · 疑似调仓 7 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>SNDK</td><td>闪迪</td><td>9.5%</td><td>13.8%</td><td>+4.3% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>8.8%</td><td>0.0%</td><td>-8.8% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>8.5%</td><td>9.2%</td><td>+0.7% </td></tr><tr><td>INTC</td><td>英特尔</td><td>7.8%</td><td>8.5%</td><td>+0.7% </td></tr><tr><td>WDC</td><td>西部数据</td><td>7.6%</td><td>15.6%</td><td>+8.0% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>7.5%</td><td>9.5%</td><td>+1.9% </td></tr><tr><td>COHR</td><td>Coherent Corp</td><td>4.0%</td><td>13.6%</td><td>+9.6% <span class="ok">▲加仓</span></td></tr><tr><td>TER</td><td>泰瑞达</td><td>4.0%</td><td>0.0%</td><td>-4.0% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>SNDK</td><td>闪迪</td><td>9.5%</td><td>14.1%</td><td>+4.5% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>8.8%</td><td>0.0%</td><td>-8.8% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>8.5%</td><td>9.3%</td><td>+0.8% </td></tr><tr><td>INTC</td><td>英特尔</td><td>7.8%</td><td>8.6%</td><td>+0.8% </td></tr><tr><td>WDC</td><td>西部数据</td><td>7.6%</td><td>15.6%</td><td>+8.0% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>7.5%</td><td>8.7%</td><td>+1.2% </td></tr><tr><td>COHR</td><td>Coherent Corp</td><td>4.0%</td><td>13.6%</td><td>+9.7% <span class="ok">▲加仓</span></td></tr><tr><td>TER</td><td>泰瑞达</td><td>4.0%</td><td>0.0%</td><td>-4.0% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>汇添富全球移动C（015202）— 十大持仓 10 项 · 疑似调仓 8 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>NVDA</td><td>英伟达</td><td>7.7%</td><td>13.4%</td><td>+5.6% <span class="ok">▲加仓</span></td></tr><tr><td>GOOGL</td><td>谷歌-A</td><td>6.5%</td><td>12.3%</td><td>+5.8% <span class="ok">▲加仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>5.7%</td><td>11.0%</td><td>+5.3% <span class="ok">▲加仓</span></td></tr><tr><td>AMZN</td><td>亚马逊</td><td>4.2%</td><td>6.1%</td><td>+1.9% </td></tr><tr><td>AAPL</td><td>苹果</td><td>4.1%</td><td>5.1%</td><td>+0.9% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>4.1%</td><td>9.8%</td><td>+5.8% <span class="ok">▲加仓</span></td></tr><tr><td>MSFT</td><td>微软</td><td>3.5%</td><td>0.0%</td><td>-3.5% <span class="no">▼减仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>3.4%</td><td>8.5%</td><td>+5.1% <span class="ok">▲加仓</span></td></tr><tr><td>AVGO</td><td>博通</td><td>3.1%</td><td>7.7%</td><td>+4.6% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>3.0%</td><td>8.5%</td><td>+5.6% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>NVDA</td><td>英伟达</td><td>7.7%</td><td>13.7%</td><td>+5.9% <span class="ok">▲加仓</span></td></tr><tr><td>GOOGL</td><td>谷歌-A</td><td>6.5%</td><td>12.6%</td><td>+6.0% <span class="ok">▲加仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>5.7%</td><td>11.3%</td><td>+5.5% <span class="ok">▲加仓</span></td></tr><tr><td>AMZN</td><td>亚马逊</td><td>4.2%</td><td>6.1%</td><td>+1.9% </td></tr><tr><td>AAPL</td><td>苹果</td><td>4.1%</td><td>5.0%</td><td>+0.8% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>4.1%</td><td>9.3%</td><td>+5.2% <span class="ok">▲加仓</span></td></tr><tr><td>MSFT</td><td>微软</td><td>3.5%</td><td>0.0%</td><td>-3.5% <span class="no">▼减仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>3.4%</td><td>8.7%</td><td>+5.3% <span class="ok">▲加仓</span></td></tr><tr><td>AVGO</td><td>博通</td><td>3.1%</td><td>7.6%</td><td>+4.6% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>3.0%</td><td>8.6%</td><td>+5.6% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>银华海外数字C（016702）— 十大持仓 10 项 · 疑似调仓 5 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>NVDA</td><td>英伟达</td><td>8.2%</td><td>16.1%</td><td>+8.0% <span class="ok">▲加仓</span></td></tr><tr><td>GOOGL</td><td>谷歌-A</td><td>7.4%</td><td>8.8%</td><td>+1.4% </td></tr><tr><td>AAPL</td><td>苹果</td><td>6.3%</td><td>7.1%</td><td>+0.9% </td></tr><tr><td>MU</td><td>美光科技</td><td>6.1%</td><td>6.3%</td><td>+0.2% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>5.4%</td><td>8.6%</td><td>+3.2% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>5.4%</td><td>9.9%</td><td>+4.4% <span class="ok">▲加仓</span></td></tr><tr><td>AMZN</td><td>亚马逊</td><td>4.5%</td><td>4.8%</td><td>+0.4% </td></tr><tr><td>MSFT</td><td>微软</td><td>4.3%</td><td>4.3%</td><td>-0.0% </td></tr><tr><td>AVGO</td><td>博通</td><td>4.1%</td><td>9.8%</td><td>+5.8% <span class="ok">▲加仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>3.3%</td><td>7.4%</td><td>+4.1% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>NVDA</td><td>英伟达</td><td>8.2%</td><td>16.1%</td><td>+7.9% <span class="ok">▲加仓</span></td></tr><tr><td>GOOGL</td><td>谷歌-A</td><td>7.4%</td><td>8.8%</td><td>+1.4% </td></tr><tr><td>AAPL</td><td>苹果</td><td>6.3%</td><td>7.3%</td><td>+1.0% </td></tr><tr><td>MU</td><td>美光科技</td><td>6.1%</td><td>6.5%</td><td>+0.3% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>5.4%</td><td>8.4%</td><td>+2.9% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>5.4%</td><td>9.9%</td><td>+4.5% <span class="ok">▲加仓</span></td></tr><tr><td>AMZN</td><td>亚马逊</td><td>4.5%</td><td>5.0%</td><td>+0.6% </td></tr><tr><td>MSFT</td><td>微软</td><td>4.3%</td><td>4.0%</td><td>-0.3% </td></tr><tr><td>AVGO</td><td>博通</td><td>4.1%</td><td>9.8%</td><td>+5.7% <span class="ok">▲加仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>3.3%</td><td>7.5%</td><td>+4.2% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>建信新兴C（018147）— 十大持仓 10 项 · 疑似调仓 8 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>TSM</td><td>台积电</td><td>9.7%</td><td>20.3%</td><td>+10.6% <span class="ok">▲加仓</span></td></tr><tr><td>NVDA</td><td>英伟达</td><td>9.4%</td><td>20.4%</td><td>+11.0% <span class="ok">▲加仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>8.9%</td><td>0.0%</td><td>-8.9% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>7.8%</td><td>0.0%</td><td>-7.8% <span class="no">▼减仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>7.2%</td><td>15.3%</td><td>+8.2% <span class="ok">▲加仓</span></td></tr><tr><td>AVGO</td><td>博通</td><td>4.2%</td><td>9.2%</td><td>+5.0% <span class="ok">▲加仓</span></td></tr><tr><td>WDC</td><td>西部数据</td><td>4.2%</td><td>7.0%</td><td>+2.8% <span class="ok">▲加仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>4.0%</td><td>4.2%</td><td>+0.2% </td></tr><tr><td>LITE</td><td>Lumentum Holdings Inc</td><td>3.6%</td><td>1.8%</td><td>-1.8% </td></tr><tr><td>GLW</td><td>康宁</td><td>3.4%</td><td>9.9%</td><td>+6.5% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>TSM</td><td>台积电</td><td>9.7%</td><td>20.1%</td><td>+10.4% <span class="ok">▲加仓</span></td></tr><tr><td>NVDA</td><td>英伟达</td><td>9.4%</td><td>20.4%</td><td>+11.0% <span class="ok">▲加仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>8.9%</td><td>0.0%</td><td>-8.9% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>7.8%</td><td>0.0%</td><td>-7.8% <span class="no">▼减仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>7.2%</td><td>15.4%</td><td>+8.2% <span class="ok">▲加仓</span></td></tr><tr><td>AVGO</td><td>博通</td><td>4.2%</td><td>8.8%</td><td>+4.7% <span class="ok">▲加仓</span></td></tr><tr><td>WDC</td><td>西部数据</td><td>4.2%</td><td>6.8%</td><td>+2.6% <span class="ok">▲加仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>4.0%</td><td>4.6%</td><td>+0.6% </td></tr><tr><td>LITE</td><td>Lumentum Holdings Inc</td><td>3.6%</td><td>1.9%</td><td>-1.7% </td></tr><tr><td>GLW</td><td>康宁</td><td>3.4%</td><td>9.6%</td><td>+6.2% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>广发全球精选C（021277）— 十大持仓 10 项 · 疑似调仓 4 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>02513</td><td>智谱</td><td>9.0%</td><td>8.1%</td><td>-0.9% </td></tr><tr><td>MU</td><td>美光科技</td><td>6.2%</td><td>5.8%</td><td>-0.3% </td></tr><tr><td>LRCX</td><td>拉姆研究</td><td>4.5%</td><td>6.4%</td><td>+1.9% </td></tr><tr><td>ASML</td><td>阿斯麦</td><td>4.3%</td><td>5.0%</td><td>+0.6% </td></tr><tr><td>285A</td><td>KIOXIA</td><td>4.1%</td><td>0.0%</td><td>-4.1% <span class="no">▼减仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>3.9%</td><td>5.7%</td><td>+1.9% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>3.7%</td><td>3.0%</td><td>-0.8% </td></tr><tr><td>AMAT</td><td>应用材料</td><td>3.5%</td><td>7.8%</td><td>+4.3% <span class="ok">▲加仓</span></td></tr><tr><td>GOOG</td><td>谷歌-C</td><td>3.4%</td><td>13.8%</td><td>+10.4% <span class="ok">▲加仓</span></td></tr><tr><td>300408</td><td>三环集团</td><td>3.1%</td><td>5.6%</td><td>+2.5% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>02513</td><td>智谱</td><td>9.0%</td><td>8.1%</td><td>-0.9% </td></tr><tr><td>MU</td><td>美光科技</td><td>6.2%</td><td>5.5%</td><td>-0.7% </td></tr><tr><td>LRCX</td><td>拉姆研究</td><td>4.5%</td><td>5.8%</td><td>+1.3% </td></tr><tr><td>ASML</td><td>阿斯麦</td><td>4.3%</td><td>5.5%</td><td>+1.2% </td></tr><tr><td>285A</td><td>KIOXIA</td><td>4.1%</td><td>0.0%</td><td>-4.1% <span class="no">▼减仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>3.9%</td><td>5.8%</td><td>+1.9% </td></tr><tr><td>AMD</td><td>超威半导体</td><td>3.7%</td><td>3.1%</td><td>-0.6% </td></tr><tr><td>AMAT</td><td>应用材料</td><td>3.5%</td><td>8.4%</td><td>+4.9% <span class="ok">▲加仓</span></td></tr><tr><td>GOOG</td><td>谷歌-C</td><td>3.4%</td><td>13.1%</td><td>+9.7% <span class="ok">▲加仓</span></td></tr><tr><td>300408</td><td>三环集团</td><td>3.1%</td><td>6.0%</td><td>+2.9% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
 
-          <summary>国富全球科技C（021842）— 十大持仓 10 项 · 疑似调仓 9 项</summary>
+
+
+          <summary>国富全球科技C（021842）— 十大持仓 10 项 · 疑似调仓 8 项</summary>
+
+
 
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>MU</td><td>美光科技</td><td>8.4%</td><td>14.8%</td><td>+6.4% <span class="ok">▲加仓</span></td></tr><tr><td>MKSI</td><td>MKS Inc</td><td>7.5%</td><td>9.7%</td><td>+2.2% <span class="ok">▲加仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>7.5%</td><td>17.1%</td><td>+9.6% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>7.2%</td><td>9.2%</td><td>+2.0% <span class="ok">▲加仓</span></td></tr><tr><td>GLW</td><td>康宁</td><td>5.4%</td><td>7.7%</td><td>+2.4% <span class="ok">▲加仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>4.4%</td><td>3.6%</td><td>-0.8% </td></tr><tr><td>LRCX</td><td>拉姆研究</td><td>3.7%</td><td>0.0%</td><td>-3.7% <span class="no">▼减仓</span></td></tr><tr><td>GOOG</td><td>谷歌-C</td><td>3.2%</td><td>8.7%</td><td>+5.5% <span class="ok">▲加仓</span></td></tr><tr><td>6857</td><td>爱德万测试</td><td>2.8%</td><td>0.0%</td><td>-2.8% <span class="no">▼减仓</span></td></tr><tr><td>NOK</td><td>诺基亚</td><td>2.7%</td><td>8.1%</td><td>+5.5% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>MU</td><td>美光科技</td><td>8.4%</td><td>14.9%</td><td>+6.5% <span class="ok">▲加仓</span></td></tr><tr><td>MKSI</td><td>MKS Inc</td><td>7.5%</td><td>11.3%</td><td>+3.8% <span class="ok">▲加仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>7.5%</td><td>15.9%</td><td>+8.4% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>7.2%</td><td>8.8%</td><td>+1.6% </td></tr><tr><td>GLW</td><td>康宁</td><td>5.4%</td><td>8.0%</td><td>+2.6% <span class="ok">▲加仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>4.4%</td><td>3.0%</td><td>-1.4% </td></tr><tr><td>LRCX</td><td>拉姆研究</td><td>3.7%</td><td>0.0%</td><td>-3.7% <span class="no">▼减仓</span></td></tr><tr><td>GOOG</td><td>谷歌-C</td><td>3.2%</td><td>10.7%</td><td>+7.5% <span class="ok">▲加仓</span></td></tr><tr><td>6857</td><td>爱德万测试</td><td>2.8%</td><td>0.0%</td><td>-2.8% <span class="no">▼减仓</span></td></tr><tr><td>NOK</td><td>诺基亚</td><td>2.7%</td><td>7.4%</td><td>+4.7% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
 
-          <summary>富国全球互联网C（022184）— 十大持仓 10 项 · 疑似调仓 7 项</summary>
+
+
+          <summary>富国全球互联网C（022184）— 十大持仓 10 项 · 疑似调仓 8 项</summary>
+
+
 
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>00522</td><td>ASMPT</td><td>5.6%</td><td>24.6%</td><td>+19.0% <span class="ok">▲加仓</span></td></tr><tr><td>603986</td><td>兆易创新</td><td>5.5%</td><td>0.0%</td><td>-5.5% <span class="no">▼减仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>5.0%</td><td>4.7%</td><td>-0.4% </td></tr><tr><td>600183</td><td>生益科技</td><td>4.7%</td><td>0.0%</td><td>-4.7% <span class="no">▼减仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>4.3%</td><td>5.5%</td><td>+1.2% </td></tr><tr><td>STX</td><td>希捷科技</td><td>4.3%</td><td>2.4%</td><td>-1.9% </td></tr><tr><td>WDC</td><td>西部数据</td><td>4.2%</td><td>8.4%</td><td>+4.2% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>00522</td><td>ASMPT</td><td>5.6%</td><td>24.1%</td><td>+18.5% <span class="ok">▲加仓</span></td></tr><tr><td>603986</td><td>兆易创新</td><td>5.5%</td><td>0.0%</td><td>-5.5% <span class="no">▼减仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>5.0%</td><td>5.3%</td><td>+0.2% </td></tr><tr><td>600183</td><td>生益科技</td><td>4.7%</td><td>0.0%</td><td>-4.7% <span class="no">▼减仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>4.6%</td><td>0.0%</td><td>-4.6% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>4.3%</td><td>5.3%</td><td>+1.0% </td></tr><tr><td>STX</td><td>希捷科技</td><td>4.3%</td><td>1.6%</td><td>-2.7% <span class="no">▼减仓</span></td></tr><tr><td>WDC</td><td>西部数据</td><td>4.2%</td><td>8.9%</td><td>+4.7% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
 
+
+
         <details>
+
+
 
           <summary>易方达全球成长C（012922）— 十大持仓 10 项 · 疑似调仓 9 项</summary>
 
+
+
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
 
-          <tbody><tr><td>LRCX</td><td>拉姆研究</td><td>6.4%</td><td>23.8%</td><td>+17.4% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>5.9%</td><td>0.0%</td><td>-5.9% <span class="no">▼减仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>5.5%</td><td>12.8%</td><td>+7.3% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>5.0%</td><td>0.0%</td><td>-5.0% <span class="no">▼减仓</span></td></tr><tr><td>300502</td><td>新易盛</td><td>4.7%</td><td>8.6%</td><td>+4.0% <span class="ok">▲加仓</span></td></tr><tr><td>300308</td><td>中际旭创</td><td>4.6%</td><td>24.1%</td><td>+19.5% <span class="ok">▲加仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>4.5%</td><td>0.8%</td><td>-3.7% <span class="no">▼减仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>4.3%</td><td>2.9%</td><td>-1.4% </td></tr><tr><td>688498</td><td>源杰科技</td><td>3.3%</td><td>0.0%</td><td>-3.3% <span class="no">▼减仓</span></td></tr><tr><td>ASML</td><td>阿斯麦</td><td>3.3%</td><td>12.0%</td><td>+8.7% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
+          <tbody><tr><td>LRCX</td><td>拉姆研究</td><td>6.4%</td><td>23.6%</td><td>+17.2% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>5.9%</td><td>0.0%</td><td>-5.9% <span class="no">▼减仓</span></td></tr><tr><td>TSM</td><td>台积电</td><td>5.5%</td><td>13.9%</td><td>+8.3% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>5.0%</td><td>0.0%</td><td>-5.0% <span class="no">▼减仓</span></td></tr><tr><td>300502</td><td>新易盛</td><td>4.7%</td><td>8.4%</td><td>+3.7% <span class="ok">▲加仓</span></td></tr><tr><td>300308</td><td>中际旭创</td><td>4.6%</td><td>24.2%</td><td>+19.6% <span class="ok">▲加仓</span></td></tr><tr><td>SNDK</td><td>闪迪</td><td>4.5%</td><td>1.3%</td><td>-3.2% <span class="no">▼减仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>4.3%</td><td>2.6%</td><td>-1.7% </td></tr><tr><td>688498</td><td>源杰科技</td><td>3.3%</td><td>0.0%</td><td>-3.3% <span class="no">▼减仓</span></td></tr><tr><td>ASML</td><td>阿斯麦</td><td>3.3%</td><td>10.8%</td><td>+7.4% <span class="ok">▲加仓</span></td></tr></tbody></table>
+
+
 
         </details>
 
+
+
 </div>
+
+
+
+
 
 
 
 <footer class="sub" style="text-align:center;margin:24px 0 8px;">
 
+
+
   qdii-nav-tracker · 数据源：天天基金F10 / 东财lsjz / 中行牌价 / 新浪行情 · 仅供研究，非投资建议
+
+
 
 </footer>
 
+
+
 </div>
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
+
+
 <script>
+
+
 
 new Chart(document.getElementById('usChart'), {
 
+
+
   type: 'bar',
+
+
 
   data: {
 
+
+
     labels: ["浦银全球智能C", "华夏移动互联", "国富全球科技C", "华宝致远C", "银华海外数字C", "建信新兴C", "汇添富全球移动C", "广发全球精选C"],
+
+
 
     datasets: [{
 
+
+
       label: '披露美股占比',
+
+
 
       data: [48.9, 47.0, 49.8, 42.7, 55.0, 45.5, 45.4, 29.5],
 
+
+
       backgroundColor: '#2563eb', borderRadius: 4,
+
+
 
       barPercentage: 0.6, categoryPercentage: 0.5
 
+
+
     }]
+
+
 
   },
 
+
+
   options: {
+
+
 
     responsive: true, maintainAspectRatio: false,
 
+
+
     plugins: {
+
+
 
       legend: {display: false},
 
+
+
       tooltip: {
+
+
 
         callbacks: {
 
+
+
           afterLabel: function(ctx) {
 
-            return 'NDX β: ' + [2.05, 2.08, 1.83, 1.86, 1.24, 1.64, 1.35, 1.29][ctx.dataIndex];
+
+
+            return 'NDX β: ' + [2.06, 2.1, 1.83, 1.88, 1.25, 1.65, 1.35, 1.3][ctx.dataIndex];
+
+
 
           }
 
+
+
         }
+
+
 
       }
 
+
+
     },
+
+
 
     scales: {
 
+
+
       y: {beginAtZero: true, ticks: {callback: v => v + '%'}, grid: {color: 'rgba(128,128,128,.12)'}},
+
+
 
       x: {grid: {display: false}, ticks: {font: {size: 11}}}
 
+
+
     }
+
+
 
   }
 
+
+
 });
+
+
 
 </script>
 
+
+
 </body>
+
+
 
 </html>
