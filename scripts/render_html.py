@@ -17,7 +17,8 @@ CST = datetime.timezone(datetime.timedelta(hours=8))
 
 FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
               "015202": "汇添富全球移动C", "016702": "银华海外数字C", "018147": "建信新兴C",
-              "021277": "广发全球精选C", "021842": "国富全球科技C"}
+              "021277": "广发全球精选C", "021842": "国富全球科技C",
+              "012922": "易方达全球C", "022184": "富国全球科技C"}
 
 CSS = """
 :root{--bg:#f3f5f9;--card:#fff;--ink:#1f2937;--sub:#64748b;--line:#e5eaf1;
@@ -197,8 +198,8 @@ def render(report, history, out_path):
                 f"<td>{mark}</td><td>{fmt_pp(v.get('err'))}</td></tr>")
 
     v_rows_show = "".join(_vrow(v) for v in verified_recent)
-    # 查看更多：最多 16 条（8 基金 × 2 天），避免一年后无限增长
-    v_rows_all = "".join(_vrow(v) for v in verified_all[::-1][:16])
+    # 查看更多：最多 2×基金数 条（10基金→20条，即 8/19 动态 2N 设计），避免无限增长
+    v_rows_all = "".join(_vrow(v) for v in verified_all[::-1][:2 * len(funds)])
     v_table_head = ("<table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th>"
                     "<th>实际</th><th>命中</th><th>误差</th></tr></thead>")
     if v_rows_show:
