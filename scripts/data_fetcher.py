@@ -6,7 +6,7 @@
 
 - 净值：东财 f10/lsjz 直连（主，portfolio 验证）→ akshare fund_open_fund_info_em（备）
 - 汇率：中行牌价 currency_boc_safe（主，portfolio 验证，每日更新）→ 东财 push2his curl_cffi（备）→ yfinance（兜底）
-- 美股：akshare stock_us_daily 新浪源（主）→ 腾讯 qt.gtimg.cn 实时快照（当日兜底，仅预测用）
+- 美股：yfinance（主，含当天实时，2026-08-19 起首选）→ akshare 新浪日线（兜底）→ 腾讯快照（当日兜底）
 - 港股：akshare stock_hk_daily（主）→ 腾讯 qt.gtimg.cn hk 快照（当日兜底）
 - A股：akshare stock_zh_a_daily（新浪）
 - 美股指数：akshare index_us_stock_sina（新浪）
@@ -239,15 +239,16 @@ def get_nav(code, start_date=None):
         df = df[df["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
     return df
 
-# ============ 个股行情（美股 yfinance 主 → 新浪日线兜底；A/港 新浪主 → 腾讯快照兜底当日）============
-
+# ============ 个股行情（美股 yfinance 主 → 新浪 → 腾讯快照；港A股新浪主）============
 
 def _yf_us_daily(code):
     """美股日线（yfinance / Yahoo，首选，2026-08-19 启用）：
     period="1y" 的 Close 含当天实时价（美东收盘后即更新），解决新浪美股日线滞后一天的问题。
     失败（限流/网络）返回 None，由调用方回退新浪日线。"""
+    if not _HAS_YF:
+        return None
+
     def _fetch():
-        import yfinance as yf
         tk = yf.Ticker(code)
         hist = tk.history(period="1y", auto_adjust=True)
         if hist is None or hist.empty:
@@ -256,8 +257,8 @@ def _yf_us_daily(code):
             "date": pd.to_datetime(hist.index.tz_localize(None).date),
             "close": hist["Close"].values,
         })
-    return _retry_call(_fetch, attempts=2, wait=1.5, label=f"yf_{code}")
 
+    return _retry_call(_fetch, attempts=2, wait=1.5, label=f"yf_{code}")
 
 def _sina_price(code, market):
     """akshare 新浪源日线"""
@@ -383,15 +384,15 @@ def _tencent_snapshot_df(code, market):
 
 def get_price_df(code, market, allow_snapshot=True):
     """个股日线：
-    - US:    yfinance 主源（含当天实时，2026-08-19 起首选）→ 新浪日线兜底 → 腾讯快照兜底
-    - HK/CN: 新浪主源（完整历史）→ 腾讯快照兜底（仅当日，预测够用）
-    - JP/KR:  东财 push2his 主（历史K线）→ yfinance 备 → 腾讯快照兜底（当日）
+    - US/HK/CN: 新浪主源（完整历史）→ 腾讯快照兜底（仅当日，预测够用）
+    - JP/KR:     东财 push2his 主（历史K线）→ yfinance 备 → 腾讯快照兜底（当日）
     返回 DataFrame(date, close)；快照模式返回的只有最近两日。
     """
     if code in _CACHE:
         return _CACHE[code]
 
     if market == "US":
+        # 美股：yfinance 主（含当天实时，2026-08-19 起首选）→ 新浪日线兜底
         df = fallback_chain([("yf", lambda: _yf_us_daily(code)),
                              ("sina", lambda: _sina_price(code, market))],
                             label=f"美股{code}")
@@ -586,23 +587,3 @@ def us_last_trade_date():
     while d.weekday() >= 5:
         d -= _dt.timedelta(days=1)
     return d
-
-
-def get_fund_purchase(codes):
-    """场外基金申购限额（东财 fund_purchase_em，akshare）。
-    返回 {code: {"status": str, "limit": float|None}}；接口失败返回 {}（不影响主流程）。
-    字段：申购状态（开放申购/限大额/暂停申购/场内交易）、日累计限定金额（元，NaN 表示不限购）。"""
-    def _fetch():
-        df = ak.fund_purchase_em()
-        out = {}
-        for _, r in df.iterrows():
-            c = str(r["基金代码"])
-            if c in codes:
-                lim = r.get("日累计限定金额")
-                out[c] = {
-                    "status": str(r.get("申购状态", "")),
-                    "limit": float(lim) if lim is not None and str(lim) not in ("nan", "") else None,
-                }
-        return out
-    return _retry_call(_fetch, attempts=2, wait=1.0, label="fund_purchase_em")
-

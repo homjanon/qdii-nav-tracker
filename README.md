@@ -90,7 +90,8 @@ GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.g
 |---|---|---|
 | 十大持仓 / 年报全持仓 | 天天基金 F10（HTTP/1.1 直连） | 本地缓存 holdings_cache.json（F10 超时兜底，90 天有效） |
 | 基金净值 | 东财 f10/lsjz 直连 | akshare（东财） |
-| 美股 / 港股 / A股日线 | akshare（新浪源） | 腾讯 qt.gtimg.cn 实时快照（当日预测兜底） |
+| 美股日线 | **yfinance（首选，含当天实时，2026-08-19 起）** | akshare 新浪 → 腾讯 qt.gtimg.cn 实时快照（当日兜底） |
+| 港股 / A股日线 | akshare（新浪源） | 腾讯 qt.gtimg.cn 实时快照（当日预测兜底） |
 | 日股 / 韩股 | 东财 push2his（JP=176/KR=177 secid） | yfinance（.T/.KS）→ 腾讯快照（kr/jp 前缀，当日） |
 | USD/CNH 汇率 | 中行牌价 currency_boc_safe | 东财 push2his（curl_cffi）→ yfinance |
 | NDX / INX / HSI 指数 | akshare（新浪） | yfinance（兜底） |
