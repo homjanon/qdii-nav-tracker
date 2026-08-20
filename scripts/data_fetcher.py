@@ -82,28 +82,75 @@ def classify_market(code):
         return "SKIP"
     return "SKIP"
 
-def _retry_call(fn, *args, attempts=3, wait=2.0, label=""):
-    """统一重试包装：异常全部吞掉，失败返回 None（不抛，避免拖垮整体）"""
+# 数据源使用统计（可观测性汇总，2026-08-21）
+SRC_STATS = {}  # {源名: {"ok": N, "fail": M}}
+
+def _src_record(label, ok):
+    """记录数据源使用情况。label 传「源名」即可（如 'yf'/'sina'/'em'/'boc'）"""
+    s = SRC_STATS.setdefault(label, {"ok": 0, "fail": 0})
+    s["ok" if ok else "fail"] += 1
+
+def _src_key(label):
+    """从各种 label 提取纯源名（用于 _retry_call 统计）：
+    'yf_MU'→'yf'、'东财lsjz 022184'→'东财lsjz'、'中行牌价'→'中行牌价'、'指数 .NDX'→'指数'"""
+    if not label:
+        return "?"
+    key = label.split("_")[0] if "_" in label else label.split(" ")[0]
+    return key
+
+def src_summary():
+    """数据源使用汇总：{'yf': ✓12/✗3, 'sina': ✓5, ...}"""
+    if not SRC_STATS:
+        return "（无数据源调用）"
+    parts = []
+    for k, v in sorted(SRC_STATS.items()):
+        mark = "✓" if v["fail"] == 0 else "✗"
+        parts.append(f"{k}={mark}{v['ok']}成功/{v['fail']}失败")
+    return " ".join(parts)
+
+def _retry_call(fn, *args, attempts=3, wait=2.0, label="", verbose=False):
+    """统一重试包装：异常全部吞掉，失败返回 None（不抛，避免拖垮整体）
+    verbose=True 时成功/空也打印（数据源可观测性，2026-08-21）：
+      ✓ [label] 成功 (N条) / ⚠ [label] 空数据 / ✗ [label] 失败: 原因"""
     last_err = None
     for i in range(attempts):
         try:
-            return fn(*args)
+            r = fn(*args)
+            if r is not None and (not isinstance(r, pd.DataFrame) or len(r) > 0):
+                if label:
+                    _src_record(_src_key(label), True)
+                if verbose:
+                    n = len(r) if isinstance(r, pd.DataFrame) else "?"
+                    print(f"    ✓ [{label}] 成功 ({n}条)")
+                return r
+            if verbose:
+                print(f"    ⚠ [{label}] 空数据")
         except Exception as e:
             last_err = e
             time.sleep(wait * (i + 1))
     if label:
-        print(f"    !! {label} 失败: {repr(last_err)[:120]}")
+        _src_record(_src_key(label), False)
+        print(f"    ✗ [{label}] 失败: {repr(last_err)[:120]}")
     return None
 
-def fallback_chain(fetchers, label=""):
-    """多源降级链：依次尝试，返回首个非 None 结果"""
+def fallback_chain(fetchers, label="", verbose=True):
+    """多源降级链：依次尝试，返回首个非 None 结果
+    每次尝试都打印数据源结果（数据源可观测性，2026-08-21）：
+      ✓ [label/source] 成功 (N条) / ⚠ 空数据 / ✗ 失败: 原因"""
     for name, fn in fetchers:
         try:
             r = fn()
             if r is not None and (not isinstance(r, pd.DataFrame) or len(r) > 0):
+                n = len(r) if isinstance(r, pd.DataFrame) else "?"
+                _src_record(name, True)  # 源名（yf/sina/em/akshare 等），不含个股代码
+                if verbose:
+                    print(f"    ✓ [{label}/{name}] 成功 ({n}条)")
                 return r
+            if verbose:
+                print(f"    ⚠ [{label}/{name}] 空数据")
         except Exception as e:
-            print(f"    !! [{label}/{name}] 失败: {repr(e)[:100]}")
+            _src_record(name, False)  # 源名（yf/sina/em/akshare 等）
+            print(f"    ✗ [{label}/{name}] 失败: {repr(e)[:100]}")
     return None
 
 # ============ 持仓 ============
@@ -239,6 +286,25 @@ def get_nav(code, start_date=None):
         df = df[df["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
     return df
 
+def get_fund_purchase(codes):
+    """场外基金申购限额（东财 fund_purchase_em，akshare）。
+    返回 {code: {"status": str, "limit": float|None}}；接口失败返回 {}（不影响主流程）。
+    字段：申购状态（开放申购/限大额/暂停申购/场内交易）、日累计限定金额（元，NaN 表示不限购）。
+    2026-08-18 加入（ba7dae3），2026-08-21 从被覆盖状态恢复。"""
+    def _fetch():
+        df = ak.fund_purchase_em()
+        out = {}
+        for _, r in df.iterrows():
+            c = str(r["基金代码"])
+            if c in codes:
+                lim = r.get("日累计限定金额")
+                out[c] = {
+                    "status": str(r.get("申购状态", "")),
+                    "limit": float(lim) if lim is not None and str(lim) not in ("nan", "") else None,
+                }
+        return out
+    return _retry_call(_fetch, attempts=2, wait=1.0, label="fund_purchase_em")
+
 # ============ 个股行情（美股 yfinance 主 → 新浪 → 腾讯快照；港A股新浪主）============
 
 def _yf_us_daily(code):
@@ -258,7 +324,7 @@ def _yf_us_daily(code):
             "close": hist["Close"].values,
         })
 
-    return _retry_call(_fetch, attempts=2, wait=1.5, label=f"yf_{code}")
+    return _retry_call(_fetch, attempts=2, wait=1.5, label=f"yf_{code}", verbose=True)
 
 def _sina_price(code, market):
     """akshare 新浪源日线"""
@@ -304,7 +370,7 @@ def _em_jpkr(code, market):
                 continue
         return None
 
-    return _retry_call(_fetch, label=f"东财{market} {code}", attempts=2, wait=1.5)
+    return _retry_call(_fetch, label=f"东财{market} {code}", attempts=2, wait=1.5, verbose=True)
 
 def _yf_jpkr(code, market):
     """yfinance 日韩股（云端备源：285A.T / 005930.KS / 000660.KS）"""
@@ -323,7 +389,7 @@ def _yf_jpkr(code, market):
         df["date"] = pd.to_datetime(df["date"])
         return df
 
-    return _retry_call(_fetch, label=f"yf{market} {code}", attempts=2, wait=2.0)
+    return _retry_call(_fetch, label=f"yf{market} {code}", attempts=2, wait=2.0, verbose=True)
 
 def _tencent_jpkr_snapshot(code, market):
     """腾讯日韩股快照（当日预测兜底，kr005930 / jp285A）"""
@@ -434,7 +500,7 @@ def _boc_fx():
         df["close"] = df["usd"] / 100.0
         return df[["date", "close"]]
 
-    return _retry_call(_fetch, label="中行牌价")
+    return _retry_call(_fetch, label="中行牌价", verbose=True)
 
 def _em_fx():
     """东财 push2his USDCNH（备，需 HTTP/2）"""
@@ -457,7 +523,7 @@ def _em_fx():
             rows.append({"date": parts[0], "close": float(parts[2])})
         return pd.DataFrame(rows)
 
-    return _retry_call(_fetch, label="东财USDCNH")
+    return _retry_call(_fetch, label="东财USDCNH", verbose=True)
 
 def _yf_fx():
     """yfinance USDCNH=X（兜底，GitHub Actions 云端 IP 较干净）"""
@@ -474,7 +540,7 @@ def _yf_fx():
         df["date"] = pd.to_datetime(df["date"])
         return df
 
-    return _retry_call(_fetch, label="yfinance USDCNH", attempts=2, wait=2.0)
+    return _retry_call(_fetch, label="yfinance USDCNH", attempts=2, wait=2.0, verbose=True)
 
 def get_usdcnh():
     """USD/CNH 日线：中行牌价主 → 东财 push2his 备 → yfinance 兜底"""
@@ -505,7 +571,7 @@ def get_index(symbol):
     def _fetch():
         return ak.index_us_stock_sina(symbol=symbol)
 
-    df = _retry_call(_fetch, label=f"指数 {symbol}")
+    df = _retry_call(_fetch, label=f"指数 {symbol}", verbose=True)
     if df is None or len(df) == 0:
         _CACHE[key] = None
         return None
@@ -522,7 +588,7 @@ def get_hs_index():
     def _fetch():
         return ak.stock_hk_index_daily_sina(symbol="HSI")
 
-    df = _retry_call(_fetch, label="HSI")
+    df = _retry_call(_fetch, label="HSI", verbose=True)
     if df is None or len(df) == 0:
         _CACHE["__HSI__"] = None
         return None

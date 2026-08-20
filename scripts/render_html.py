@@ -41,6 +41,9 @@ box-shadow:var(--shadow);margin-bottom:18px;}
 .fund-card .fcode{font-size:11px;color:var(--sub);margin-top:1px;}
 .fund-card .pred{font-size:26px;font-weight:800;margin:8px 0 2px;letter-spacing:-.5px;}
 .fund-card .meta{font-size:12px;color:var(--sub);display:flex;justify-content:space-between;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line);}
+.fund-card .purchase{font-size:11px;color:var(--sub);display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
+.fund-card .purchase .amt{font-weight:700;color:var(--blue);}
+.fund-card .purchase .amt.paused{color:var(--sub);text-decoration:line-through;}
 .up{color:var(--up);} .down{color:var(--down);}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px;}
 .stat{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 16px;text-align:center;}
@@ -107,6 +110,7 @@ def render(report, history, out_path):
     gen = report.get("generated_at", "")
     funds = report.get("funds", {})
     verify = report.get("verify", {})
+    purchase = report.get("purchase") or {}  # {code: {"status","limit"}} 申购限额（2026-08-18 加入）
     hist_verified = [h for h in history if h.get("actual") is not None]
 
     # ---- 今晚预测卡片（保留全部基金：待验证显示预测，已公布显示预测vs实际）----
@@ -127,6 +131,7 @@ def render(report, history, out_path):
                 "next_date": str(p["next_date"])[:10],
                 "status": "pending", "actual": None, "hit": None, "err": None,
                 "diverge": diverge, "src_cache": src_cache,
+                "purchase": purchase.get(code),
             })
         else:
             # 已公布：从 history 找该基金最新已验证记录（预测 vs 实际对照）
@@ -140,6 +145,7 @@ def render(report, history, out_path):
                     "next_date": rec["pred_date"],
                     "status": "verified", "actual": rec["actual"], "hit": rec.get("hit"),
                     "err": rec.get("err"), "diverge": diverge, "src_cache": src_cache,
+                    "purchase": purchase.get(code),
                 })
     pred_cards.sort(key=lambda x: (0 if x["status"] == "pending" else 1, -x["pred"]))
 
@@ -150,6 +156,18 @@ def render(report, history, out_path):
         nnls_s = fmt_pct(c["pred_nnls"]) if c["pred_nnls"] is not None else "-"
         diverge_note = '<span style="color:var(--warn);font-size:11px">⚠️与大盘背离</span>' if c.get("diverge") else ""
         cache_note = '<span style="color:var(--sub);font-size:11px">持仓缓存</span>' if c.get("src_cache") else ""
+        # 申购限额（东财 fund_purchase_em）：仅金额，暂停申购显示「暂停」（2026-08-18 加入）
+        _pur = c.get("purchase") or {}
+        _lim = _pur.get("limit")
+        if _pur.get("status") == "暂停申购":
+            purchase_html = '<div class="purchase"><span>申购限额</span><span class="amt paused">暂停</span></div>'
+        elif _lim is not None:
+            _amt = f'{_lim:.0f}元' if _lim >= 1 else f'{_lim:g}元'
+            if _lim >= 10000:
+                _amt = f'{_lim/10000:.0f}万'
+            purchase_html = f'<div class="purchase"><span>申购限额</span><span class="amt">{_amt}</span></div>'
+        else:
+            purchase_html = '<div class="purchase"><span>申购限额</span><span class="amt">不限购</span></div>'
         if c["status"] == "pending":
             status_badge = f'<span class="badge">待公布</span> {diverge_note} {cache_note}'
             actual_html = f'<div class="meta"><span>最新净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>'
@@ -167,6 +185,7 @@ def render(report, history, out_path):
           <div class="pred {cls}">{arrow} {fmt_pct(c['pred'])}</div>
           <div class="meta"><span>滚动NNLS {nnls_s}</span><span>预测净值<br/><b>{c['pred_nav']:.4f}</b></span></div>
           {actual_html}
+          {purchase_html}
         </div>""")
     pred_block = "\n".join(cards_html) if cards_html else "<p class='sub'>暂无预测数据</p>"
 

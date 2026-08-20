@@ -112,15 +112,20 @@ def main():
     # 记录今日新预测（追加到历史）
     append_predictions(history, results, today)
 
+    # 申购限额（东财 fund_purchase_em，2026-08-18 加入；失败返回 {} 不影响主流程）
+    purchase = dfet.get_fund_purchase(set(str(c) for c in results.keys()))
+
     # 保存当日结果
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
-              "funds": results, "verify": verify_report}
+              "funds": results, "verify": verify_report, "purchase": purchase}
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
 
     # 生成 Markdown 摘要
     write_summary(report, args.out, history)
     print("DONE ->", os.path.join(args.out, "daily_report.json"))
+    # 数据源使用汇总（可观测性，2026-08-21）
+    print("数据源汇总:", dfet.src_summary())
     return 0
 
 def _json_default(o):
