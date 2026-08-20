@@ -118,10 +118,16 @@ def main():
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
 
+    # 生成 Markdown 摘要
+    write_summary(report, args.out, history)
+    print("DONE ->", os.path.join(args.out, "daily_report.json"))
+    return 0
+
 def _json_default(o):
     """json 序列化兜底：numpy 类型转原生（bool 保持布尔，不转字符串）
     ⚠️ 曾用 default=str 导致 np.bool_ 序列化成字符串 "False"，
-       render_html 里 bool("False")==True → 8 个基金全误判"与大盘背离"（2026-08-13）"""
+       render_html 里 bool("False")==True → 8 个基金全误判"与大盘背离"（2026-08-13）
+    ⚠️ 2026-08-20 曾误插进 main() 内部导致 write_summary 永不执行，已移到模块级"""
     import numpy as _np
     if isinstance(o, (_np.bool_,)):
         return bool(o)
@@ -132,11 +138,6 @@ def _json_default(o):
     if isinstance(o, (_np.ndarray,)):
         return o.tolist()
     return str(o)
-
-    # 生成 Markdown 摘要
-    write_summary(report, args.out, history)
-    print("DONE ->", os.path.join(args.out, "daily_report.json"))
-    return 0
 
 def append_predictions(history, results, today):
     """把今日预测写入历史 JSONL（按 (code, pred_date) 去重 + 覆盖更新）
@@ -321,7 +322,8 @@ def write_summary(report, out_dir, history=None):
             recs = [h for h in history if h.get("code") == code and h.get("actual") is not None]
             if recs:
                 rec = recs[-1]
-                hit = "✓" if rec.get("hit") else "✗"
+                # 综合命中：方向对 且 |误差|≤1.0pp 才算 ✓
+                hit = "✓" if (rec.get("hit") and abs(rec.get("err") or 0) <= 0.010) else "✗"
                 lines.append(f"| {code} | {name} | {rec['pred_date']} | **{rec['pred_static']*100:+.2f}%** | "
                              f"{rec.get('pred_nnls')*100 if rec.get('pred_nnls') is not None else 0:+.2f}% | "
                              f"{rec.get('pred_nav_static', 0):.4f} | {rec.get('actual_nav', 0):.4f} | "
@@ -349,7 +351,8 @@ def write_summary(report, out_dir, history=None):
         # 用 history 补 run_date
         hist_by_key = {(h.get("code"), h.get("pred_date")): h for h in history}
         for rc in (v.get("recent") or [])[::-1]:
-            hit = "✓" if rc["hit"] else "✗"
+            # 综合命中：方向对 且 |误差|≤1.0pp 才算 ✓
+            hit = "✓" if (rc["hit"] and abs(rc.get("err") or 0) <= 0.010) else "✗"
             hk = hist_by_key.get((rc["code"], rc["pred_date"]), {})
             run_date = str(hk.get("run_date", ""))[:10]
             lines.append(f"| {rc['code']} | {run_date} | {rc['pred_date']} | {rc['pred_static']*100:+.2f}% | "

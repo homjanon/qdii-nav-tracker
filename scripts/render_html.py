@@ -154,7 +154,8 @@ def render(report, history, out_path):
             status_badge = f'<span class="badge">待公布</span> {diverge_note} {cache_note}'
             actual_html = f'<div class="meta"><span>最新净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>'
         else:
-            hit = c.get("hit")
+            # 综合命中：方向对 且 |误差|≤1.0pp 才算 ✓
+            hit = bool(c.get("hit")) and abs(c.get("err") or 0) <= 0.010
             mark = '<span class="ok">✓</span>' if hit else '<span class="no">✗</span>'
             status_badge = f'<span class="badge" style="background:#f0fdf4;color:#166534">已公布 {mark}</span> {cache_note}'
             actual_html = (f'<div class="meta"><span>实际 {fmt_pct(c["actual"])}</span>'
@@ -188,7 +189,8 @@ def render(report, history, out_path):
     verified_recent = verified_all[-5:][::-1]  # 最近 5 条，最新在前
 
     def _vrow(v):
-        hit = v.get("hit")
+        # 综合命中：方向对 且 |误差|≤1.0pp 才算 ✓（2026-08-20 用户要求统一）
+        hit = bool(v.get("hit")) and abs(v.get("err") or 0) <= 0.010
         mark = '<span class="ok">✓</span>' if hit else '<span class="no">✗</span>'
         hk = hist_by_key.get((v["code"], v["pred_date"]), {})
         run_date = str(hk.get("run_date", ""))[:10]
@@ -314,7 +316,7 @@ def render(report, history, out_path):
   <h2>历史预测验证 <span class="badge">{v_n} 条已验证</span></h2>
   <div class="legend">
     <span class="sub">闭环：早上预测 → 当晚净值公布 → 次日早上自动验证回填</span>
-    <span class="sub">幅度命中=|误差|≤1.0pp · 综合=方向对且幅度命中 · 区间=实际落在预测±{f"{v_band:.2f}" if v_band is not None else "-"}pp误差带内</span>
+    <span class="sub">✓=方向对且|误差|≤1.0pp（综合命中）· 区间=实际落在预测±{f"{v_band:.2f}" if v_band is not None else "-"}pp误差带内</span>
   </div>
   <div class="stat-grid">
     <div class="stat"><div class="num">{f"{v_dir:.1f}%" if v_dir is not None else "-"}</div><div class="lbl">方向命中率</div></div>
