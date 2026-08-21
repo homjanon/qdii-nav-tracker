@@ -76,7 +76,7 @@ python scripts/render_html.py --json output/daily_report.json --history output/p
 
 GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.github.io/qdii-nav-tracker/`
 
-页面区块：⭐今晚净值预测（10 基金卡片，待公布显示预测、已公布显示预测vs实际对照）→ 历史预测验证（命中率/MAE/对照表）→ 美股含量总览（Chart.js 条形图）→ 持仓质量表 → 疑似调仓（全部十大持仓+中文名）
+页面区块：⭐今晚净值预测（10 基金卡片，待公布显示预测、已公布显示预测vs实际对照）→ 历史预测验证（五维指标/对照表/查看更多）→ **基金涨跌幅对比（近30日折线图，相对首日累计涨跌%）** → 美股含量总览（Chart.js 条形图）→ 持仓质量表 → 疑似调仓（全部十大持仓+中文名）
 
 ## 输出示例（summary.md）
 
@@ -89,11 +89,11 @@ GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.g
 | 数据 | 主源 | 备源/兜底 |
 |---|---|---|
 | 十大持仓 / 年报全持仓 | 天天基金 F10（HTTP/1.1 直连） | 本地缓存 holdings_cache.json（F10 超时兜底，90 天有效） |
-| 基金净值 | 东财 f10/lsjz 直连 | akshare（东财） |
+| 基金净值 | **akshare 东财（首选，2026-08-21 起：云端 lsjz 被东财限流）** | 东财 f10/lsjz 直连 |
 | **申购限额** | 东财 fund_purchase_em（akshare，仅金额/暂停） | 失败返回 {} 不影响主流程 |
 | 美股日线 | **yfinance（首选，含当天实时，2026-08-19 起）** | akshare 新浪 → 腾讯 qt.gtimg.cn 实时快照（当日兜底） |
 | 港股 / A股日线 | akshare（新浪源） | 腾讯 qt.gtimg.cn 实时快照（当日预测兜底） |
-| 日股 / 韩股 | 东财 push2his（JP=176/KR=177 secid） | yfinance（.T/.KS）→ 腾讯快照（kr/jp 前缀，当日） |
+| 日股 / 韩股 | **yfinance（.T/.KS，首选，2026-08-21 起）** | 东财 push2his（JP=176/KR=177 secid）→ 腾讯快照（kr/jp 前缀，当日） |
 | USD/CNH 汇率 | 中行牌价 currency_boc_safe | 东财 push2his（curl_cffi）→ yfinance |
 | NDX / INX / HSI 指数 | akshare（新浪） | yfinance（兜底） |
 | 美股交易日历 | pandas-market-calendars（NYSE） | weekday 近似 |
