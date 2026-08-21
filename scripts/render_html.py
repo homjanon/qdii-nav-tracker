@@ -241,13 +241,42 @@ def render(report, history, out_path):
 
     # ---- 美股含量图表数据 ----
     chart_labels, chart_us, chart_beta = [], [], []
-    for code in ["014002", "002891", "021842", "008254", "016702", "018147", "015202", "021277"]:
+    for code in funds:  # 动态取基金（与"今晚净值预测"一致，2026-08-21 修复 8→10）
         r = funds.get(code)
         if not r or "error" in r:
             continue
         chart_labels.append(f"{FUND_NAMES.get(code, code)}")
         chart_us.append(r.get("us_pct", 0))
         chart_beta.append(round((r.get("ndx_beta") or {}).get("ndx_beta", 0), 2))
+
+    # ---- 30 日涨跌幅走势对比（2026-08-21 新增；相对区间首日累计涨跌%）----
+    # 10 只基金固定色板（高区分度；华宝致远C 用黑色、易方达全球C 用橙色，避免混淆）
+    TREND_COLORS = {"002891": "#2563eb", "008254": "#111827", "014002": "#dc2626",
+                    "015202": "#16a34a", "016702": "#7c3aed", "018147": "#0891b2",
+                    "021277": "#db2777", "021842": "#d97706", "012922": "#f97316",
+                    "022184": "#65a30d"}
+    trend = report.get("trend") or {}
+    # 日期对齐：取各基金日期的并集（升序），缺失日补 null（避免 tooltip 少显示基金）
+    all_dates = sorted({dd for td in trend.values() for dd in (td.get("dates") or [])})
+    trend_dates, trend_sets = [], []
+    for code, td in trend.items():
+        if not td or len(td.get("dates", [])) < 2 or not td.get("pct"):
+            continue
+        # 映射 date -> pct，按公共轴对齐
+        pct_map = dict(zip(td["dates"], td["pct"]))
+        trend_dates = all_dates
+        trend_sets.append({
+            "label": FUND_NAMES.get(code, code),
+            "data": [pct_map.get(dd) for dd in all_dates],  # 缺失日 None（Chart.js 显示为空）
+            "borderColor": TREND_COLORS.get(code, "#6b7280"),
+            "backgroundColor": TREND_COLORS.get(code, "#6b7280"),
+            "borderWidth": 2,
+            "pointRadius": 1.5,
+            "tension": 0.2,
+            "spanGaps": True,  # 缺失日连线（不中断）
+        })
+    trend_dates_json = json.dumps(trend_dates, ensure_ascii=False)
+    trend_sets_json = json.dumps(trend_sets, ensure_ascii=False)
 
     # ---- 持仓质量表 ----
     q_rows = []
@@ -358,6 +387,14 @@ def render(report, history, out_path):
 </div>
 
 <div class="card">
+  <h2>基金涨跌幅对比（近30日）</h2>
+  <div class="legend">
+    <span class="sub">相对区间首日的累计涨跌幅 % · 曲线越高涨得越好 · 随每日运行滚动更新</span>
+  </div>
+  <div class="chart-box"><canvas id="trendChart" role="img" aria-label="基金涨跌幅对比折线图">基金涨跌幅对比</canvas></div>
+</div>
+
+<div class="card">
   <h2>持仓质量（历史回测）</h2>
   {q_table}
 </div>
@@ -399,6 +436,34 @@ new Chart(document.getElementById('usChart'), {{
     scales: {{
       y: {{beginAtZero: true, ticks: {{callback: v => v + '%'}}, grid: {{color: 'rgba(128,128,128,.12)'}}}},
       x: {{grid: {{display: false}}, ticks: {{font: {{size: 11}}}}}}
+    }}
+  }}
+}});
+
+new Chart(document.getElementById('trendChart'), {{
+  type: 'line',
+  data: {{
+    labels: {trend_dates_json},
+    datasets: {json.dumps(trend_sets, ensure_ascii=False)}
+  }},
+  options: {{
+    responsive: true, maintainAspectRatio: false,
+    interaction: {{mode: 'index', intersect: false}},
+    plugins: {{
+      legend: {{position: 'bottom', labels: {{boxWidth: 10, padding: 8, font: {{size: 10}}, usePointStyle: true}}}},
+      tooltip: {{
+        displayColors: true,
+        callbacks: {{
+          label: function(ctx) {{
+            var v = ctx.parsed.y;
+            return ' ' + ctx.dataset.label + ': ' + (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+          }}
+        }}
+      }}
+    }},
+    scales: {{
+      y: {{ticks: {{callback: v => (v >= 0 ? '+' : '') + v + '%'}}, grid: {{color: 'rgba(128,128,128,.12)'}}}},
+      x: {{grid: {{display: false}}, ticks: {{maxTicksLimit: 6, font: {{size: 10}}}}}}
     }}
   }}
 }});

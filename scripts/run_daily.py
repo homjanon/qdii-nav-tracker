@@ -115,9 +115,27 @@ def main():
     # 申购限额（东财 fund_purchase_em，2026-08-18 加入；失败返回 {} 不影响主流程）
     purchase = dfet.get_fund_purchase(set(str(c) for c in results.keys()))
 
+    # 30 日净值涨跌幅走势（网页对比图用：每只基金相对区间首日累计涨跌%）
+    # 2026-08-21 由 60 日净值曲线改为 30 日涨跌幅，直接对比"最近30日谁涨得最好"
+    trend = {}
+    for code in FUNDS:
+        try:
+            nav = dfet.get_nav(code)
+            if nav is not None and len(nav) >= 2:
+                nav = nav.sort_values("date").tail(30)
+                base = float(nav["nav"].iloc[0])
+                if base and base > 0:
+                    trend[code] = {
+                        "dates": [str(d.date()) for d in nav["date"]],
+                        # 相对首日累计涨跌幅 %（首日=0）
+                        "pct": [round((float(v) / base - 1) * 100, 2) for v in nav["nav"]],
+                    }
+        except Exception:
+            pass
+
     # 保存当日结果
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
-              "funds": results, "verify": verify_report, "purchase": purchase}
+              "funds": results, "verify": verify_report, "purchase": purchase, "trend": trend}
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
 

@@ -52,7 +52,7 @@ TX_URL = "https://qt.gtimg.cn/q="
 HEADERS_F10 = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                "Referer": "http://fundf10.eastmoney.com/"}
 HEADERS_EM = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-              "Referer": "https://fundf10.eastmoney.com/"}
+              "Referer": "https://fund.eastmoney.com/"}  # 2026-08-21 修复：fundf10→fund（portfolio 生产验证，lsjz 需此 Referer）
 HEADERS_TX = {"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"}
 
 # 全局行情缓存（多基金重仓股去重）
@@ -463,8 +463,9 @@ def get_price_df(code, market, allow_snapshot=True):
                              ("sina", lambda: _sina_price(code, market))],
                             label=f"美股{code}")
     elif market in ("JP", "KR"):
-        df = fallback_chain([("em", lambda: _em_jpkr(code, market)),
-                             ("yf", lambda: _yf_jpkr(code, market))],
+        # 日韩股：yfinance 首选（2026-08-21 提升，云端稳定 .T/.KS）→ 东财备源 → 腾讯快照兜底
+        df = fallback_chain([("yf", lambda: _yf_jpkr(code, market)),
+                             ("em", lambda: _em_jpkr(code, market))],
                             label=f"日韩{code}")
     else:
         df = fallback_chain([("sina", lambda: _sina_price(code, market))], label=f"行情{code}")
