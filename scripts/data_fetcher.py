@@ -272,9 +272,10 @@ def _ak_nav(code):
     return df
 
 def get_nav(code, start_date=None):
-    """基金净值（东财 lsjz 直连主 → akshare 备）"""
-    df = fallback_chain([("em_lsjz", lambda: _em_lsjz(code)),
-                         ("akshare", lambda: _ak_nav(code))], label=f"净值{code}")
+    """基金净值（akshare 主 → 东财 lsjz 备）
+    2026-08-21 提升 akshare 首选：云端(GitHub Actions IP) lsjz 持续被东财限流(30次全失败)，akshare 稳定✓"""
+    df = fallback_chain([("akshare", lambda: _ak_nav(code)),
+                         ("em_lsjz", lambda: _em_lsjz(code))], label=f"净值{code}")
     if df is None or len(df) == 0:
         return None
     df = df.rename(columns={c: c for c in df.columns})
