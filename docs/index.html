@@ -52,7 +52,7 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
 <div class="wrap">
 <header>
   <div><h1>QDII 净值跟踪</h1><div class="sub">十大持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
-  <div class="sub">报告日 2026-08-21<br>更新 2026-08-21 20:56:32</div>
+  <div class="sub">报告日 2026-08-21<br>更新 2026-08-21 21:16:56</div>
 </header>
 
 <div class="card">
@@ -64,14 +64,6 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
     <span class="sub">静态=披露权重 · 滚动=60日NNLS · 基于美股最新收盘（lag=0）</span>
   </div>
   <div class="grid">
-        <div class="fund-card">
-          <div class="fname">浦银全球智能C <span class="fcode">014002</span> <span class="badge">待公布</span> <span style="color:var(--warn);font-size:11px">⚠️与大盘背离</span> </div>
-          <div class="pred up">▲ +0.68%</div>
-          <div class="meta"><span>滚动NNLS +1.02%</span><span>预测净值<br/><b>3.4015</b></span></div>
-          <div class="meta"><span>最新净值 3.3787</span><span>2026-08-20公布</span></div>
-          <div class="purchase"><span>申购限额</span><span class="amt paused">暂停</span></div>
-        </div>
-
         <div class="fund-card">
           <div class="fname">汇添富全球移动C <span class="fcode">015202</span> <span class="badge">待公布</span>  </div>
           <div class="pred down">▼ -0.03%</div>
@@ -86,6 +78,14 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
           <div class="meta"><span>滚动NNLS +1.48%</span><span>预测净值<br/><b>2.6465</b></span></div>
           <div class="meta"><span>实际 +1.52%</span><span>误差 -0.82pp</span></div><div class="meta"><span>实际净值 2.6680</span><span>2026-08-20公布</span></div>
           <div class="purchase"><span>申购限额</span><span class="amt">200元</span></div>
+        </div>
+
+        <div class="fund-card">
+          <div class="fname">浦银全球智能C <span class="fcode">014002</span> <span class="badge" style="background:#f0fdf4;color:#166534">已公布 <span class="ok">✓</span></span> </div>
+          <div class="pred up">▲ +0.68%</div>
+          <div class="meta"><span>滚动NNLS +1.02%</span><span>预测净值<br/><b>3.4015</b></span></div>
+          <div class="meta"><span>实际 +1.48%</span><span>误差 -0.80pp</span></div><div class="meta"><span>实际净值 3.4286</span><span>2026-08-20公布</span></div>
+          <div class="purchase"><span>申购限额</span><span class="amt paused">暂停</span></div>
         </div>
 
         <div class="fund-card">
@@ -146,20 +146,20 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
 </div>
 
 <div class="card">
-  <h2>历史预测验证 <span class="badge">75 条已验证</span></h2>
+  <h2>历史预测验证 <span class="badge">76 条已验证</span></h2>
   <div class="legend">
     <span class="sub">闭环：早上预测 → 当晚净值公布 → 次日早上自动验证回填</span>
     <span class="sub">✓=方向对且|误差|≤1.0pp（综合命中）· 区间=实际落在预测±1.19pp误差带内</span>
   </div>
   <div class="stat-grid">
-    <div class="stat"><div class="num">93.3%</div><div class="lbl">方向命中率</div></div>
-    <div class="stat"><div class="num">62.7%</div><div class="lbl">幅度命中率±1pp</div></div>
-    <div class="stat"><div class="num">57.3%</div><div class="lbl">综合精度命中</div></div>
-    <div class="stat"><div class="num">69%</div><div class="lbl">区间覆盖率</div></div>
+    <div class="stat"><div class="num">93.4%</div><div class="lbl">方向命中率</div></div>
+    <div class="stat"><div class="num">63.2%</div><div class="lbl">幅度命中率±1pp</div></div>
+    <div class="stat"><div class="num">57.9%</div><div class="lbl">综合精度命中</div></div>
+    <div class="stat"><div class="num">70%</div><div class="lbl">区间覆盖率</div></div>
     <div class="stat"><div class="num">0.93</div><div class="lbl">MAE（pp）</div></div>
-    <div class="stat"><div class="num">2</div><div class="lbl">待验证（今晚公布后回填）</div></div>
+    <div class="stat"><div class="num">1</div><div class="lbl">待验证（今晚公布后回填）</div></div>
   </div>
-  <table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th><th>实际</th><th>命中</th><th>误差</th></tr></thead><tbody id='v-rows-show'><tr><td>富国全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.49%</td><td>+1.87%</td><td><span class="no">✗</span></td><td>-1.38pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.39%</td><td>+0.32%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.48%</td><td>+0.76%</td><td><span class="ok">✓</span></td><td>-0.28pp</td></tr><tr><td>建信新兴C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.61%</td><td>+2.40%</td><td><span class="no">✗</span></td><td>-1.79pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-21</td><td>2026-08-20</td><td>-0.10%</td><td>-0.17%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr></tbody><tbody id='v-rows-all' style='display:none'><tr><td>富国全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.49%</td><td>+1.87%</td><td><span class="no">✗</span></td><td>-1.38pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.39%</td><td>+0.32%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.48%</td><td>+0.76%</td><td><span class="ok">✓</span></td><td>-0.28pp</td></tr><tr><td>建信新兴C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.61%</td><td>+2.40%</td><td><span class="no">✗</span></td><td>-1.79pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-21</td><td>2026-08-20</td><td>-0.10%</td><td>-0.17%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr><tr><td>易方达全球C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.26%</td><td>+0.59%</td><td><span class="ok">✓</span></td><td>-0.33pp</td></tr><tr><td>华宝致远C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.53%</td><td>+0.54%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.70%</td><td>+1.52%</td><td><span class="ok">✓</span></td><td>-0.82pp</td></tr><tr><td>富国全球科技C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.35%</td><td>-3.94%</td><td><span class="no">✗</span></td><td>+2.59pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.54%</td><td>-2.39%</td><td><span class="ok">✓</span></td><td>+0.85pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.49%</td><td>-3.03%</td><td><span class="no">✗</span></td><td>+1.54pp</td></tr><tr><td>建信新兴C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.25%</td><td>-3.09%</td><td><span class="no">✗</span></td><td>+1.84pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-20</td><td>2026-08-19</td><td>-0.48%</td><td>-0.81%</td><td><span class="ok">✓</span></td><td>+0.33pp</td></tr><tr><td>汇添富全球移动C</td><td>2026-08-20</td><td>2026-08-19</td><td>-0.33%</td><td>-1.11%</td><td><span class="ok">✓</span></td><td>+0.78pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-20</td><td>2026-08-19</td><td>-2.00%</td><td>-2.86%</td><td><span class="ok">✓</span></td><td>+0.86pp</td></tr><tr><td>易方达全球C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.91%</td><td>-4.30%</td><td><span class="no">✗</span></td><td>+2.39pp</td></tr><tr><td>华宝致远C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.43%</td><td>-1.72%</td><td><span class="ok">✓</span></td><td>+0.29pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.53%</td><td>-3.28%</td><td><span class="no">✗</span></td><td>+1.75pp</td></tr><tr><td>富国全球科技C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.69%</td><td>-2.79%</td><td><span class="no">✗</span></td><td>+1.10pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-19</td><td>2026-08-18</td><td>-2.90%</td><td>-4.02%</td><td><span class="no">✗</span></td><td>+1.12pp</td></tr></tbody></table><div style='margin-top:8px;text-align:center'><button onclick="var a=document.getElementById('v-rows-all'),s=document.getElementById('v-rows-show'),b=this;if(a.style.display==='none'){a.style.display='';s.style.display='none';b.textContent='收起';}else{a.style.display='none';s.style.display='';b.textContent='查看更多';}" style='cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--accent);border-radius:8px;padding:4px 16px;font-size:12px'>查看更多</button></div>
+  <table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th><th>实际</th><th>命中</th><th>误差</th></tr></thead><tbody id='v-rows-show'><tr><td>富国全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.49%</td><td>+1.87%</td><td><span class="no">✗</span></td><td>-1.38pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.39%</td><td>+0.32%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.48%</td><td>+0.76%</td><td><span class="ok">✓</span></td><td>-0.28pp</td></tr><tr><td>建信新兴C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.61%</td><td>+2.40%</td><td><span class="no">✗</span></td><td>-1.79pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-21</td><td>2026-08-20</td><td>-0.10%</td><td>-0.17%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr></tbody><tbody id='v-rows-all' style='display:none'><tr><td>富国全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.49%</td><td>+1.87%</td><td><span class="no">✗</span></td><td>-1.38pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.39%</td><td>+0.32%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.48%</td><td>+0.76%</td><td><span class="ok">✓</span></td><td>-0.28pp</td></tr><tr><td>建信新兴C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.61%</td><td>+2.40%</td><td><span class="no">✗</span></td><td>-1.79pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-21</td><td>2026-08-20</td><td>-0.10%</td><td>-0.17%</td><td><span class="ok">✓</span></td><td>+0.07pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.68%</td><td>+1.48%</td><td><span class="ok">✓</span></td><td>-0.80pp</td></tr><tr><td>易方达全球C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.26%</td><td>+0.59%</td><td><span class="ok">✓</span></td><td>-0.33pp</td></tr><tr><td>华宝致远C</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.53%</td><td>+0.54%</td><td><span class="ok">✓</span></td><td>-0.01pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-21</td><td>2026-08-20</td><td>+0.70%</td><td>+1.52%</td><td><span class="ok">✓</span></td><td>-0.82pp</td></tr><tr><td>富国全球科技C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.35%</td><td>-3.94%</td><td><span class="no">✗</span></td><td>+2.59pp</td></tr><tr><td>国富全球科技C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.54%</td><td>-2.39%</td><td><span class="ok">✓</span></td><td>+0.85pp</td></tr><tr><td>广发全球精选C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.49%</td><td>-3.03%</td><td><span class="no">✗</span></td><td>+1.54pp</td></tr><tr><td>建信新兴C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.25%</td><td>-3.09%</td><td><span class="no">✗</span></td><td>+1.84pp</td></tr><tr><td>银华海外数字C</td><td>2026-08-20</td><td>2026-08-19</td><td>-0.48%</td><td>-0.81%</td><td><span class="ok">✓</span></td><td>+0.33pp</td></tr><tr><td>汇添富全球移动C</td><td>2026-08-20</td><td>2026-08-19</td><td>-0.33%</td><td>-1.11%</td><td><span class="ok">✓</span></td><td>+0.78pp</td></tr><tr><td>浦银全球智能C</td><td>2026-08-20</td><td>2026-08-19</td><td>-2.00%</td><td>-2.86%</td><td><span class="ok">✓</span></td><td>+0.86pp</td></tr><tr><td>易方达全球C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.91%</td><td>-4.30%</td><td><span class="no">✗</span></td><td>+2.39pp</td></tr><tr><td>华宝致远C</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.43%</td><td>-1.72%</td><td><span class="ok">✓</span></td><td>+0.29pp</td></tr><tr><td>华夏移动互联</td><td>2026-08-20</td><td>2026-08-19</td><td>-1.53%</td><td>-3.28%</td><td><span class="no">✗</span></td><td>+1.75pp</td></tr><tr><td>富国全球科技C</td><td>2026-08-19</td><td>2026-08-18</td><td>-1.69%</td><td>-2.79%</td><td><span class="no">✗</span></td><td>+1.10pp</td></tr></tbody></table><div style='margin-top:8px;text-align:center'><button onclick="var a=document.getElementById('v-rows-all'),s=document.getElementById('v-rows-show'),b=this;if(a.style.display==='none'){a.style.display='';s.style.display='none';b.textContent='收起';}else{a.style.display='none';s.style.display='';b.textContent='查看更多';}" style='cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--accent);border-radius:8px;padding:4px 16px;font-size:12px'>查看更多</button></div>
 </div>
 
 <div class="card">
@@ -181,7 +181,7 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
 
 <div class="card">
   <h2>持仓质量（历史回测）</h2>
-  <table><thead><tr><th>基金</th><th>披露美股%</th><th>NDX β</th><th>方向准确率</th><th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead><tbody><tr><td>银华海外数字C<br/><span class='sub'>016702</span></td><td>55.0%</td><td>1.25</td><td>89.1%</td><td>0.76pp</td><td>0.45pp</td><td>0.866</td></tr><tr><td>国富全球科技C<br/><span class='sub'>021842</span></td><td>49.8%</td><td>1.83</td><td>95.9%</td><td>0.99pp</td><td>0.59pp</td><td>0.893</td></tr><tr><td>浦银全球智能C<br/><span class='sub'>014002</span></td><td>48.9%</td><td>2.06</td><td>88.5%</td><td>1.33pp</td><td>0.84pp</td><td>0.853</td></tr><tr><td>华夏移动互联<br/><span class='sub'>002891</span></td><td>47.0%</td><td>2.09</td><td>90.7%</td><td>1.46pp</td><td>0.87pp</td><td>0.860</td></tr><tr><td>建信新兴C<br/><span class='sub'>018147</span></td><td>45.5%</td><td>1.65</td><td>83.7%</td><td>1.59pp</td><td>1.01pp</td><td>0.748</td></tr><tr><td>汇添富全球移动C<br/><span class='sub'>015202</span></td><td>45.4%</td><td>1.35</td><td>91.7%</td><td>0.94pp</td><td>0.45pp</td><td>0.896</td></tr><tr><td>华宝致远C<br/><span class='sub'>008254</span></td><td>42.7%</td><td>1.87</td><td>90.7%</td><td>1.24pp</td><td>0.83pp</td><td>0.806</td></tr><tr><td>广发全球精选C<br/><span class='sub'>021277</span></td><td>29.5%</td><td>1.29</td><td>88.7%</td><td>0.77pp</td><td>0.74pp</td><td>0.857</td></tr><tr><td>易方达全球C<br/><span class='sub'>012922</span></td><td>29.0%</td><td>1.50</td><td>88.7%</td><td>1.58pp</td><td>0.89pp</td><td>0.811</td></tr><tr><td>富国全球科技C<br/><span class='sub'>022184</span></td><td>17.8%</td><td>1.07</td><td>87.6%</td><td>1.36pp</td><td>0.97pp</td><td>0.610</td></tr></tbody></table>
+  <table><thead><tr><th>基金</th><th>披露美股%</th><th>NDX β</th><th>方向准确率</th><th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead><tbody><tr><td>银华海外数字C<br/><span class='sub'>016702</span></td><td>55.0%</td><td>1.25</td><td>89.1%</td><td>0.76pp</td><td>0.45pp</td><td>0.866</td></tr><tr><td>国富全球科技C<br/><span class='sub'>021842</span></td><td>49.8%</td><td>1.83</td><td>95.9%</td><td>0.99pp</td><td>0.59pp</td><td>0.893</td></tr><tr><td>浦银全球智能C<br/><span class='sub'>014002</span></td><td>48.9%</td><td>2.05</td><td>88.7%</td><td>1.32pp</td><td>0.84pp</td><td>0.853</td></tr><tr><td>华夏移动互联<br/><span class='sub'>002891</span></td><td>47.0%</td><td>2.09</td><td>90.7%</td><td>1.46pp</td><td>0.87pp</td><td>0.860</td></tr><tr><td>建信新兴C<br/><span class='sub'>018147</span></td><td>45.5%</td><td>1.65</td><td>83.7%</td><td>1.59pp</td><td>1.01pp</td><td>0.748</td></tr><tr><td>汇添富全球移动C<br/><span class='sub'>015202</span></td><td>45.4%</td><td>1.35</td><td>91.7%</td><td>0.94pp</td><td>0.45pp</td><td>0.896</td></tr><tr><td>华宝致远C<br/><span class='sub'>008254</span></td><td>42.7%</td><td>1.87</td><td>90.7%</td><td>1.24pp</td><td>0.83pp</td><td>0.806</td></tr><tr><td>广发全球精选C<br/><span class='sub'>021277</span></td><td>29.5%</td><td>1.29</td><td>88.7%</td><td>0.77pp</td><td>0.74pp</td><td>0.857</td></tr><tr><td>易方达全球C<br/><span class='sub'>012922</span></td><td>29.0%</td><td>1.50</td><td>88.7%</td><td>1.58pp</td><td>0.89pp</td><td>0.811</td></tr><tr><td>富国全球科技C<br/><span class='sub'>022184</span></td><td>17.8%</td><td>1.07</td><td>87.6%</td><td>1.36pp</td><td>0.97pp</td><td>0.610</td></tr></tbody></table>
 </div>
 
 <div class="card">
@@ -200,9 +200,9 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
         </details>
 
         <details>
-          <summary>浦银全球智能C（014002）— 十大持仓 10 项 · 疑似调仓 7 项</summary>
+          <summary>浦银全球智能C（014002）— 十大持仓 10 项 · 疑似调仓 8 项</summary>
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
-          <tbody><tr><td>SNDK</td><td>闪迪</td><td>9.5%</td><td>14.8%</td><td>+5.3% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>8.8%</td><td>0.0%</td><td>-8.8% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>8.5%</td><td>9.6%</td><td>+1.1% </td></tr><tr><td>INTC</td><td>英特尔</td><td>7.8%</td><td>8.5%</td><td>+0.7% </td></tr><tr><td>WDC</td><td>西部数据</td><td>7.6%</td><td>15.4%</td><td>+7.9% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>7.5%</td><td>7.0%</td><td>-0.5% </td></tr><tr><td>COHR</td><td>Coherent Corp</td><td>4.0%</td><td>13.4%</td><td>+9.4% <span class="ok">▲加仓</span></td></tr><tr><td>TER</td><td>泰瑞达</td><td>4.0%</td><td>0.0%</td><td>-4.0% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr></tbody></table>
+          <tbody><tr><td>SNDK</td><td>闪迪</td><td>9.5%</td><td>11.8%</td><td>+2.3% <span class="ok">▲加仓</span></td></tr><tr><td>285A</td><td>KIOXIA</td><td>8.8%</td><td>0.0%</td><td>-8.8% <span class="no">▼减仓</span></td></tr><tr><td>MU</td><td>美光科技</td><td>8.5%</td><td>15.7%</td><td>+7.2% <span class="ok">▲加仓</span></td></tr><tr><td>INTC</td><td>英特尔</td><td>7.8%</td><td>6.7%</td><td>-1.2% </td></tr><tr><td>WDC</td><td>西部数据</td><td>7.6%</td><td>15.4%</td><td>+7.8% <span class="ok">▲加仓</span></td></tr><tr><td>AMD</td><td>超威半导体</td><td>7.5%</td><td>9.2%</td><td>+1.7% </td></tr><tr><td>COHR</td><td>Coherent Corp</td><td>4.0%</td><td>11.9%</td><td>+7.9% <span class="ok">▲加仓</span></td></tr><tr><td>TER</td><td>泰瑞达</td><td>4.0%</td><td>0.0%</td><td>-4.0% <span class="no">▼减仓</span></td></tr><tr><td>005930</td><td>三星电子</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr><tr><td>000660</td><td>SK海力士</td><td>3.8%</td><td>0.0%</td><td>-3.8% <span class="no">▼减仓</span></td></tr></tbody></table>
         </details>
 
         <details>
@@ -272,7 +272,7 @@ new Chart(document.getElementById('usChart'), {
       tooltip: {
         callbacks: {
           afterLabel: function(ctx) {
-            return 'NDX β: ' + [2.09, 1.87, 2.06, 1.35, 1.25, 1.65, 1.29, 1.83, 1.5, 1.07][ctx.dataIndex];
+            return 'NDX β: ' + [2.09, 1.87, 2.05, 1.35, 1.25, 1.65, 1.29, 1.83, 1.5, 1.07][ctx.dataIndex];
           }
         }
       }
