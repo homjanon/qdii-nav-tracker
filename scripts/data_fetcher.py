@@ -310,14 +310,15 @@ def get_fund_purchase(codes):
 
 def _yf_us_daily(code):
     """美股日线（yfinance / Yahoo，首选，2026-08-19 启用）：
-    period="1y" 的 Close 含当天实时价（美东收盘后即更新），解决新浪美股日线滞后一天的问题。
+    period="6mo" 的 Close 含当天实时价（美东收盘后即更新），解决新浪美股日线滞后一天的问题。
+    2026-08-22 精简：1y→6mo（~130 交易日，足够 60 日 NNLS + 近6月 β 回归，精度无影响）。
     失败（限流/网络）返回 None，由调用方回退新浪日线。"""
     if not _HAS_YF:
         return None
 
     def _fetch():
         tk = yf.Ticker(code)
-        hist = tk.history(period="1y", auto_adjust=True)
+        hist = tk.history(period="6mo", auto_adjust=True)
         if hist is None or hist.empty:
             return None
         return pd.DataFrame({
@@ -366,7 +367,9 @@ def _em_jpkr(code, market):
                     for line in kl:
                         parts = line.split(",")
                         rows.append({"date": parts[0], "close": float(parts[2])})
-                    return pd.DataFrame(rows)
+                    df = pd.DataFrame(rows)
+                    # 2026-08-22 精简：仅保留近 200 个交易日（足够 NNLS+β），防全量占用
+                    return df.tail(200) if len(df) > 200 else df
             except Exception:
                 continue
         return None
@@ -374,7 +377,8 @@ def _em_jpkr(code, market):
     return _retry_call(_fetch, label=f"东财{market} {code}", attempts=2, wait=1.5, verbose=True)
 
 def _yf_jpkr(code, market):
-    """yfinance 日韩股（云端备源：285A.T / 005930.KS / 000660.KS）"""
+    """yfinance 日韩股（首选，2026-08-21 起：285A.T / 005930.KS / 000660.KS）
+    2026-08-22 精简：固定 start→period='6mo'（~130 交易日，足够 NNLS+β 回归）"""
     if not _HAS_YF:
         return None
     suffix = ".T" if market == "JP" else ".KS"
@@ -382,7 +386,7 @@ def _yf_jpkr(code, market):
 
     def _fetch():
         t = yf.Ticker(sym)
-        hist = t.history(start="2025-06-01", end="2026-12-31", auto_adjust=False)
+        hist = t.history(period="6mo", auto_adjust=False)
         if hist is None or len(hist) == 0:
             return None
         df = hist.reset_index()[["Date", "Close"]].rename(
@@ -564,16 +568,36 @@ def get_usdcnh():
 
 # ============ 指数 ============
 
+def _yf_index(symbol):
+    """美股指数（yfinance，首选，2026-08-22 起）：
+    与美股个股同源同步（新浪清晨滞后一天 → 背离误判，已修复）
+    symbol: '.NDX'→'^NDX'、'.INX'→'^GSPC'；period='6mo' 足够 β 回归（~130 交易日）"""
+    if not _HAS_YF:
+        return None
+    ysym = {"^NDX": "^NDX", ".NDX": "^NDX", ".INX": "^GSPC", "^GSPC": "^GSPC"}.get(symbol, symbol)
+
+    def _fetch():
+        tk = yf.Ticker(ysym)
+        hist = tk.history(period="6mo", auto_adjust=True)
+        if hist is None or hist.empty:
+            return None
+        return pd.DataFrame({
+            "date": pd.to_datetime(hist.index.tz_localize(None).date),
+            "close": hist["Close"].values,
+        })
+
+    return _retry_call(_fetch, attempts=2, wait=1.5, label=f"yf指数 {symbol}", verbose=True)
+
 def get_index(symbol):
-    """美股指数（新浪，HTTP/1.1）"""
+    """美股指数（yfinance 首选 → 新浪兜底）
+    2026-08-22 修复：新浪清晨滞后一天导致 NDX 与个股不同步 → 背离误判"""
     key = f"__IDX_{symbol}__"
     if key in _CACHE:
         return _CACHE[key]
 
-    def _fetch():
-        return ak.index_us_stock_sina(symbol=symbol)
-
-    df = _retry_call(_fetch, label=f"指数 {symbol}", verbose=True)
+    df = fallback_chain([("yf", lambda: _yf_index(symbol)),
+                         ("sina", lambda: ak.index_us_stock_sina(symbol=symbol))],
+                        label=f"指数 {symbol}")
     if df is None or len(df) == 0:
         _CACHE[key] = None
         return None
