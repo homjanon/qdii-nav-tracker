@@ -49,6 +49,8 @@ h1{font-size:22px;font-weight:800;letter-spacing:-.3px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;
 box-shadow:var(--shadow);margin-bottom:18px;}
 .card h2{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ndx-badge{font-size:11px;font-weight:600;margin-left:auto;padding:3px 10px;border-radius:99px;background:#f8fafc;border:1px solid var(--line);color:var(--sub);display:flex;align-items:center;gap:5px;}
+.ndx-badge b{color:var(--ink);font-size:12px;}
 .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#eef2ff;color:var(--accent);}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
 .fund-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fafbfe;}
@@ -204,6 +206,18 @@ def render(report, history, out_path):
         </div>""")
     pred_block = "\n".join(cards_html) if cards_html else "<p class='sub'>暂无预测数据</p>"
 
+    # NDX 当日收盘（右上角对照：点位 + 涨跌幅；2026-08-26 加入）
+    ndx_html = ""
+    ndx = report.get("ndx")
+    if ndx and ndx.get("close"):
+        _pct = ndx.get("pct")
+        _cls = "up" if (_pct or 0) > 0 else ("down" if (_pct or 0) < 0 else "")
+        _arrow = "▲" if (_pct or 0) > 0 else ("▼" if (_pct or 0) < 0 else "—")
+        _pct_s = f"{_pct:+.2f}%" if _pct is not None else "-"
+        ndx_html = (f'<span class="ndx-badge" title="纳指100 当日收盘，用于对照背离提示">'
+                    f'NDX {esc(ndx.get("date",""))} <b>{ndx["close"]:,.0f}</b> '
+                    f'<span class="{_cls}">{_arrow} {_pct_s}</span></span>')
+
     # ---- 历史验证 ----
     v_n = verify.get("n", 0)
     v_dir = verify.get("dir_acc")
@@ -265,12 +279,26 @@ def render(report, history, out_path):
         chart_beta.append(round((r.get("ndx_beta") or {}).get("ndx_beta", 0), 2))
 
     # ---- 30 日涨跌幅走势对比（2026-08-21 新增；相对区间首日累计涨跌%）----
-    # 10 只基金固定色板（高区分度；华宝致远C 用黑色、易方达全球C 用橙色，避免混淆）
-    TREND_COLORS = {"002891": "#2563eb", "008254": "#111827", "014002": "#dc2626",
-                    "015202": "#16a34a", "016702": "#7c3aed", "018147": "#0891b2",
-                    "021277": "#db2777", "021842": "#d97706", "012922": "#f97316",
-                    "022184": "#65a30d"}
+    # 颜色自动分配（2026-08-26 升级）：预定义 16 色调色板 + 按 code 排序稳定分配，
+    # 超限用 code 哈希生成色相——用户增减基金零维护，颜色永不重复
+    # ⚠️ 固定色（用户确认过）：华宝=黑、易方达=橙、长盛=深青、华夏科技=棕褐，先占用，其余按序补
+    TREND_PALETTE = ["#2563eb", "#dc2626", "#16a34a", "#7c3aed", "#0891b2",
+                     "#db2777", "#d97706", "#65a30d", "#6366f1", "#e11d48",
+                     "#a3a000", "#475569"]
+    TREND_FIXED = {"008254": "#111827", "012922": "#f97316",
+                   "080006": "#0d9488", "024239": "#92400e"}
     trend = report.get("trend") or {}
+    _color_map = dict(TREND_FIXED)
+    _used = set(_color_map.values())
+    _palette_iter = iter([c for c in TREND_PALETTE if c not in _used])
+    for _c in sorted(trend.keys()):
+        if _c in _color_map:
+            continue
+        try:
+            _color_map[_c] = next(_palette_iter)
+        except StopIteration:  # 超限：code 哈希 → 色相环（黄金角散列）
+            _h = (int(_c) * 137.508) % 360
+            _color_map[_c] = f"hsl({_h:.0f},70%,45%)"
     # 日期对齐：取各基金日期的并集（升序），缺失日补 null（避免 tooltip 少显示基金）
     all_dates = sorted({dd for td in trend.values() for dd in (td.get("dates") or [])})
     trend_dates, trend_sets = [], []
@@ -283,8 +311,8 @@ def render(report, history, out_path):
         trend_sets.append({
             "label": FUND_NAMES.get(code, code),
             "data": [pct_map.get(dd) for dd in all_dates],  # 缺失日 None（Chart.js 显示为空）
-            "borderColor": TREND_COLORS.get(code, "#6b7280"),
-            "backgroundColor": TREND_COLORS.get(code, "#6b7280"),
+            "borderColor": _color_map[code],
+            "backgroundColor": _color_map[code],
             "borderWidth": 2,
             "pointRadius": 1.5,
             "tension": 0.2,
@@ -326,6 +354,9 @@ def render(report, history, out_path):
         holdings = r.get("holdings", [])
         disc = {x["code"]: x["pct"] for x in holdings}
         names = {x["code"]: x["name"] for x in holdings}
+        # 最新涨跌幅（来自 predict.contributors；2026-08-26 新增列）
+        p = r.get("predict") or {}
+        contrib_ret = {x.get("code"): x.get("ret") for x in (p.get("contributors") or [])}
         rows = []
         changed = 0
         for x in sorted(holdings, key=lambda v: v["pct"], reverse=True):
@@ -337,12 +368,19 @@ def render(report, history, out_path):
                 changed += 1
             flag = '<span class="ok">▲加仓</span>' if diff > 2 else ('<span class="no">▼减仓</span>' if diff < -2 else "")
             nm = names.get(c, "")
+            # 最新涨跌幅单元格（红涨绿跌；无数据显示 -）
+            ret = contrib_ret.get(c)
+            if ret is not None and ret == ret:  # 非 NaN
+                _cls = "up" if ret > 0 else ("down" if ret < 0 else "")
+                ret_cell = f'<span class="{_cls}">{ret*100:+.2f}%</span>'
+            else:
+                ret_cell = "-"
             rows.append(f"<tr><td>{esc(c)}</td><td>{esc(nm)}</td><td>{d:.1f}%</td><td>{wt*100:.1f}%</td>"
-                        f"<td>{diff:+.1f}% {flag}</td></tr>")
+                        f"<td>{diff:+.1f}% {flag}</td><td>{ret_cell}</td></tr>")
         adj_details.append(f"""
         <details>
           <summary>{FUND_NAMES.get(code, code)}（{code}）— 十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项</summary>
-          <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th></tr></thead>
+          <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th><th>最新涨跌幅</th></tr></thead>
           <tbody>{''.join(rows)}</tbody></table>
         </details>""")
     adj_block = "\n".join(adj_details) if adj_details else "<p class='sub'>暂无数据</p>"
@@ -365,7 +403,7 @@ def render(report, history, out_path):
 </header>
 
 <div class="card">
-  <h2>今晚净值预测 <span class="badge">{esc(date)}</span></h2>
+  <h2>今晚净值预测 <span class="badge">{esc(date)}</span> {ndx_html}</h2>
   <div class="legend">
     <span><i style="background:var(--up)"></i>预测上涨</span>
     <span><i style="background:var(--down)"></i>预测下跌</span>

@@ -155,9 +155,25 @@ def main():
         except Exception:
             pass
 
+    # NDX 当日收盘（网页右上角对照用：点位 + 当日涨跌幅；2026-08-26 加入）
+    ndx_info = None
+    try:
+        ndx_df = dfet.get_index(".NDX")
+        if ndx_df is not None and len(ndx_df) >= 2:
+            last_close = float(ndx_df["close"].iloc[-1])
+            prev_close = float(ndx_df["close"].iloc[-2])
+            ndx_info = {
+                "date": str(ndx_df["date"].iloc[-1].date()),
+                "close": round(last_close, 2),
+                "pct": round((last_close / prev_close - 1) * 100, 2),
+            }
+    except Exception:
+        pass
+
     # 保存当日结果
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
-              "funds": results, "verify": verify_report, "purchase": purchase, "trend": trend}
+              "funds": results, "verify": verify_report, "purchase": purchase,
+              "trend": trend, "ndx": ndx_info}
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
 
