@@ -19,14 +19,36 @@ import data_fetcher as dfet
 import analysis as ana
 
 # 关注的 QDII 基金（A/C 份额已合并选择）
-# 2026-08-18 起 10 只：加入 012922（易方达全球C）、022184（富国全球科技C）
-FUNDS = ["002891", "008254", "014002", "015202", "016702", "018147", "021277", "021842",
-         "012922", "022184"]
-FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
+# 配置化（2026-08-16 起，2026-08-26 恢复）：优先读仓库 config/funds.json（维护面板可编辑），缺失回退内置默认
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_FUNDS = ["002891", "008254", "014002", "015202", "016702", "018147", "021277", "021842",
+                 "012922", "022184"]
+DEFAULT_FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
               "015202": "汇添富全球移动C", "016702": "银华海外数字C", "018147": "建信新兴C",
               "021277": "广发全球精选C", "021842": "国富全球科技C",
               "012922": "易方达全球C", "022184": "富国全球科技C"}
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def load_funds_config():
+    """从 config/funds.json 读取基金清单；文件缺失/格式错误时回退内置默认（向后兼容）。
+    ⚠️ 2026-08-26 恢复：8/20 曾因本地旧代码覆盖导致此函数被回滚（config 在云端但无人消费）"""
+    cfg_path = os.path.join(BASE_DIR, "..", "config", "funds.json")
+    try:
+        with open(cfg_path, encoding="utf-8") as f:
+            cfg = json.load(f)
+        items = cfg.get("funds") or []
+        funds = [str(x["code"]) for x in items if x.get("code")]
+        names = {str(x["code"]): str(x.get("name", "")) for x in items if x.get("code")}
+        if funds:
+            print(f"[funds] 已从 config/funds.json 加载 {len(funds)} 只基金")
+            return funds, names
+        print(f"[funds] config/funds.json 为空，回退内置默认")
+    except FileNotFoundError:
+        print(f"[funds] 未找到 config/funds.json，回退内置默认（{len(DEFAULT_FUNDS)} 只）")
+    except Exception as e:
+        print(f"[funds] 读取 config/funds.json 失败（{e}），回退内置默认")
+    return DEFAULT_FUNDS, DEFAULT_FUND_NAMES
+
+FUNDS, FUND_NAMES = load_funds_config()
 OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
 HIST_FILE = os.path.join(OUTPUT_DIR, "predictions.jsonl")
 
