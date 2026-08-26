@@ -16,10 +16,11 @@ import data_fetcher as dfet
 US_CODES_POOL = None  # 动态识别，不硬编码
 
 def _weights(holdings):
-    """披露权重 {code: pct/100}，仅保留有行情源的美股/港股/A股"""
+    """披露权重 {code: pct/100}，仅保留有行情源的美股/港股/A股/日韩股
+    2026-08-26：加入 JP/KR——净值日定价含 T 日日韩收盘（与美股/港/A股同基准），此前日韩被排除是预测盲区"""
     w = {}
     for h in holdings:
-        if h["market"] in ("US", "HK", "CN"):
+        if h["market"] in ("US", "HK", "CN", "JP", "KR"):
             w[h["code"]] = h["pct"] / 100
     return w
 

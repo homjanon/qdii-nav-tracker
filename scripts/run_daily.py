@@ -435,8 +435,16 @@ def write_summary(report, out_dir, history=None):
         s = r.get("static") or {}
         rr = r.get("roll") or {}
         r2 = s.get("r2", "-")
-        lines.append(f"| {code} | {name} | {us}% | {beta} | {s.get('dir_acc','-'):.1f}% | "
-                     f"{s.get('mae','-'):.2f} | {rr.get('mae','-'):.2f} | {r2:.3f} |")
+        # 2026-08-26 容错：static 可能缺失/None（如分析失败），不能直接 :.1f 格式化
+        _da = s.get("dir_acc")
+        _mae = s.get("mae")
+        _rmae = rr.get("mae")
+        _da_s = f"{_da:.1f}" if isinstance(_da, (int, float)) else "-"
+        _mae_s = f"{_mae:.2f}" if isinstance(_mae, (int, float)) else "-"
+        _rmae_s = f"{_rmae:.2f}" if isinstance(_rmae, (int, float)) else "-"
+        _r2_s = f"{r2:.3f}" if isinstance(r2, (int, float)) else "-"
+        lines.append(f"| {code} | {name} | {us}% | {beta} | {_da_s}% | "
+                     f"{_mae_s} | {_rmae_s} | {_r2_s} |")
     lines.append("")
 
     # 预测明细（每只基金持仓股贡献）

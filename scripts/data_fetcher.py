@@ -77,8 +77,8 @@ def classify_market(code):
     if code.isdigit():
         if len(code) == 5 and code.startswith(("0", "1", "2")):
             return "HK"
-        if len(code) == 6 and code.startswith("3"):
-            return "CN"
+        if len(code) == 6:
+            return "CN"  # A股全市场：主板 000/600/601/603/605 + 创业板 300 + 科创板 688（2026-08-26 修复：原来只认 3 开头，误判 600183/603986/688498 为 SKIP）
         return "SKIP"
     return "SKIP"
 
