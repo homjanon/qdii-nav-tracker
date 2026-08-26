@@ -392,6 +392,10 @@ def _yf_jpkr(code, market):
         df = hist.reset_index()[["Date", "Close"]].rename(
             columns={"Date": "date", "Close": "close"})
         df["date"] = pd.to_datetime(df["date"])
+        # 2026-08-26 修复：yfinance 返回 tz-aware 日期，与新浪(朴素)比较崩溃
+        # （012922 等含日韩股基金报 Cannot compare tz-naive and tz-aware）
+        if getattr(df["date"].dtype, "tz", None) is not None:
+            df["date"] = df["date"].dt.tz_localize(None)
         return df
 
     return _retry_call(_fetch, label=f"yf{market} {code}", attempts=2, wait=2.0, verbose=True)
