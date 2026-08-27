@@ -9,13 +9,14 @@ name: QDII Nav Daily
 # 因此：北京 T+1 日 06:00 运行时，美股 T 日已收盘，今晚净值将更新，
 # 可用美股 T 日收盘数据预测今晚净值（lag=0 对齐，用户已验证）。
 #
-# 触发时间对齐 portfolio 仓（参考）：
-#   cron "0 22 * * 1-5" = 北京 06:00（UTC 22:00 前日），叠加 GitHub
-#   Actions 调度延迟（实测约 30~60min）→ 实际约 06:30~07:00 完成，
-#   用户可在早上 7 点前看到最新预测。
+# 触发方式（单通道，2026-08-27 起）：
+#   由 Cloudflare Worker qdii-dispatch（cron "0 22 * * 1-5" UTC = 北京
+#   工作日 06:00）调用 GitHub API workflow_dispatch 触发本工作流，
+#   绕开 GitHub Actions schedule 共享队列（偶发延迟/静默跳过）。
+#   GitHub 侧不再配置 schedule（避免双通道重复触发）。
 #
 # 三道闸门（参照 xiaoxu-fear 仓的时间门控设计）：
-#   1) cron 仅覆盖周一至五："0 22 * * 1-5" = 北京 06:00（UTC 22:00）
+#   1) 触发日：Cloudflare cron 工作日 06:00（北京）
 #   2) 美股交易日判断：NYX 日历（pandas_market_calendars）精确排除
 #      美东节假日/周末（美东昨日是否为交易日）
 #   3) 盘后判断：北京 06:00 必然已过美股收盘（美东 16:00 = 北京 4~5 点）
@@ -24,8 +25,6 @@ name: QDII Nav Daily
 # 手动触发（workflow_dispatch）：任意时间强制运行（取最近交易日数据）
 # =====================================================================
 on:
-  schedule:
-    - cron: "0 22 * * 1-5"
   workflow_dispatch:
 
 permissions:
