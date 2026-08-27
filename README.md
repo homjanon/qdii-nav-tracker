@@ -2,7 +2,7 @@
 
 用**十大持仓披露 + 全球股市日行情**预测场外 QDII 基金每日净值涨跌，验证持仓真实性，反推美股含量，并通过**滚动 NNLS 动态权重**追踪基金调仓。
 
-GitHub Actions 每日北京时间 06:00 自动运行（仅美股交易日盘后，对齐 portfolio 仓，叠加调度延迟实际约 06:30~07:00 完成），产出报告到 `output/`，并渲染静态网页到 `docs/`（GitHub Pages 发布）。
+每日北京时间 06:00 自动运行（仅美股交易日盘后，对齐 portfolio 仓），由 Cloudflare Worker `qdii-dispatch` 定时调用 GitHub `workflow_dispatch` 触发（绕开 GitHub Actions schedule 共享队列偶发漏触发），产出报告到 `output/`，并渲染静态网页到 `docs/`（GitHub Pages 发布）。
 
 ## 核心方法
 
@@ -53,7 +53,7 @@ GitHub Actions 每日北京时间 06:00 自动运行（仅美股交易日盘后�
 ## 目录结构
 
 ```
-├── .github/workflows/qdii-daily.yml   # 每日自动运行（北京 06:00 · 仅美股交易日）
+├── .github/workflows/qdii-daily.yml   # 由 Cloudflare Worker qdii-dispatch 触发（北京 06:00 · 仅美股交易日）
 ├── scripts/
 │   ├── data_fetcher.py    # 数据获取（F10持仓/净值/美股/港股/A股/日韩股/汇率/指数）
 │   ├── analysis.py        # 核心分析（静态/滚动NNLS/指数暴露/前瞻预测）
