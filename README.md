@@ -76,7 +76,7 @@ python scripts/render_html.py --json output/daily_report.json --history output/p
 
 ## 静态网页
 
-GitHub Pages 发布（main 分支 /docs 目录），地址：`https://homjanon.github.io/qdii-nav-tracker/`
+GitHub Pages 发布（main 分支 /docs 目录）
 
 页面区块：⭐今晚净值预测（12 基金卡片，右上角 NDX 当日收盘徽章；待公布显示预测、已公布显示预测vs实际对照）→ 历史预测验证（五维指标/对照表/查看更多）→ **基金涨跌幅对比（近30日折线图，相对首日累计涨跌%，颜色自动分配不重复）** → 美股含量总览（Chart.js 条形图）→ 持仓质量表 → 疑似调仓（全部十大持仓+中文名+**最新涨跌幅列**）
 
