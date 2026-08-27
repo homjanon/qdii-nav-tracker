@@ -127,3 +127,29 @@ GitHub Pages 发布（main 分支 /docs 目录）
 - 披露为季末时点（6/30），7/1 后调仓会降低静态 R²；半年报披露后可升级全持仓口径
 - 幅度预测（MAE ~0.5-1.1pp）只能参考，方向预测（77~95%）更可靠；方向偏差源于"披露持仓≠实际持仓"，NNLS 能缩小但无法完全消除
 - 腾讯快照兜底在"日韩已收盘+美股未收盘"窗口（北京 9:00-16:00）手动触发时可能跳过日韩股（已知边界，暂不处理）
+
+---
+
+## 排错：GitHub API 403 `Request forbidden by administrative rules`（缺 User-Agent）
+
+Cloudflare Worker 调 `api.github.com` 时，GitHub REST API **强制要求 `User-Agent` header**，
+缺失会被 403 拒绝（错误信息藏在响应体里，光看状态码很容易误判成 token 权限问题）。
+
+**症状**：`/trigger` 返回 `dispatched status=403`（HTTP 整体 200，但业务状态是 403）。
+
+**根因**：worker.js 的 `fetch` 没带 `User-Agent` header（Cloudflare Worker 默认不补浏览器 UA）。
+与 GITHUB_TOKEN 无关——token 无效通常是 401，不是 403。
+
+**修复（worker.js headers 加一行）**：
+```js
+headers: {
+  "User-Agent": "qdii-dispatch-worker",   // ← 缺这个，GitHub 直接 403
+  Authorization: `Bearer ${token}`,
+  ...
+}
+```
+
+**排查技巧**：开发时让 worker 把 GitHub 响应体透传回来（而非只返回状态码），
+一眼就能看到真实原因。诊断外部 API 报错，**先透传完整响应体，别只看状态码猜**。
+
+> 2026-08-27 实测：加上 `User-Agent` 后 `/trigger` 从 403 → `dispatched status=204` ✅
