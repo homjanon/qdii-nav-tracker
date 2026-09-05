@@ -248,8 +248,16 @@ def render(report, history, out_path, full_holdings=None):
                 f"<td>{mark}</td><td>{fmt_pp(v.get('err'))}</td></tr>")
 
     v_rows_show = "".join(_vrow(v) for v in verified_recent)
-    # 查看更多：最多 2×基金数 条（10基金→20条，即 8/19 动态 2N 设计），避免无限增长
-    v_rows_all = "".join(_vrow(v) for v in verified_all[::-1][:2 * len(funds)])
+    # 查看更多：每只基金取各自最近 2 条已验证（12基金×2=24条，跨多日展示）
+    # 2026-09-05 修复：原实现"全局最新 2N 条"只覆盖最近 2 天，早前验证被挤出表格
+    per_fund_last2 = []
+    _seen_code = {}
+    for v in reversed(verified_all):  # 最新在前
+        c = v["code"]
+        if _seen_code.get(c, 0) < 2:
+            per_fund_last2.append(v)
+            _seen_code[c] = _seen_code.get(c, 0) + 1
+    v_rows_all = "".join(_vrow(v) for v in per_fund_last2)
     v_table_head = ("<table><thead><tr><th>基金</th><th>预测来源日</th><th>净值日</th><th>预测</th>"
                     "<th>实际</th><th>命中</th><th>误差</th></tr></thead>")
     if v_rows_show:
