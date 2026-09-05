@@ -128,6 +128,10 @@ def main():
             print(f"  [{code}] 失败: {repr(e)[:150]}")
             results[code] = {"code": code, "error": str(e)[:200]}
 
+    # 全持仓静态档案刷新（2026-09-05 加入：中报/年报披露期抓一次，供网页"全部半年报持仓"展示）
+    # get_holdings_full 内部有 120 天缓存，非披露期不会重复拉取
+    full_report = refresh_full_holdings()
+
     # 验证历史预测：预测净值日已公布 → 补记 actual + 命中率
     verify_report = verify_history(history, results)
 
@@ -199,6 +203,43 @@ def _json_default(o):
     if isinstance(o, (_np.ndarray,)):
         return o.tolist()
     return str(o)
+
+FULL_REPORT_PATH = os.path.join(OUTPUT_DIR, "holdings_full.json")
+
+def refresh_full_holdings(force=False):
+    """刷新全部半年报持仓静态档案（2026-09-05）
+    逐基金调 get_holdings_full（内部 120 天缓存，披露期才真拉），汇总写 output/holdings_full.json
+    返回 dict：{"report_date": "...", "funds": {code: {...}}}
+    """
+    report_date = "2026-06-30"  # 当前中报截止日（Q2 2026）；年报期需更新
+    cache = dfet._load_full_cache()
+    funds_out = {}
+    any_live = False
+    for code in FUNDS:
+        try:
+            h, src = dfet.get_holdings_full(code, force=force)
+            if not h:
+                continue
+            entry = cache.get(code) or {}
+            funds_out[code] = {"holdings": h, "ts": entry.get("ts", ""),
+                               "count": len(h), "source": src}
+            if src == "live":
+                any_live = True
+        except Exception as e:
+            print(f"  [全持仓 {code}] 失败: {repr(e)[:100]}")
+    if not funds_out:
+        print("  [全持仓] 无任何基金全持仓数据")
+        return None
+    report = {"report_date": report_date, "funds": funds_out,
+              "refreshed_at": bj_now().strftime("%Y-%m-%d %H:%M:%S")}
+    try:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        with open(FULL_REPORT_PATH, "w", encoding="utf-8") as f:
+            json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
+        print(f"  [全持仓] 已写 {FULL_REPORT_PATH}（{len(funds_out)} 只基金，live={any_live}）")
+    except Exception as e:
+        print(f"  [全持仓] 写文件失败: {repr(e)[:100]}")
+    return report
 
 def append_predictions(history, results, today):
     """把今日预测写入历史 JSONL（按 (code, pred_date) 去重 + 覆盖更新）
@@ -352,7 +393,7 @@ def write_summary(report, out_dir, history=None):
     """生成对比摘要 Markdown"""
     history = history or []
     lines = [f"# QDII 净值跟踪日报（{report['date']}）", "",
-             f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：十大持仓静态 + 滚动NNLS动态",
+             f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：二十大持仓静态 + 滚动NNLS动态",
              ""]
 
     # ⭐ 核心板块：今晚净值预测（保留全部基金：待验证显示预测，已公布显示预测vs实际）
@@ -463,7 +504,7 @@ def write_summary(report, out_dir, history=None):
         lines.append(f"| USDCNH | - | {p['fx_ret']*100 if p['fx_ret'] is not None else 0.0:+.2f}% | "
                      f"{'已计入' if p['fx_ret'] is not None else '源不可用'} |")
         lines.append("")
-    lines.append("## 疑似调仓（滚动NNLS vs 披露 · 全部十大持仓）")
+    lines.append("## 疑似调仓（滚动NNLS vs 披露 · 全部二十大持仓）")
     lines.append("")
     for code, r in report["funds"].items():
         if "error" in r:
@@ -476,7 +517,7 @@ def write_summary(report, out_dir, history=None):
         disc = {x["code"]: x["pct"] for x in h_q2}
         names = {x["code"]: x["name"] for x in h_q2}
         nnls = r.get("nnls_weight") or {}
-        # 按披露权重降序展示全部十大持仓（NNLS 未估计到的显示 0）
+        # 按披露权重降序展示全部二十大持仓（NNLS 未估计到的显示 0）
         for x in sorted(h_q2, key=lambda v: v["pct"], reverse=True):
             c = x["code"]
             d = x["pct"]
