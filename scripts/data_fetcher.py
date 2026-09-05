@@ -204,14 +204,18 @@ def fetch_f10_all(code, year="2026", month="6"):
         return []
     return parse_holdings(html)
 
-# 全持仓静态缓存（中报/年报披露后抓一次，非每日行情）：output/holdings_full.json
+# 全持仓静态缓存（中报/年报披露后抓一次，非每日行情）
+# 2026-09-05 修复：缓存文件与报告文件分离 —— 报告 holdings_full.json 是
+# {report_date, funds} 结构（render 用）；此处私有缓存用独立文件存 {code: {...}}
+# 结构，避免两种结构互相覆盖导致 120 天缓存失效、天天重拉全持仓。
 HOLDINGS_FULL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", "holdings_full.json")
+HOLDINGS_FULL_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", ".holdings_full_cache.json")
 HOLDINGS_FULL_MAX_AGE_DAYS = 120  # 披露期（8月底中报/3月底年报）才刷新，120 天足够
 
 def _load_full_cache():
     try:
-        if os.path.exists(HOLDINGS_FULL_PATH):
-            with open(HOLDINGS_FULL_PATH, encoding="utf-8") as f:
+        if os.path.exists(HOLDINGS_FULL_CACHE_PATH):
+            with open(HOLDINGS_FULL_CACHE_PATH, encoding="utf-8") as f:
                 return json.load(f)
     except Exception:
         pass
@@ -219,8 +223,8 @@ def _load_full_cache():
 
 def _save_full_cache(cache):
     try:
-        os.makedirs(os.path.dirname(HOLDINGS_FULL_PATH), exist_ok=True)
-        with open(HOLDINGS_FULL_PATH, "w", encoding="utf-8") as f:
+        os.makedirs(os.path.dirname(HOLDINGS_FULL_CACHE_PATH), exist_ok=True)
+        with open(HOLDINGS_FULL_CACHE_PATH, "w", encoding="utf-8") as f:
             json.dump(cache, f, ensure_ascii=False, indent=1)
     except Exception:
         pass
