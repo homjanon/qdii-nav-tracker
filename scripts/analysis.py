@@ -3,8 +3,8 @@
 """QDII 基金净值跟踪 - 核心分析模块
 
 功能：
-1. 静态披露权重预测：用当期十大持仓 × 美股日收益（lag=0 对齐）+ USDCNH 折算
-2. 滚动 NNLS 动态权重：walk-forward 重估十大权重，追踪调仓，提升幅度预测精度
+1. 静态披露权重预测：用当期二十大持仓 × 美股日收益（lag=0 对齐）+ USDCNH 折算
+2. 滚动 NNLS 动态权重：walk-forward 重估二十大权重，追踪调仓，提升幅度预测精度
 3. 披露真实性验证：披露权重回测 R² / 方向一致率（与历史对比）
 4. 美股含量评估：披露美股占比 + 指数回归 NDX β
 """
@@ -25,24 +25,28 @@ def _weights(holdings):
     return w
 
 def basket_returns(nav, holdings, price_map, fx_df, lag=0):
-    """披露权重篮子收益（对齐净值日期）"""
+    """披露权重篮子收益（对齐净值日期）
+    2026-09-05 容错改造：单成分当日 NaN / 无行情 → 跳过该成分并以实际参与权重归一化，
+    不再"一刀切"丢弃整行（二十大口径下成分多，日韩等源偶发缺口不应废掉整日预测）"""
     w = _weights(holdings)
     wsum = sum(w.values())
     total = np.full(len(nav), np.nan)
     for i, d in enumerate(nav["date"]):
         b = 0.0
-        ok = True
+        w_used = 0.0  # 实际参与计算的权重和
         for code, wgt in w.items():
             px = price_map.get(code)
             if px is None:
-                continue
+                continue  # 无行情源 → 跳过该成分
             r = dfet.asof_ret(px, [d], lag)[0]
             if np.isnan(r):
-                ok = False
-                break
+                continue  # 当日无收益 → 跳过（不废整行）
             b += wgt * r
-        if not ok:
-            continue
+            w_used += wgt
+        if w_used <= 0:
+            continue  # 当天所有成分都无数据 → 该日无效
+        # 归一化：按实际参与权重比例放大（缺失成分的敞口折算到有数据的成分上）
+        b = b * (wsum / w_used)
         fxr = np.nan
         if fx_df is not None:
             fxr = dfet.asof_ret(fx_df, [d], lag)[0]
@@ -72,7 +76,6 @@ def rolling_nnls(nav, holdings, price_map, fx_df, window=60, min_n=30):
     codes = [c for c in w0 if c in price_map]
     if not codes:
         return None, None, None
-    fx_codes = codes + ["FX"]
     # 构建收益矩阵
     X = pd.DataFrame({"date": nav["date"]})
     for c in codes:
@@ -82,6 +85,13 @@ def rolling_nnls(nav, holdings, price_map, fx_df, window=60, min_n=30):
     else:
         X["FX"] = 0.0
     X = X.set_index("date")
+    # 2026-09-05 健壮性：剔除整列全 NaN 的成分（数据源缺口，如日韩限流），
+    # 否则 dropna() 会连带删掉全部有效行，NNLS 直接无样本
+    X = X.dropna(axis=1, how="all")
+    codes = [c for c in X.columns if c != "FX"]
+    fx_codes = codes + ["FX"]
+    if not codes:
+        return None, None, None  # 全部成分无数据 → NNLS 无特征可解
     Y = nav.set_index("date")["growth"] / 100
     full = pd.concat([Y, X], axis=1).dropna()
     if len(full) <= window:
@@ -239,7 +249,7 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     us_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "US")
     hk_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "HK")
     src_note = f" 持仓来源: Q2={'缓存' if src_q2=='cache' else '实时'} Q1={'缓存' if src_q1=='cache' else '实时'}"
-    print(f"[{code}] Q2十大 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%){src_note}")
+    print(f"[{code}] Q2二十大 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%){src_note}")
 
     # 2. 行情（Q1+Q2 并集）
     price_map = {}
