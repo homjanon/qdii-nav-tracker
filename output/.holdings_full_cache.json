@@ -1,0 +1,11011 @@
+{
+ "002891": {
+  "ts": "2026-09-05 17:38:36",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 8.16,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 6.53,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "ONTO",
+    "name": "Onto Innovation Inc",
+    "pct": 5.55,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 5.3,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 4.94,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 4.59,
+    "market": "JP"
+   },
+   {
+    "seq": 7,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 4.43,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 4.3,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "STM",
+    "name": "意法半导体",
+    "pct": 4.28,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 3.47,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 3.35,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 1.89,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "6981",
+    "name": "村田制作所",
+    "pct": 1.88,
+    "market": "SKIP"
+   },
+   {
+    "seq": 14,
+    "code": "AXTI",
+    "name": "AXT Inc",
+    "pct": 1.88,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 1.73,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "300223",
+    "name": "君正股份",
+    "pct": 1.69,
+    "market": "CN"
+   },
+   {
+    "seq": 17,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 1.69,
+    "market": "CN"
+   },
+   {
+    "seq": 18,
+    "code": "688498",
+    "name": "源杰科技",
+    "pct": 1.66,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "AAOI",
+    "name": "应用光电",
+    "pct": 1.65,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 1.58,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "03696",
+    "name": "英矽智能",
+    "pct": 1.41,
+    "market": "HK"
+   },
+   {
+    "seq": 22,
+    "code": "3436",
+    "name": "胜高",
+    "pct": 1.29,
+    "market": "SKIP"
+   },
+   {
+    "seq": 23,
+    "code": "605358",
+    "name": "立昂微",
+    "pct": 1.26,
+    "market": "CN"
+   },
+   {
+    "seq": 24,
+    "code": "GFS",
+    "name": "GLOBALFOUNDRIES Inc",
+    "pct": 1.24,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "688041",
+    "name": "海光信息",
+    "pct": 1.09,
+    "market": "CN"
+   },
+   {
+    "seq": 26,
+    "code": "SMTC",
+    "name": "先科电子",
+    "pct": 1.03,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "688126",
+    "name": "沪硅产业",
+    "pct": 1.01,
+    "market": "CN"
+   },
+   {
+    "seq": 28,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 1.0,
+    "market": "US"
+   },
+   {
+    "seq": 29,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 0.92,
+    "market": "CN"
+   },
+   {
+    "seq": 30,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 0.89,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "300308",
+    "name": "中际旭创",
+    "pct": 0.87,
+    "market": "CN"
+   },
+   {
+    "seq": 32,
+    "code": "3110",
+    "name": "日东纺织",
+    "pct": 0.85,
+    "market": "SKIP"
+   },
+   {
+    "seq": 33,
+    "code": "688783",
+    "name": "西安奕材",
+    "pct": 0.75,
+    "market": "CN"
+   },
+   {
+    "seq": 34,
+    "code": "600330",
+    "name": "天通股份",
+    "pct": 0.74,
+    "market": "CN"
+   },
+   {
+    "seq": 35,
+    "code": "300672",
+    "name": "国科微",
+    "pct": 0.72,
+    "market": "CN"
+   },
+   {
+    "seq": 36,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 0.68,
+    "market": "CN"
+   },
+   {
+    "seq": 37,
+    "code": "07666",
+    "name": "剂泰科技-P",
+    "pct": 0.44,
+    "market": "HK"
+   },
+   {
+    "seq": 38,
+    "code": "8035",
+    "name": "东京电子",
+    "pct": 0.44,
+    "market": "SKIP"
+   },
+   {
+    "seq": 39,
+    "code": "688809",
+    "name": "强一股份",
+    "pct": 0.37,
+    "market": "CN"
+   },
+   {
+    "seq": 40,
+    "code": "688797",
+    "name": "臻宝科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 41,
+    "code": "001399",
+    "name": "惠科股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 42,
+    "code": "301669",
+    "name": "高特电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 43,
+    "code": "001248",
+    "name": "华润新能源",
+    "pct": 0.0,
+    "market": "CN"
+   }
+  ],
+  "count": 43
+ },
+ "008254": {
+  "ts": "2026-09-05 17:38:36",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 9.12,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 8.46,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 3.67,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 3.65,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "MKSI",
+    "name": "MKS Inc",
+    "pct": 3.61,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 3.53,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 3.47,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 2.43,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 2.41,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 2.37,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 2.23,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 2.05,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 2.05,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 2.01,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 1.95,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "KLIC",
+    "name": "库力索法工业",
+    "pct": 1.87,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 1.26,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 1.14,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "ASX",
+    "name": "日月光半导体",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 1.05,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "CAT",
+    "name": "卡特彼勒",
+    "pct": 1.0,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "GE",
+    "name": "GE航空航天",
+    "pct": 0.98,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "UMC",
+    "name": "联华电子",
+    "pct": 0.95,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "SIMO",
+    "name": "慧荣科技",
+    "pct": 0.93,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 0.93,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 0.92,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "BE",
+    "name": "Bloom Energy Corp-A",
+    "pct": 0.84,
+    "market": "US"
+   },
+   {
+    "seq": 29,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 0.82,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "TER",
+    "name": "泰瑞达",
+    "pct": 0.76,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "AMKR",
+    "name": "艾马克技术",
+    "pct": 0.72,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 0.62,
+    "market": "US"
+   },
+   {
+    "seq": 33,
+    "code": "03986",
+    "name": "兆易创新",
+    "pct": 0.61,
+    "market": "HK"
+   },
+   {
+    "seq": 34,
+    "code": "01888",
+    "name": "建滔积层板",
+    "pct": 0.6,
+    "market": "HK"
+   },
+   {
+    "seq": 35,
+    "code": "VECO",
+    "name": "维易科精密仪器",
+    "pct": 0.59,
+    "market": "US"
+   },
+   {
+    "seq": 36,
+    "code": "STM",
+    "name": "意法半导体",
+    "pct": 0.59,
+    "market": "US"
+   },
+   {
+    "seq": 37,
+    "code": "UCTT",
+    "name": "超科林半导体",
+    "pct": 0.57,
+    "market": "US"
+   },
+   {
+    "seq": 38,
+    "code": "ACMR",
+    "name": "ACM Research Inc-A",
+    "pct": 0.53,
+    "market": "US"
+   },
+   {
+    "seq": 39,
+    "code": "ICHR",
+    "name": "Ichor Holdings Ltd",
+    "pct": 0.53,
+    "market": "US"
+   },
+   {
+    "seq": 40,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 0.52,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "GFS",
+    "name": "GLOBALFOUNDRIES Inc",
+    "pct": 0.52,
+    "market": "US"
+   },
+   {
+    "seq": 42,
+    "code": "APH",
+    "name": "安费诺",
+    "pct": 0.49,
+    "market": "US"
+   },
+   {
+    "seq": 43,
+    "code": "TTMI",
+    "name": "TTM科技",
+    "pct": 0.49,
+    "market": "US"
+   },
+   {
+    "seq": 44,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 0.48,
+    "market": "US"
+   },
+   {
+    "seq": 45,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 0.48,
+    "market": "HK"
+   },
+   {
+    "seq": 46,
+    "code": "VSH",
+    "name": "威世科技",
+    "pct": 0.47,
+    "market": "US"
+   },
+   {
+    "seq": 47,
+    "code": "RVMD",
+    "name": "Revolution Medicines Inc",
+    "pct": 0.46,
+    "market": "US"
+   },
+   {
+    "seq": 48,
+    "code": "GS",
+    "name": "高盛",
+    "pct": 0.44,
+    "market": "US"
+   },
+   {
+    "seq": 49,
+    "code": "SMTC",
+    "name": "先科电子",
+    "pct": 0.4,
+    "market": "US"
+   },
+   {
+    "seq": 50,
+    "code": "09903",
+    "name": "天数智芯",
+    "pct": 0.36,
+    "market": "HK"
+   },
+   {
+    "seq": 51,
+    "code": "ADI",
+    "name": "亚德诺",
+    "pct": 0.35,
+    "market": "US"
+   },
+   {
+    "seq": 52,
+    "code": "VRT",
+    "name": "Vertiv Holdings Co-A",
+    "pct": 0.29,
+    "market": "US"
+   },
+   {
+    "seq": 53,
+    "code": "DELL",
+    "name": "戴尔科技",
+    "pct": 0.26,
+    "market": "US"
+   },
+   {
+    "seq": 54,
+    "code": "TXN",
+    "name": "德州仪器",
+    "pct": 0.26,
+    "market": "US"
+   },
+   {
+    "seq": 55,
+    "code": "NXPI",
+    "name": "恩智浦半导体",
+    "pct": 0.25,
+    "market": "US"
+   },
+   {
+    "seq": 56,
+    "code": "02513",
+    "name": "智谱",
+    "pct": 0.24,
+    "market": "HK"
+   },
+   {
+    "seq": 57,
+    "code": "PLTR",
+    "name": "Palantir Technologies Inc-A",
+    "pct": 0.22,
+    "market": "US"
+   },
+   {
+    "seq": 58,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 0.12,
+    "market": "HK"
+   },
+   {
+    "seq": 59,
+    "code": "00522",
+    "name": "ASMPT",
+    "pct": 0.11,
+    "market": "HK"
+   },
+   {
+    "seq": 60,
+    "code": "03200",
+    "name": "大族数控",
+    "pct": 0.06,
+    "market": "HK"
+   }
+  ],
+  "count": 60
+ },
+ "014002": {
+  "ts": "2026-09-05 17:38:36",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 9.52,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 8.81,
+    "market": "JP"
+   },
+   {
+    "seq": 3,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 8.5,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 7.82,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 7.58,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 7.53,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 3.95,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "TER",
+    "name": "泰瑞达",
+    "pct": 3.95,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 3.83,
+    "market": "KR"
+   },
+   {
+    "seq": 10,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 3.77,
+    "market": "KR"
+   },
+   {
+    "seq": 11,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 3.02,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 2.52,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.46,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 2.2,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.4,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.34,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "CIEN",
+    "name": "Ciena科技",
+    "pct": 1.27,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 0.74,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "BE",
+    "name": "Bloom Energy Corp-A",
+    "pct": 0.72,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 0.7,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "NOK",
+    "name": "诺基亚",
+    "pct": 0.65,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 0.58,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "ONTO",
+    "name": "Onto Innovation Inc",
+    "pct": 0.57,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "MPWR",
+    "name": "Monolithic Power Systems Inc",
+    "pct": 0.57,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "DDOG",
+    "name": "Datadog Inc-A",
+    "pct": 0.47,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "4004",
+    "name": "Resonac Holdings Corp",
+    "pct": 0.45,
+    "market": "SKIP"
+   },
+   {
+    "seq": 29,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 0.45,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "SNOW",
+    "name": "Snowflake Inc",
+    "pct": 0.4,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "AKAM",
+    "name": "阿卡迈",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "RMBS",
+    "name": "Rambus Inc",
+    "pct": 0.24,
+    "market": "US"
+   },
+   {
+    "seq": 33,
+    "code": "CRWV",
+    "name": "CoreWeave Inc-A",
+    "pct": 0.19,
+    "market": "US"
+   },
+   {
+    "seq": 34,
+    "code": "5802",
+    "name": "住友电工",
+    "pct": 0.19,
+    "market": "SKIP"
+   },
+   {
+    "seq": 35,
+    "code": "5801",
+    "name": "古河电气工业",
+    "pct": 0.16,
+    "market": "SKIP"
+   }
+  ],
+  "count": 35
+ },
+ "015202": {
+  "ts": "2026-09-05 17:38:36",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 7.74,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 6.53,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 5.74,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 4.21,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 4.14,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 4.06,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "MSFT",
+    "name": "微软",
+    "pct": 3.55,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 3.39,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 3.06,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 2.97,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 2.95,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.55,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 2.33,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.3,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "ADI",
+    "name": "亚德诺",
+    "pct": 2.12,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.89,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.85,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.76,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 1.44,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "CSCO",
+    "name": "思科",
+    "pct": 1.32,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "NFLX",
+    "name": "奈飞",
+    "pct": 1.25,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "ASX",
+    "name": "日月光半导体",
+    "pct": 1.15,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "V",
+    "name": "维萨",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "ONTO",
+    "name": "Onto Innovation Inc",
+    "pct": 1.0,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "TER",
+    "name": "泰瑞达",
+    "pct": 0.98,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "APH",
+    "name": "安费诺",
+    "pct": 0.97,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "02513",
+    "name": "智谱",
+    "pct": 0.94,
+    "market": "HK"
+   },
+   {
+    "seq": 29,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 0.92,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "APP",
+    "name": "Applovin Corp-A",
+    "pct": 0.87,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "VRT",
+    "name": "Vertiv Holdings Co-A",
+    "pct": 0.74,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 0.73,
+    "market": "US"
+   },
+   {
+    "seq": 33,
+    "code": "TTMI",
+    "name": "TTM科技",
+    "pct": 0.73,
+    "market": "US"
+   },
+   {
+    "seq": 34,
+    "code": "MA",
+    "name": "万事达",
+    "pct": 0.71,
+    "market": "US"
+   },
+   {
+    "seq": 35,
+    "code": "NOK",
+    "name": "诺基亚",
+    "pct": 0.67,
+    "market": "US"
+   },
+   {
+    "seq": 36,
+    "code": "CLS",
+    "name": "天弘科技",
+    "pct": 0.67,
+    "market": "US"
+   },
+   {
+    "seq": 37,
+    "code": "PLTR",
+    "name": "Palantir Technologies Inc-A",
+    "pct": 0.64,
+    "market": "US"
+   },
+   {
+    "seq": 38,
+    "code": "UBER",
+    "name": "优步",
+    "pct": 0.58,
+    "market": "US"
+   },
+   {
+    "seq": 39,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 0.58,
+    "market": "US"
+   },
+   {
+    "seq": 40,
+    "code": "SNPS",
+    "name": "新思科技",
+    "pct": 0.58,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "NTES",
+    "name": "网易",
+    "pct": 0.55,
+    "market": "US"
+   },
+   {
+    "seq": 42,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 0.53,
+    "market": "US"
+   },
+   {
+    "seq": 43,
+    "code": "DDOG",
+    "name": "Datadog Inc-A",
+    "pct": 0.51,
+    "market": "US"
+   },
+   {
+    "seq": 44,
+    "code": "CRWD",
+    "name": "CrowdStrike Holdings Inc-A",
+    "pct": 0.5,
+    "market": "US"
+   },
+   {
+    "seq": 45,
+    "code": "STM",
+    "name": "意法半导体",
+    "pct": 0.49,
+    "market": "US"
+   },
+   {
+    "seq": 46,
+    "code": "CDNS",
+    "name": "铿腾电子",
+    "pct": 0.41,
+    "market": "US"
+   },
+   {
+    "seq": 47,
+    "code": "MXL",
+    "name": "MaxLinear Inc",
+    "pct": 0.4,
+    "market": "US"
+   },
+   {
+    "seq": 48,
+    "code": "FORM",
+    "name": "FormFactor Inc",
+    "pct": 0.39,
+    "market": "US"
+   },
+   {
+    "seq": 49,
+    "code": "MCHP",
+    "name": "微芯科技",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 50,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 0.34,
+    "market": "US"
+   },
+   {
+    "seq": 51,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 0.34,
+    "market": "US"
+   },
+   {
+    "seq": 52,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 0.33,
+    "market": "HK"
+   },
+   {
+    "seq": 53,
+    "code": "U",
+    "name": "Unity Software Inc",
+    "pct": 0.32,
+    "market": "US"
+   },
+   {
+    "seq": 54,
+    "code": "DASH",
+    "name": "DoorDash Inc-A",
+    "pct": 0.29,
+    "market": "US"
+   },
+   {
+    "seq": 55,
+    "code": "NET",
+    "name": "Cloudflare Inc-A",
+    "pct": 0.29,
+    "market": "US"
+   },
+   {
+    "seq": 56,
+    "code": "01651",
+    "name": "津上机床中国",
+    "pct": 0.26,
+    "market": "HK"
+   },
+   {
+    "seq": 57,
+    "code": "09903",
+    "name": "天数智芯",
+    "pct": 0.25,
+    "market": "HK"
+   },
+   {
+    "seq": 58,
+    "code": "ON",
+    "name": "安森美半导体",
+    "pct": 0.25,
+    "market": "US"
+   },
+   {
+    "seq": 59,
+    "code": "ABNB",
+    "name": "爱彼迎",
+    "pct": 0.24,
+    "market": "US"
+   },
+   {
+    "seq": 60,
+    "code": "BZ",
+    "name": "BOSS直聘",
+    "pct": 0.22,
+    "market": "US"
+   },
+   {
+    "seq": 61,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 0.21,
+    "market": "US"
+   },
+   {
+    "seq": 62,
+    "code": "HPE",
+    "name": "慧与",
+    "pct": 0.21,
+    "market": "US"
+   },
+   {
+    "seq": 63,
+    "code": "ADSK",
+    "name": "欧特克",
+    "pct": 0.2,
+    "market": "US"
+   },
+   {
+    "seq": 64,
+    "code": "DELL",
+    "name": "戴尔科技",
+    "pct": 0.2,
+    "market": "US"
+   },
+   {
+    "seq": 65,
+    "code": "RBRK",
+    "name": "Rubrik Inc-A",
+    "pct": 0.2,
+    "market": "US"
+   },
+   {
+    "seq": 66,
+    "code": "MELI",
+    "name": "MercadoLibre Inc",
+    "pct": 0.19,
+    "market": "US"
+   },
+   {
+    "seq": 67,
+    "code": "CIEN",
+    "name": "Ciena科技",
+    "pct": 0.18,
+    "market": "US"
+   },
+   {
+    "seq": 68,
+    "code": "TAL",
+    "name": "好未来",
+    "pct": 0.17,
+    "market": "US"
+   },
+   {
+    "seq": 69,
+    "code": "PDD",
+    "name": "拼多多",
+    "pct": 0.17,
+    "market": "US"
+   },
+   {
+    "seq": 70,
+    "code": "SITM",
+    "name": "SiTime Corp",
+    "pct": 0.16,
+    "market": "US"
+   },
+   {
+    "seq": 71,
+    "code": "TWLO",
+    "name": "Twilio Inc-A",
+    "pct": 0.16,
+    "market": "US"
+   },
+   {
+    "seq": 72,
+    "code": "VICR",
+    "name": "Vicor Corp",
+    "pct": 0.15,
+    "market": "US"
+   },
+   {
+    "seq": 73,
+    "code": "MPWR",
+    "name": "Monolithic Power Systems Inc",
+    "pct": 0.14,
+    "market": "US"
+   },
+   {
+    "seq": 74,
+    "code": "OKTA",
+    "name": "Okta Inc-A",
+    "pct": 0.14,
+    "market": "US"
+   },
+   {
+    "seq": 75,
+    "code": "VNET",
+    "name": "世纪互联",
+    "pct": 0.14,
+    "market": "US"
+   },
+   {
+    "seq": 76,
+    "code": "ZETA",
+    "name": "Zeta Global Holdings Corp-A",
+    "pct": 0.11,
+    "market": "US"
+   },
+   {
+    "seq": 77,
+    "code": "TCOM",
+    "name": "携程",
+    "pct": 0.1,
+    "market": "US"
+   },
+   {
+    "seq": 78,
+    "code": "SHOP",
+    "name": "Shopify Inc-A",
+    "pct": 0.09,
+    "market": "US"
+   },
+   {
+    "seq": 79,
+    "code": "CRM",
+    "name": "赛富时",
+    "pct": 0.08,
+    "market": "US"
+   },
+   {
+    "seq": 80,
+    "code": "TEAM",
+    "name": "Atlassian Corp-A",
+    "pct": 0.08,
+    "market": "US"
+   }
+  ],
+  "count": 80
+ },
+ "016702": {
+  "ts": "2026-09-05 17:38:37",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 8.16,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 7.42,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 6.27,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 6.14,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 5.43,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 5.41,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 4.45,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "MSFT",
+    "name": "微软",
+    "pct": 4.31,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 4.06,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 3.31,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "TSLA",
+    "name": "特斯拉",
+    "pct": 3.19,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 2.86,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.81,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 2.22,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 1.97,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.87,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 1.78,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 1.57,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 1.45,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 1.43,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 1.37,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.07,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "CSCO",
+    "name": "思科",
+    "pct": 1.06,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.01,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "DELL",
+    "name": "戴尔科技",
+    "pct": 0.89,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "ANET",
+    "name": "Arista Networks Inc",
+    "pct": 0.87,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "CLS",
+    "name": "天弘科技",
+    "pct": 0.83,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "09988",
+    "name": "阿里巴巴-W",
+    "pct": 0.76,
+    "market": "HK"
+   },
+   {
+    "seq": 29,
+    "code": "00992",
+    "name": "联想集团",
+    "pct": 0.7,
+    "market": "HK"
+   },
+   {
+    "seq": 30,
+    "code": "APH",
+    "name": "安费诺",
+    "pct": 0.66,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "CRWV",
+    "name": "CoreWeave Inc-A",
+    "pct": 0.65,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 0.48,
+    "market": "US"
+   },
+   {
+    "seq": 33,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 0.47,
+    "market": "US"
+   },
+   {
+    "seq": 34,
+    "code": "CRWD",
+    "name": "CrowdStrike Holdings Inc-A",
+    "pct": 0.44,
+    "market": "US"
+   },
+   {
+    "seq": 35,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 0.38,
+    "market": "HK"
+   },
+   {
+    "seq": 36,
+    "code": "PLTR",
+    "name": "Palantir Technologies Inc-A",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 37,
+    "code": "BIDU",
+    "name": "百度",
+    "pct": 0.33,
+    "market": "US"
+   },
+   {
+    "seq": 38,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 0.31,
+    "market": "HK"
+   },
+   {
+    "seq": 39,
+    "code": "APP",
+    "name": "Applovin Corp-A",
+    "pct": 0.31,
+    "market": "US"
+   },
+   {
+    "seq": 40,
+    "code": "SNOW",
+    "name": "Snowflake Inc",
+    "pct": 0.28,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "ORCL",
+    "name": "甲骨文",
+    "pct": 0.24,
+    "market": "US"
+   },
+   {
+    "seq": 42,
+    "code": "SHOP",
+    "name": "Shopify Inc-A",
+    "pct": 0.21,
+    "market": "US"
+   },
+   {
+    "seq": 43,
+    "code": "00020",
+    "name": "商汤-W",
+    "pct": 0.14,
+    "market": "HK"
+   },
+   {
+    "seq": 44,
+    "code": "CDNS",
+    "name": "铿腾电子",
+    "pct": 0.14,
+    "market": "US"
+   },
+   {
+    "seq": 45,
+    "code": "01024",
+    "name": "快手-W",
+    "pct": 0.13,
+    "market": "HK"
+   },
+   {
+    "seq": 46,
+    "code": "09626",
+    "name": "哔哩哔哩-W",
+    "pct": 0.13,
+    "market": "HK"
+   },
+   {
+    "seq": 47,
+    "code": "INTU",
+    "name": "财捷",
+    "pct": 0.09,
+    "market": "US"
+   }
+  ],
+  "count": 47
+ },
+ "018147": {
+  "ts": "2026-09-05 17:38:37",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 9.68,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 9.38,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 8.94,
+    "market": "KR"
+   },
+   {
+    "seq": 4,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 7.8,
+    "market": "KR"
+   },
+   {
+    "seq": 5,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 7.16,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 4.18,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 4.18,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 3.99,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 3.56,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 3.35,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "SITM",
+    "name": "SiTime Corp",
+    "pct": 3.21,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 3.0,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "MPWR",
+    "name": "Monolithic Power Systems Inc",
+    "pct": 2.98,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.54,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 2.04,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "2383",
+    "name": "台光电",
+    "pct": 1.64,
+    "market": "SKIP"
+   },
+   {
+    "seq": 17,
+    "code": "JP3914400001",
+    "name": "村田制作所",
+    "pct": 1.49,
+    "market": "SKIP"
+   },
+   {
+    "seq": 18,
+    "code": "KR7009150004",
+    "name": "三星电机公司",
+    "pct": 0.78,
+    "market": "SKIP"
+   },
+   {
+    "seq": 19,
+    "code": "JP3452000007",
+    "name": "太阳诱电株式会社",
+    "pct": 0.61,
+    "market": "SKIP"
+   },
+   {
+    "seq": 20,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 0.42,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "2317",
+    "name": "鸿海",
+    "pct": 0.35,
+    "market": "SKIP"
+   },
+   {
+    "seq": 22,
+    "code": "3711",
+    "name": "日月光投控",
+    "pct": 0.34,
+    "market": "SKIP"
+   }
+  ],
+  "count": 22
+ },
+ "021277": {
+  "ts": "2026-09-05 17:38:37",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "02513",
+    "name": "智谱",
+    "pct": 9.01,
+    "market": "HK"
+   },
+   {
+    "seq": 2,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 6.16,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 4.5,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 4.35,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 4.07,
+    "market": "JP"
+   },
+   {
+    "seq": 6,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 3.89,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 3.74,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 3.5,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 3.37,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "300408",
+    "name": "三环集团",
+    "pct": 3.1,
+    "market": "CN"
+   },
+   {
+    "seq": 11,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 2.84,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 2.64,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 2.57,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 2.55,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "002371",
+    "name": "北方华创",
+    "pct": 2.24,
+    "market": "CN"
+   },
+   {
+    "seq": 16,
+    "code": "4004",
+    "name": "Resonac Holdings Corp",
+    "pct": 2.07,
+    "market": "SKIP"
+   },
+   {
+    "seq": 17,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 1.93,
+    "market": "KR"
+   },
+   {
+    "seq": 18,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 1.65,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "688012",
+    "name": "中微公司",
+    "pct": 1.33,
+    "market": "CN"
+   },
+   {
+    "seq": 20,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 1.15,
+    "market": "KR"
+   },
+   {
+    "seq": 21,
+    "code": "00883",
+    "name": "中国海洋石油",
+    "pct": 0.83,
+    "market": "HK"
+   },
+   {
+    "seq": 22,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 0.77,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "601088",
+    "name": "中国神华",
+    "pct": 0.73,
+    "market": "CN"
+   },
+   {
+    "seq": 24,
+    "code": "688008",
+    "name": "澜起科技",
+    "pct": 0.72,
+    "market": "CN"
+   },
+   {
+    "seq": 25,
+    "code": "TER",
+    "name": "泰瑞达",
+    "pct": 0.69,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "601225",
+    "name": "陕西煤业",
+    "pct": 0.68,
+    "market": "CN"
+   },
+   {
+    "seq": 27,
+    "code": "300604",
+    "name": "长川科技",
+    "pct": 0.63,
+    "market": "CN"
+   },
+   {
+    "seq": 28,
+    "code": "HOOD",
+    "name": "Robinhood Markets Inc-A",
+    "pct": 0.6,
+    "market": "US"
+   },
+   {
+    "seq": 29,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 0.59,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "VICR",
+    "name": "Vicor Corp",
+    "pct": 0.58,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "ROST",
+    "name": "罗斯百货",
+    "pct": 0.52,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "5801",
+    "name": "古河电气工业",
+    "pct": 0.52,
+    "market": "SKIP"
+   },
+   {
+    "seq": 33,
+    "code": "01021",
+    "name": "华沿机器人",
+    "pct": 0.51,
+    "market": "HK"
+   },
+   {
+    "seq": 34,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 0.48,
+    "market": "US"
+   },
+   {
+    "seq": 35,
+    "code": "5706",
+    "name": "Mitsui Mining and Smelting Co.",
+    "pct": 0.46,
+    "market": "SKIP"
+   },
+   {
+    "seq": 36,
+    "code": "002353",
+    "name": "杰瑞股份",
+    "pct": 0.46,
+    "market": "CN"
+   },
+   {
+    "seq": 37,
+    "code": "6594",
+    "name": "尼得科",
+    "pct": 0.44,
+    "market": "SKIP"
+   },
+   {
+    "seq": 38,
+    "code": "601939",
+    "name": "建设银行",
+    "pct": 0.44,
+    "market": "CN"
+   },
+   {
+    "seq": 39,
+    "code": "01288",
+    "name": "农业银行",
+    "pct": 0.37,
+    "market": "HK"
+   },
+   {
+    "seq": 40,
+    "code": "AEIS",
+    "name": "先进能源工业",
+    "pct": 0.35,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "01688",
+    "name": "领益智造",
+    "pct": 0.34,
+    "market": "HK"
+   },
+   {
+    "seq": 42,
+    "code": "09988",
+    "name": "阿里巴巴-W",
+    "pct": 0.34,
+    "market": "HK"
+   },
+   {
+    "seq": 43,
+    "code": "SPCX",
+    "name": "SpaceX",
+    "pct": 0.32,
+    "market": "US"
+   },
+   {
+    "seq": 44,
+    "code": "688200",
+    "name": "华峰测控",
+    "pct": 0.27,
+    "market": "CN"
+   },
+   {
+    "seq": 45,
+    "code": "601288",
+    "name": "农业银行",
+    "pct": 0.27,
+    "market": "CN"
+   },
+   {
+    "seq": 46,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 0.27,
+    "market": "HK"
+   },
+   {
+    "seq": 47,
+    "code": "KLIC",
+    "name": "库力索法工业",
+    "pct": 0.23,
+    "market": "US"
+   },
+   {
+    "seq": 48,
+    "code": "03988",
+    "name": "中国银行",
+    "pct": 0.22,
+    "market": "HK"
+   },
+   {
+    "seq": 49,
+    "code": "BIDU",
+    "name": "百度",
+    "pct": 0.2,
+    "market": "US"
+   },
+   {
+    "seq": 50,
+    "code": "601857",
+    "name": "中国石油",
+    "pct": 0.2,
+    "market": "CN"
+   },
+   {
+    "seq": 51,
+    "code": "01801",
+    "name": "信达生物",
+    "pct": 0.19,
+    "market": "HK"
+   },
+   {
+    "seq": 52,
+    "code": "601869",
+    "name": "长飞光纤",
+    "pct": 0.19,
+    "market": "CN"
+   },
+   {
+    "seq": 53,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 0.19,
+    "market": "HK"
+   },
+   {
+    "seq": 54,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 0.16,
+    "market": "US"
+   },
+   {
+    "seq": 55,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 0.15,
+    "market": "US"
+   },
+   {
+    "seq": 56,
+    "code": "688072",
+    "name": "拓荆科技",
+    "pct": 0.15,
+    "market": "CN"
+   },
+   {
+    "seq": 57,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 0.15,
+    "market": "US"
+   },
+   {
+    "seq": 58,
+    "code": "01779",
+    "name": "天辰生物-B",
+    "pct": 0.14,
+    "market": "HK"
+   },
+   {
+    "seq": 59,
+    "code": "09992",
+    "name": "泡泡玛特",
+    "pct": 0.12,
+    "market": "HK"
+   },
+   {
+    "seq": 60,
+    "code": "CRWD",
+    "name": "CrowdStrike Holdings Inc-A",
+    "pct": 0.11,
+    "market": "US"
+   },
+   {
+    "seq": 61,
+    "code": "002475",
+    "name": "立讯精密",
+    "pct": 0.1,
+    "market": "CN"
+   },
+   {
+    "seq": 62,
+    "code": "TSLA",
+    "name": "特斯拉",
+    "pct": 0.1,
+    "market": "US"
+   },
+   {
+    "seq": 63,
+    "code": "00068",
+    "name": "群核科技",
+    "pct": 0.09,
+    "market": "HK"
+   },
+   {
+    "seq": 64,
+    "code": "CRWV",
+    "name": "CoreWeave Inc-A",
+    "pct": 0.07,
+    "market": "US"
+   },
+   {
+    "seq": 65,
+    "code": "07630",
+    "name": "英派药业-B",
+    "pct": 0.07,
+    "market": "HK"
+   },
+   {
+    "seq": 66,
+    "code": "300308",
+    "name": "中际旭创",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 67,
+    "code": "688233",
+    "name": "神工股份",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 68,
+    "code": "OPEN",
+    "name": "Opendoor Technologies Inc",
+    "pct": 0.05,
+    "market": "US"
+   },
+   {
+    "seq": 69,
+    "code": "RBLX",
+    "name": "Roblox Corp-A",
+    "pct": 0.05,
+    "market": "US"
+   },
+   {
+    "seq": 70,
+    "code": "688110",
+    "name": "东芯股份",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 71,
+    "code": "06106",
+    "name": "仙工智能",
+    "pct": 0.05,
+    "market": "HK"
+   },
+   {
+    "seq": 72,
+    "code": "BE",
+    "name": "Bloom Energy Corp-A",
+    "pct": 0.05,
+    "market": "US"
+   },
+   {
+    "seq": 73,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 0.04,
+    "market": "US"
+   },
+   {
+    "seq": 74,
+    "code": "301321",
+    "name": "翰博高新",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 75,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 76,
+    "code": "688596",
+    "name": "正帆科技",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 77,
+    "code": "01578",
+    "name": "天津银行",
+    "pct": 0.04,
+    "market": "HK"
+   },
+   {
+    "seq": 78,
+    "code": "PDD",
+    "name": "拼多多",
+    "pct": 0.03,
+    "market": "US"
+   },
+   {
+    "seq": 79,
+    "code": "688503",
+    "name": "聚和材料",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 80,
+    "code": "300223",
+    "name": "君正股份",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 81,
+    "code": "688536",
+    "name": "思瑞浦",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 82,
+    "code": "002384",
+    "name": "东山精密",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 83,
+    "code": "688525",
+    "name": "佰维存储",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 84,
+    "code": "300398",
+    "name": "飞凯材料",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 85,
+    "code": "300438",
+    "name": "鹏辉能源",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 86,
+    "code": "688025",
+    "name": "杰普特",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 87,
+    "code": "688388",
+    "name": "嘉元科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 88,
+    "code": "688372",
+    "name": "伟测科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 89,
+    "code": "300184",
+    "name": "力源信息",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 90,
+    "code": "300323",
+    "name": "华灿光电",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 91,
+    "code": "603588",
+    "name": "高能环境",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 92,
+    "code": "688559",
+    "name": "海目星",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 93,
+    "code": "300568",
+    "name": "星源材质",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 94,
+    "code": "DUOL",
+    "name": "多邻国",
+    "pct": 0.03,
+    "market": "US"
+   },
+   {
+    "seq": 95,
+    "code": "000100",
+    "name": "TCL科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 96,
+    "code": "300373",
+    "name": "扬杰科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 97,
+    "code": "688668",
+    "name": "鼎通科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 98,
+    "code": "002415",
+    "name": "海康威视",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 99,
+    "code": "601677",
+    "name": "明泰铝业",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 100,
+    "code": "688002",
+    "name": "睿创微纳",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 101,
+    "code": "000938",
+    "name": "紫光股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 102,
+    "code": "688390",
+    "name": "固德威",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 103,
+    "code": "300219",
+    "name": "鸿利智汇",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 104,
+    "code": "300747",
+    "name": "锐科激光",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 105,
+    "code": "300602",
+    "name": "飞荣达",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 106,
+    "code": "300458",
+    "name": "全志科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 107,
+    "code": "301307",
+    "name": "美利信",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 108,
+    "code": "002979",
+    "name": "雷赛智能",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 109,
+    "code": "688256",
+    "name": "寒武纪",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 110,
+    "code": "300475",
+    "name": "香农芯创",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 111,
+    "code": "601678",
+    "name": "滨化股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 112,
+    "code": "002396",
+    "name": "星网锐捷",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 113,
+    "code": "688700",
+    "name": "东威科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 114,
+    "code": "CLS",
+    "name": "天弘科技",
+    "pct": 0.02,
+    "market": "US"
+   },
+   {
+    "seq": 115,
+    "code": "301031",
+    "name": "中熔电气",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 116,
+    "code": "688097",
+    "name": "博众精工",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 117,
+    "code": "002134",
+    "name": "天津普林",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 118,
+    "code": "688416",
+    "name": "恒烁股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 119,
+    "code": "300331",
+    "name": "苏大维格",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 120,
+    "code": "300098",
+    "name": "高新兴",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 121,
+    "code": "002635",
+    "name": "安洁科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 122,
+    "code": "600114",
+    "name": "东睦股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 123,
+    "code": "600201",
+    "name": "生物股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 124,
+    "code": "600619",
+    "name": "海立股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 125,
+    "code": "688380",
+    "name": "中微半导",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 126,
+    "code": "605123",
+    "name": "派克新材",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 127,
+    "code": "000690",
+    "name": "宝新能源",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 128,
+    "code": "688090",
+    "name": "瑞松科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 129,
+    "code": "688717",
+    "name": "艾罗能源",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 130,
+    "code": "002558",
+    "name": "巨人网络",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 131,
+    "code": "300750",
+    "name": "宁德时代",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 132,
+    "code": "002079",
+    "name": "苏州固锝",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 133,
+    "code": "300842",
+    "name": "帝科股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 134,
+    "code": "002922",
+    "name": "伊戈尔",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 135,
+    "code": "600409",
+    "name": "三友化工",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 136,
+    "code": "688518",
+    "name": "联赢激光",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 137,
+    "code": "603118",
+    "name": "共进股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 138,
+    "code": "301029",
+    "name": "怡合达",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 139,
+    "code": "600761",
+    "name": "安徽合力",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 140,
+    "code": "002271",
+    "name": "东方雨虹",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 141,
+    "code": "603305",
+    "name": "旭升集团",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 142,
+    "code": "600166",
+    "name": "福田汽车",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 143,
+    "code": "300073",
+    "name": "当升科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 144,
+    "code": "301219",
+    "name": "腾远钴业",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 145,
+    "code": "300134",
+    "name": "大富科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 146,
+    "code": "002414",
+    "name": "高德红外",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 147,
+    "code": "688516",
+    "name": "奥特维",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 148,
+    "code": "600361",
+    "name": "创新新材",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 149,
+    "code": "002237",
+    "name": "恒邦股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 150,
+    "code": "688779",
+    "name": "五矿新能",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 151,
+    "code": "688368",
+    "name": "晶丰明源",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 152,
+    "code": "603799",
+    "name": "华友钴业",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 153,
+    "code": "300432",
+    "name": "富临精工",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 154,
+    "code": "002460",
+    "name": "赣锋锂业",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 155,
+    "code": "000157",
+    "name": "中联重科",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 156,
+    "code": "600872",
+    "name": "中炬高新",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 157,
+    "code": "002756",
+    "name": "永兴材料",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 158,
+    "code": "002064",
+    "name": "华峰化学",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 159,
+    "code": "688486",
+    "name": "龙迅股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 160,
+    "code": "000837",
+    "name": "秦川机床",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 161,
+    "code": "600558",
+    "name": "大西洋",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 162,
+    "code": "603444",
+    "name": "吉比特",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 163,
+    "code": "688239",
+    "name": "航宇科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 164,
+    "code": "301041",
+    "name": "金百泽",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 165,
+    "code": "300953",
+    "name": "震裕科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 166,
+    "code": "002849",
+    "name": "威星智能",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 167,
+    "code": "300014",
+    "name": "亿纬锂能",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 168,
+    "code": "601975",
+    "name": "招商南油",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 169,
+    "code": "002643",
+    "name": "万润股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 170,
+    "code": "603928",
+    "name": "兴业股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 171,
+    "code": "600577",
+    "name": "精达股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 172,
+    "code": "688469",
+    "name": "芯联集成",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 173,
+    "code": "002426",
+    "name": "胜利精密",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 174,
+    "code": "300121",
+    "name": "阳谷华泰",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 175,
+    "code": "300034",
+    "name": "钢研高纳",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 176,
+    "code": "TLN",
+    "name": "Talen Energy Corp",
+    "pct": 0.02,
+    "market": "US"
+   },
+   {
+    "seq": 177,
+    "code": "601233",
+    "name": "桐昆股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 178,
+    "code": "600718",
+    "name": "东软集团",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 179,
+    "code": "600426",
+    "name": "华鲁恒升",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 180,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 0.02,
+    "market": "US"
+   },
+   {
+    "seq": 181,
+    "code": "600115",
+    "name": "中国东航",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 182,
+    "code": "601872",
+    "name": "招商轮船",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 183,
+    "code": "002517",
+    "name": "恺英网络",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 184,
+    "code": "000875",
+    "name": "电投绿能",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 185,
+    "code": "002648",
+    "name": "卫星化学",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 186,
+    "code": "002993",
+    "name": "奥海科技",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 187,
+    "code": "000966",
+    "name": "长源电力",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 188,
+    "code": "300292",
+    "name": "吴通控股",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 189,
+    "code": "688275",
+    "name": "万润新能",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 190,
+    "code": "603507",
+    "name": "振江股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 191,
+    "code": "000408",
+    "name": "藏格矿业",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 192,
+    "code": "002602",
+    "name": "世纪华通",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 193,
+    "code": "002204",
+    "name": "大连重工",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 194,
+    "code": "600595",
+    "name": "中孚实业",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 195,
+    "code": "600232",
+    "name": "金鹰股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 196,
+    "code": "002107",
+    "name": "沃华医药",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 197,
+    "code": "688148",
+    "name": "芳源股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 198,
+    "code": "002772",
+    "name": "众兴菌业",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 199,
+    "code": "002111",
+    "name": "威海广泰",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 200,
+    "code": "002266",
+    "name": "浙富控股",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 201,
+    "code": "000949",
+    "name": "新乡化纤",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 202,
+    "code": "600026",
+    "name": "中远海能",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 203,
+    "code": "300031",
+    "name": "宝通科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 204,
+    "code": "603126",
+    "name": "中材节能",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 205,
+    "code": "300972",
+    "name": "万辰集团",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 206,
+    "code": "600490",
+    "name": "鹏欣资源",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 207,
+    "code": "002284",
+    "name": "亚太股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 208,
+    "code": "002712",
+    "name": "思美传媒",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 209,
+    "code": "600320",
+    "name": "振华重工",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 210,
+    "code": "300185",
+    "name": "通裕重工",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 211,
+    "code": "300226",
+    "name": "上海钢联",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 212,
+    "code": "GS",
+    "name": "高盛",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 213,
+    "code": "002126",
+    "name": "银轮股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 214,
+    "code": "688378",
+    "name": "奥来德",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 215,
+    "code": "CVS",
+    "name": "西维斯健康",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 216,
+    "code": "002250",
+    "name": "联化科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 217,
+    "code": "301345",
+    "name": "涛涛车业",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 218,
+    "code": "002132",
+    "name": "恒星科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 219,
+    "code": "002008",
+    "name": "大族激光",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 220,
+    "code": "688041",
+    "name": "海光信息",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 221,
+    "code": "300490",
+    "name": "华自科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 222,
+    "code": "HWM",
+    "name": "Howmet Aerospace Inc",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 223,
+    "code": "LLY",
+    "name": "礼来",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 224,
+    "code": "000792",
+    "name": "盐湖股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 225,
+    "code": "688609",
+    "name": "九联科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 226,
+    "code": "002738",
+    "name": "中矿资源",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 227,
+    "code": "002017",
+    "name": "东信和平",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 228,
+    "code": "600805",
+    "name": "悦达投资",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 229,
+    "code": "600686",
+    "name": "金龙汽车",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 230,
+    "code": "688063",
+    "name": "派能科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 231,
+    "code": "002488",
+    "name": "金固股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 232,
+    "code": "688088",
+    "name": "虹软科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 233,
+    "code": "600288",
+    "name": "大恒科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 234,
+    "code": "300970",
+    "name": "华绿生物",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 235,
+    "code": "688221",
+    "name": "前沿生物",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 236,
+    "code": "06090",
+    "name": "不同集团",
+    "pct": 0.01,
+    "market": "HK"
+   },
+   {
+    "seq": 237,
+    "code": "002169",
+    "name": "智光电气",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 238,
+    "code": "301608",
+    "name": "博实结",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 239,
+    "code": "002463",
+    "name": "沪电股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 240,
+    "code": "688279",
+    "name": "峰岹科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 241,
+    "code": "300171",
+    "name": "东富龙",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 242,
+    "code": "603915",
+    "name": "国茂股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 243,
+    "code": "002228",
+    "name": "合兴包装",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 244,
+    "code": "600366",
+    "name": "宁波韵升",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 245,
+    "code": "301097",
+    "name": "天益医疗",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 246,
+    "code": "600027",
+    "name": "华电国际",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 247,
+    "code": "300563",
+    "name": "神宇股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 248,
+    "code": "300415",
+    "name": "伊之密",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 249,
+    "code": "000680",
+    "name": "山推股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 250,
+    "code": "002092",
+    "name": "中泰化学",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 251,
+    "code": "MCHP",
+    "name": "微芯科技",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 252,
+    "code": "002258",
+    "name": "利尔化学",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 253,
+    "code": "NVS",
+    "name": "诺华制药",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 254,
+    "code": "002758",
+    "name": "浙农股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 255,
+    "code": "600596",
+    "name": "新安股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 256,
+    "code": "002151",
+    "name": "北斗星通",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 257,
+    "code": "688678",
+    "name": "福立旺",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 258,
+    "code": "300424",
+    "name": "航新科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 259,
+    "code": "MFC",
+    "name": "宏利金融",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 260,
+    "code": "300857",
+    "name": "协创数据",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 261,
+    "code": "002843",
+    "name": "泰嘉股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 262,
+    "code": "NEE",
+    "name": "新纪元能源",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 263,
+    "code": "600123",
+    "name": "兰花科创",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 264,
+    "code": "603708",
+    "name": "家家悦",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 265,
+    "code": "600798",
+    "name": "宁波海运",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 266,
+    "code": "002539",
+    "name": "云图控股",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 267,
+    "code": "RKLB",
+    "name": "Rocket Lab Corp",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 268,
+    "code": "300681",
+    "name": "英搏尔",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 269,
+    "code": "002649",
+    "name": "博彦科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 270,
+    "code": "002557",
+    "name": "洽洽食品",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 271,
+    "code": "688230",
+    "name": "芯导科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 272,
+    "code": "002668",
+    "name": "TCL智家",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 273,
+    "code": "301087",
+    "name": "可孚医疗",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 274,
+    "code": "DVN",
+    "name": "戴文能源",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 275,
+    "code": "LIN",
+    "name": "Linde plc",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 276,
+    "code": "301239",
+    "name": "普瑞眼科",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 277,
+    "code": "603279",
+    "name": "景津装备",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 278,
+    "code": "301487",
+    "name": "盟固利",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 279,
+    "code": "600189",
+    "name": "泉阳泉",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 280,
+    "code": "688369",
+    "name": "致远互联",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 281,
+    "code": "IBM",
+    "name": "IBM国际商业机器",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 282,
+    "code": "688599",
+    "name": "天合光能",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 283,
+    "code": "601138",
+    "name": "工业富联",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 284,
+    "code": "002916",
+    "name": "深南电路",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 285,
+    "code": "301073",
+    "name": "君亭酒店",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 286,
+    "code": "002919",
+    "name": "名臣健康",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 287,
+    "code": "603167",
+    "name": "渤海轮渡",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 288,
+    "code": "002236",
+    "name": "大华股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 289,
+    "code": "301510",
+    "name": "固高科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 290,
+    "code": "600810",
+    "name": "神马股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 291,
+    "code": "600428",
+    "name": "中远海特",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 292,
+    "code": "002876",
+    "name": "三利谱",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 293,
+    "code": "000589",
+    "name": "贵州轮胎",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 294,
+    "code": "HD",
+    "name": "家得宝",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 295,
+    "code": "002320",
+    "name": "海峡股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 296,
+    "code": "V",
+    "name": "维萨",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 297,
+    "code": "002458",
+    "name": "益生股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 298,
+    "code": "300124",
+    "name": "汇川技术",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 299,
+    "code": "600057",
+    "name": "厦门象屿",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 300,
+    "code": "688182",
+    "name": "灿勤科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 301,
+    "code": "300394",
+    "name": "天孚通信",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 302,
+    "code": "601900",
+    "name": "南方传媒",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 303,
+    "code": "688226",
+    "name": "威腾电气",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 304,
+    "code": "300233",
+    "name": "金城医药",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 305,
+    "code": "002230",
+    "name": "科大讯飞",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 306,
+    "code": "600487",
+    "name": "亨通光电",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 307,
+    "code": "603638",
+    "name": "艾迪精密",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 308,
+    "code": "300949",
+    "name": "奥雅股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 309,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 310,
+    "code": "000810",
+    "name": "创维数字",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 311,
+    "code": "BKNG",
+    "name": "Booking Holdings",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 312,
+    "code": "002795",
+    "name": "永和智控",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 313,
+    "code": "688521",
+    "name": "芯原股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 314,
+    "code": "688777",
+    "name": "中控技术",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 315,
+    "code": "301086",
+    "name": "鸿富瀚",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 316,
+    "code": "T",
+    "name": "美国电话电报(AT&T)",
+    "pct": 0.01,
+    "market": "US"
+   },
+   {
+    "seq": 317,
+    "code": "688252",
+    "name": "天德钰",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 318,
+    "code": "000567",
+    "name": "海德股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 319,
+    "code": "603686",
+    "name": "福龙马",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 320,
+    "code": "300987",
+    "name": "川网传媒",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 321,
+    "code": "002906",
+    "name": "华阳集团",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 322,
+    "code": "600262",
+    "name": "北方股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 323,
+    "code": "603933",
+    "name": "睿能科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 324,
+    "code": "300307",
+    "name": "慈星股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 325,
+    "code": "688981",
+    "name": "中芯国际",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 326,
+    "code": "301039",
+    "name": "中集车辆",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 327,
+    "code": "300206",
+    "name": "理邦仪器",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 328,
+    "code": "603317",
+    "name": "天味食品",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 329,
+    "code": "000581",
+    "name": "威孚高科",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 330,
+    "code": "688392",
+    "name": "骄成超声",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 331,
+    "code": "300071",
+    "name": "福石控股",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 332,
+    "code": "600105",
+    "name": "永鼎股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 333,
+    "code": "688396",
+    "name": "华润微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 334,
+    "code": "603345",
+    "name": "安井食品",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 335,
+    "code": "301103",
+    "name": "何氏眼科",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 336,
+    "code": "002863",
+    "name": "今飞凯达",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 337,
+    "code": "600351",
+    "name": "亚宝药业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 338,
+    "code": "002139",
+    "name": "拓邦股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 339,
+    "code": "301175",
+    "name": "中科环保",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 340,
+    "code": "301082",
+    "name": "久盛电气",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 341,
+    "code": "301489",
+    "name": "思泉新材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 342,
+    "code": "688329",
+    "name": "艾隆科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 343,
+    "code": "300464",
+    "name": "星徽股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 344,
+    "code": "300050",
+    "name": "世纪鼎利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 345,
+    "code": "002833",
+    "name": "弘亚数控",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 346,
+    "code": "600216",
+    "name": "浙江医药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 347,
+    "code": "301589",
+    "name": "诺瓦星云",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 348,
+    "code": "688326",
+    "name": "经纬恒润",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 349,
+    "code": "301270",
+    "name": "汉仪股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 350,
+    "code": "002516",
+    "name": "旷达科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 351,
+    "code": "02105",
+    "name": "来凯医药-B",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 352,
+    "code": "300127",
+    "name": "银河磁体",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 353,
+    "code": "300183",
+    "name": "东软载波",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 354,
+    "code": "000063",
+    "name": "中兴通讯",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 355,
+    "code": "000570",
+    "name": "苏常柴A",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 356,
+    "code": "600218",
+    "name": "全柴动力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 357,
+    "code": "000725",
+    "name": "京东方A",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 358,
+    "code": "600116",
+    "name": "三峡水利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 359,
+    "code": "688365",
+    "name": "光云科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 360,
+    "code": "688015",
+    "name": "交控科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 361,
+    "code": "600502",
+    "name": "安徽建工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 362,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 363,
+    "code": "600419",
+    "name": "天润乳业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 364,
+    "code": "001309",
+    "name": "德明利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 365,
+    "code": "301536",
+    "name": "星宸科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 366,
+    "code": "002541",
+    "name": "鸿路钢构",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 367,
+    "code": "002281",
+    "name": "光迅科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 368,
+    "code": "300217",
+    "name": "东方电热",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 369,
+    "code": "688766",
+    "name": "普冉股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 370,
+    "code": "688017",
+    "name": "绿的谐波",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 371,
+    "code": "601689",
+    "name": "拓普集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 372,
+    "code": "000902",
+    "name": "新洋丰",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 373,
+    "code": "688600",
+    "name": "皖仪科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 374,
+    "code": "603259",
+    "name": "药明康德",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 375,
+    "code": "688220",
+    "name": "翱捷科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 376,
+    "code": "600572",
+    "name": "康恩贝",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 377,
+    "code": "603989",
+    "name": "艾华集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 378,
+    "code": "000034",
+    "name": "神州数码",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 379,
+    "code": "002090",
+    "name": "金智科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 380,
+    "code": "603980",
+    "name": "吉华集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 381,
+    "code": "600037",
+    "name": "歌华有线",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 382,
+    "code": "600030",
+    "name": "中信证券",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 383,
+    "code": "002239",
+    "name": "奥特佳",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 384,
+    "code": "300590",
+    "name": "移为通信",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 385,
+    "code": "300407",
+    "name": "凯发电气",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 386,
+    "code": "002078",
+    "name": "太阳纸业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 387,
+    "code": "301600",
+    "name": "慧翰股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 388,
+    "code": "000709",
+    "name": "河钢股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 389,
+    "code": "603019",
+    "name": "中科曙光",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 390,
+    "code": "XOM",
+    "name": "埃克森美孚",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 391,
+    "code": "ACN",
+    "name": "埃森哲",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 392,
+    "code": "300691",
+    "name": "联合光电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 393,
+    "code": "688689",
+    "name": "银河微电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 394,
+    "code": "300971",
+    "name": "博亚精工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 395,
+    "code": "300033",
+    "name": "同花顺",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 396,
+    "code": "301505",
+    "name": "苏州规划",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 397,
+    "code": "688498",
+    "name": "源杰科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 398,
+    "code": "002544",
+    "name": "普天科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 399,
+    "code": "000156",
+    "name": "华数传媒",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 400,
+    "code": "600623",
+    "name": "华谊集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 401,
+    "code": "002826",
+    "name": "易明医药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 402,
+    "code": "601766",
+    "name": "中国中车",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 403,
+    "code": "000988",
+    "name": "华工科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 404,
+    "code": "INTU",
+    "name": "财捷",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 405,
+    "code": "300772",
+    "name": "运达股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 406,
+    "code": "YUM",
+    "name": "Yum! Brands Inc",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 407,
+    "code": "688007",
+    "name": "光峰科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 408,
+    "code": "601899",
+    "name": "紫金矿业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 409,
+    "code": "600273",
+    "name": "嘉化能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 410,
+    "code": "688322",
+    "name": "奥比中光",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 411,
+    "code": "WMT",
+    "name": "沃尔玛",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 412,
+    "code": "600496",
+    "name": "精工钢构",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 413,
+    "code": "002511",
+    "name": "中顺洁柔",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 414,
+    "code": "603100",
+    "name": "川仪股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 415,
+    "code": "002219",
+    "name": "新里程",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 416,
+    "code": "002925",
+    "name": "盈趣科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 417,
+    "code": "002274",
+    "name": "华昌化工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 418,
+    "code": "603897",
+    "name": "长城科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 419,
+    "code": "688291",
+    "name": "金橙子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 420,
+    "code": "600460",
+    "name": "士兰微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 421,
+    "code": "600941",
+    "name": "中国移动",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 422,
+    "code": "600458",
+    "name": "时代新材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 423,
+    "code": "300871",
+    "name": "回盛生物",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 424,
+    "code": "688111",
+    "name": "金山办公",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 425,
+    "code": "002419",
+    "name": "天虹股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 426,
+    "code": "600841",
+    "name": "动力新科",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 427,
+    "code": "DLTR",
+    "name": "美元树",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 428,
+    "code": "002049",
+    "name": "紫光国微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 429,
+    "code": "300363",
+    "name": "博腾股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 430,
+    "code": "300059",
+    "name": "东方财富",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 431,
+    "code": "000928",
+    "name": "中钢国际",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 432,
+    "code": "603059",
+    "name": "倍加洁",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 433,
+    "code": "000630",
+    "name": "铜陵有色",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 434,
+    "code": "600278",
+    "name": "东方创业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 435,
+    "code": "002637",
+    "name": "赞宇科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 436,
+    "code": "300737",
+    "name": "科顺股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 437,
+    "code": "600844",
+    "name": "金煤科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 438,
+    "code": "600782",
+    "name": "新钢股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 439,
+    "code": "688385",
+    "name": "复旦微电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 440,
+    "code": "688778",
+    "name": "厦钨新能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 441,
+    "code": "002296",
+    "name": "辉煌科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 442,
+    "code": "688128",
+    "name": "中国电研",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 443,
+    "code": "000423",
+    "name": "东阿阿胶",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 444,
+    "code": "002264",
+    "name": "新华都",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 445,
+    "code": "601211",
+    "name": "国泰海通",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 446,
+    "code": "301002",
+    "name": "崧盛股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 447,
+    "code": "002136",
+    "name": "安纳达",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 448,
+    "code": "601117",
+    "name": "中国化学",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 449,
+    "code": "301122",
+    "name": "采纳股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 450,
+    "code": "600519",
+    "name": "贵州茅台",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 451,
+    "code": "MRSH",
+    "name": "达信",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 452,
+    "code": "000425",
+    "name": "徐工机械",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 453,
+    "code": "000990",
+    "name": "诚志股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 454,
+    "code": "600333",
+    "name": "长春燃气",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 455,
+    "code": "601608",
+    "name": "中信重工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 456,
+    "code": "301101",
+    "name": "明月镜片",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 457,
+    "code": "01308",
+    "name": "海丰国际",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 458,
+    "code": "600800",
+    "name": "渤海化学",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 459,
+    "code": "603893",
+    "name": "瑞芯微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 460,
+    "code": "300743",
+    "name": "天地数码",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 461,
+    "code": "000012",
+    "name": "南玻A",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 462,
+    "code": "300968",
+    "name": "格林精密",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 463,
+    "code": "600031",
+    "name": "三一重工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 464,
+    "code": "300890",
+    "name": "翔丰华",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 465,
+    "code": "601166",
+    "name": "兴业银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 466,
+    "code": "601688",
+    "name": "华泰证券",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 467,
+    "code": "000338",
+    "name": "潍柴动力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 468,
+    "code": "600309",
+    "name": "万华化学",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 469,
+    "code": "600150",
+    "name": "中国船舶",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 470,
+    "code": "688169",
+    "name": "石头科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 471,
+    "code": "300504",
+    "name": "天邑股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 472,
+    "code": "601100",
+    "name": "恒立液压",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 473,
+    "code": "03360",
+    "name": "远东宏信",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 474,
+    "code": "000933",
+    "name": "神火股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 475,
+    "code": "300094",
+    "name": "国联水产",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 476,
+    "code": "300702",
+    "name": "天宇股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 477,
+    "code": "688099",
+    "name": "晶晨股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 478,
+    "code": "600601",
+    "name": "方正科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 479,
+    "code": "600919",
+    "name": "江苏银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 480,
+    "code": "300824",
+    "name": "北鼎股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 481,
+    "code": "002152",
+    "name": "广电运通",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 482,
+    "code": "603939",
+    "name": "益丰药房",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 483,
+    "code": "000050",
+    "name": "深天马A",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 484,
+    "code": "002472",
+    "name": "双环传动",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 485,
+    "code": "605507",
+    "name": "国邦医药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 486,
+    "code": "688235",
+    "name": "百济神州",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 487,
+    "code": "002438",
+    "name": "江苏神通",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 488,
+    "code": "688262",
+    "name": "国芯科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 489,
+    "code": "301308",
+    "name": "江波龙",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 490,
+    "code": "600795",
+    "name": "国电电力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 491,
+    "code": "301358",
+    "name": "湖南裕能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 492,
+    "code": "000333",
+    "name": "美的集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 493,
+    "code": "300270",
+    "name": "中威电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 494,
+    "code": "00152",
+    "name": "深圳国际",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 495,
+    "code": "01186",
+    "name": "中国铁建",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 496,
+    "code": "002587",
+    "name": "奥拓电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 497,
+    "code": "688320",
+    "name": "禾川科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 498,
+    "code": "002347",
+    "name": "泰尔股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 499,
+    "code": "003017",
+    "name": "大洋生物",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 500,
+    "code": "002841",
+    "name": "视源股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 501,
+    "code": "600584",
+    "name": "长电科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 502,
+    "code": "600512",
+    "name": "腾达建设",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 503,
+    "code": "600617",
+    "name": "国新能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 504,
+    "code": "002283",
+    "name": "天润工业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 505,
+    "code": "300115",
+    "name": "长盈精密",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 506,
+    "code": "00288",
+    "name": "万洲国际",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 507,
+    "code": "00902",
+    "name": "华能国际电力股份",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 508,
+    "code": "00552",
+    "name": "中国通信服务",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 509,
+    "code": "600963",
+    "name": "岳阳林纸",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 510,
+    "code": "00576",
+    "name": "浙江沪杭甬",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 511,
+    "code": "00005",
+    "name": "汇丰控股",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 512,
+    "code": "002493",
+    "name": "荣盛石化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 513,
+    "code": "688475",
+    "name": "萤石网络",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 514,
+    "code": "601988",
+    "name": "中国银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 515,
+    "code": "002593",
+    "name": "日上集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 516,
+    "code": "002142",
+    "name": "宁波银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 517,
+    "code": "00941",
+    "name": "中国移动",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 518,
+    "code": "002947",
+    "name": "恒铭达",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 519,
+    "code": "603960",
+    "name": "克来机电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 520,
+    "code": "688299",
+    "name": "长阳科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 521,
+    "code": "300661",
+    "name": "圣邦股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 522,
+    "code": "603076",
+    "name": "乐惠国际",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 523,
+    "code": "ADBE",
+    "name": "奥多比",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 524,
+    "code": "600980",
+    "name": "北矿科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 525,
+    "code": "600728",
+    "name": "佳都科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 526,
+    "code": "002497",
+    "name": "雅化集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 527,
+    "code": "00384",
+    "name": "中国燃气",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 528,
+    "code": "00014",
+    "name": "希慎兴业",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 529,
+    "code": "300006",
+    "name": "莱美药业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 530,
+    "code": "688347",
+    "name": "华虹宏力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 531,
+    "code": "301032",
+    "name": "新柴股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 532,
+    "code": "601658",
+    "name": "邮储银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 533,
+    "code": "03958",
+    "name": "东方证券",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 534,
+    "code": "603288",
+    "name": "海天味业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 535,
+    "code": "002811",
+    "name": "郑中设计",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 536,
+    "code": "600011",
+    "name": "华能国际",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 537,
+    "code": "000039",
+    "name": "中集集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 538,
+    "code": "600540",
+    "name": "新赛股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 539,
+    "code": "00762",
+    "name": "中国联通",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 540,
+    "code": "300395",
+    "name": "菲利华",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 541,
+    "code": "06818",
+    "name": "中国光大银行",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 542,
+    "code": "01044",
+    "name": "恒安国际",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 543,
+    "code": "002218",
+    "name": "拓日新能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 544,
+    "code": "01766",
+    "name": "中国中车",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 545,
+    "code": "300037",
+    "name": "新宙邦",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 546,
+    "code": "300556",
+    "name": "丝路视觉",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 547,
+    "code": "688548",
+    "name": "广钢气体",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 548,
+    "code": "002559",
+    "name": "亚威股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 549,
+    "code": "002556",
+    "name": "辉隆股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 550,
+    "code": "002340",
+    "name": "格林美",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 551,
+    "code": "600157",
+    "name": "永泰能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 552,
+    "code": "688350",
+    "name": "富淼科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 553,
+    "code": "000703",
+    "name": "恒逸石化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 554,
+    "code": "00101",
+    "name": "恒隆地产",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 555,
+    "code": "00267",
+    "name": "中信股份",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 556,
+    "code": "000629",
+    "name": "钒钛股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 557,
+    "code": "002448",
+    "name": "中原内配",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 558,
+    "code": "688615",
+    "name": "合合信息",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 559,
+    "code": "688629",
+    "name": "华丰科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 560,
+    "code": "000975",
+    "name": "山金国际",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 561,
+    "code": "603867",
+    "name": "新化股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 562,
+    "code": "002523",
+    "name": "天桥起重",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 563,
+    "code": "000036",
+    "name": "华联控股",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 564,
+    "code": "300655",
+    "name": "晶瑞电材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 565,
+    "code": "300077",
+    "name": "国民技术",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 566,
+    "code": "000528",
+    "name": "柳工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 567,
+    "code": "003006",
+    "name": "百亚股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 568,
+    "code": "002697",
+    "name": "红旗连锁",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 569,
+    "code": "000957",
+    "name": "中通客车",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 570,
+    "code": "688395",
+    "name": "正弦电气",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 571,
+    "code": "601865",
+    "name": "福莱特",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 572,
+    "code": "300024",
+    "name": "机器人",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 573,
+    "code": "00293",
+    "name": "国泰航空",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 574,
+    "code": "300412",
+    "name": "迦南科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 575,
+    "code": "00386",
+    "name": "中国石油化工股份",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 576,
+    "code": "600104",
+    "name": "上汽集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 577,
+    "code": "601318",
+    "name": "中国平安",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 578,
+    "code": "603889",
+    "name": "新澳股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 579,
+    "code": "600522",
+    "name": "中天科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 580,
+    "code": "600019",
+    "name": "宝钢股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 581,
+    "code": "600352",
+    "name": "浙江龙盛",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 582,
+    "code": "300022",
+    "name": "吉峰科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 583,
+    "code": "002752",
+    "name": "昇兴股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 584,
+    "code": "001389",
+    "name": "广合科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 585,
+    "code": "002850",
+    "name": "科达利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 586,
+    "code": "601998",
+    "name": "中信银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 587,
+    "code": "002780",
+    "name": "三夫户外",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 588,
+    "code": "002793",
+    "name": "罗欣药业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 589,
+    "code": "601328",
+    "name": "交通银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 590,
+    "code": "600048",
+    "name": "保利发展",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 591,
+    "code": "600176",
+    "name": "中国巨石",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 592,
+    "code": "00257",
+    "name": "光大环境",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 593,
+    "code": "600938",
+    "name": "中国海油",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 594,
+    "code": "001286",
+    "name": "陕西能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 595,
+    "code": "601111",
+    "name": "中国国航",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 596,
+    "code": "600281",
+    "name": "华阳新材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 597,
+    "code": "603501",
+    "name": "豪威集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 598,
+    "code": "603129",
+    "name": "春风动力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 599,
+    "code": "002273",
+    "name": "水晶光电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 600,
+    "code": "300613",
+    "name": "富瀚微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 601,
+    "code": "600999",
+    "name": "招商证券",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 602,
+    "code": "002197",
+    "name": "证通电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 603,
+    "code": "000895",
+    "name": "双汇发展",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 604,
+    "code": "002532",
+    "name": "天山铝业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 605,
+    "code": "002745",
+    "name": "木林森",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 606,
+    "code": "002487",
+    "name": "大金重工",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 607,
+    "code": "000893",
+    "name": "亚钾国际",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 608,
+    "code": "601058",
+    "name": "赛轮轮胎",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 609,
+    "code": "603228",
+    "name": "景旺电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 610,
+    "code": "605136",
+    "name": "丽人丽妆",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 611,
+    "code": "603766",
+    "name": "隆鑫通用",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 612,
+    "code": "002506",
+    "name": "协鑫集成",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 613,
+    "code": "600109",
+    "name": "国金证券",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 614,
+    "code": "688266",
+    "name": "泽璟制药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 615,
+    "code": "002975",
+    "name": "博杰股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 616,
+    "code": "603188",
+    "name": "亚邦股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 617,
+    "code": "002379",
+    "name": "宏桥控股",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 618,
+    "code": "001339",
+    "name": "智微智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 619,
+    "code": "000519",
+    "name": "中兵红箭",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 620,
+    "code": "601727",
+    "name": "上海电气",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 621,
+    "code": "06862",
+    "name": "海底捞",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 622,
+    "code": "300389",
+    "name": "艾比森",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 623,
+    "code": "600029",
+    "name": "南方航空",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 624,
+    "code": "600969",
+    "name": "郴电国际",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 625,
+    "code": "002465",
+    "name": "海格通信",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 626,
+    "code": "603225",
+    "name": "新凤鸣",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 627,
+    "code": "688162",
+    "name": "巨一科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 628,
+    "code": "000155",
+    "name": "川能动力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 629,
+    "code": "000415",
+    "name": "渤海租赁",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 630,
+    "code": "603077",
+    "name": "和邦生物",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 631,
+    "code": "00991",
+    "name": "大唐发电",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 632,
+    "code": "300493",
+    "name": "润欣科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 633,
+    "code": "300919",
+    "name": "中伟新材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 634,
+    "code": "002376",
+    "name": "新北洋",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 635,
+    "code": "300845",
+    "name": "捷安高科",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 636,
+    "code": "688005",
+    "name": "容百科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 637,
+    "code": "603909",
+    "name": "建发合诚",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 638,
+    "code": "300079",
+    "name": "数码视讯",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 639,
+    "code": "01336",
+    "name": "新华保险",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 640,
+    "code": "300573",
+    "name": "兴齐眼药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 641,
+    "code": "301391",
+    "name": "卡莱特",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 642,
+    "code": "603486",
+    "name": "科沃斯",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 643,
+    "code": "000951",
+    "name": "中国重汽",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 644,
+    "code": "002748",
+    "name": "世龙实业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 645,
+    "code": "600063",
+    "name": "皖维高新",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 646,
+    "code": "600050",
+    "name": "中国联通",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 647,
+    "code": "688328",
+    "name": "深科达",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 648,
+    "code": "02282",
+    "name": "美高梅中国",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 649,
+    "code": "002531",
+    "name": "天顺风能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 650,
+    "code": "300677",
+    "name": "英科医疗",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 651,
+    "code": "301285",
+    "name": "鸿日达",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 652,
+    "code": "605358",
+    "name": "立昂微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 653,
+    "code": "003816",
+    "name": "中国广核",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 654,
+    "code": "000825",
+    "name": "太钢不锈",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 655,
+    "code": "301603",
+    "name": "乔锋智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 656,
+    "code": "600483",
+    "name": "福能股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 657,
+    "code": "00966",
+    "name": "中国太平",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 658,
+    "code": "002004",
+    "name": "华邦健康",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 659,
+    "code": "601898",
+    "name": "中煤能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 660,
+    "code": "000524",
+    "name": "岭南控股",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 661,
+    "code": "002747",
+    "name": "埃斯顿",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 662,
+    "code": "600556",
+    "name": "天下秀",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 663,
+    "code": "000598",
+    "name": "兴蓉环境",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 664,
+    "code": "002520",
+    "name": "日发精机",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 665,
+    "code": "688499",
+    "name": "利元亨",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 666,
+    "code": "300322",
+    "name": "硕贝德",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 667,
+    "code": "601601",
+    "name": "中国太保",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 668,
+    "code": "000783",
+    "name": "长江证券",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 669,
+    "code": "603296",
+    "name": "华勤技术",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 670,
+    "code": "300459",
+    "name": "汤姆猫",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 671,
+    "code": "600298",
+    "name": "安琪酵母",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 672,
+    "code": "002249",
+    "name": "大洋电机",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 673,
+    "code": "605208",
+    "name": "永茂泰",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 674,
+    "code": "002033",
+    "name": "丽江股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 675,
+    "code": "605100",
+    "name": "华丰股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 676,
+    "code": "688049",
+    "name": "炬芯科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 677,
+    "code": "002120",
+    "name": "韵达股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 678,
+    "code": "601186",
+    "name": "中国铁建",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 679,
+    "code": "000778",
+    "name": "新兴铸管",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 680,
+    "code": "002890",
+    "name": "弘宇股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 681,
+    "code": "601009",
+    "name": "南京银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 682,
+    "code": "688257",
+    "name": "新锐股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 683,
+    "code": "300452",
+    "name": "山河药辅",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 684,
+    "code": "300442",
+    "name": "润泽科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 685,
+    "code": "301355",
+    "name": "南王科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 686,
+    "code": "601222",
+    "name": "林洋能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 687,
+    "code": "02588",
+    "name": "中银航空租赁",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 688,
+    "code": "601888",
+    "name": "中国中免",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 689,
+    "code": "300428",
+    "name": "立中集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 690,
+    "code": "002021",
+    "name": "中捷资源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 691,
+    "code": "002701",
+    "name": "奥瑞金",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 692,
+    "code": "688208",
+    "name": "道通科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 693,
+    "code": "600801",
+    "name": "华新建材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 694,
+    "code": "601628",
+    "name": "中国人寿",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 695,
+    "code": "300136",
+    "name": "信维通信",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 696,
+    "code": "00788",
+    "name": "中国铁塔",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 697,
+    "code": "300457",
+    "name": "赢合科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 698,
+    "code": "000977",
+    "name": "浪潮信息",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 699,
+    "code": "301118",
+    "name": "恒光股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 700,
+    "code": "300095",
+    "name": "华伍股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 701,
+    "code": "601619",
+    "name": "嘉泽新能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 702,
+    "code": "000426",
+    "name": "兴业银锡",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 703,
+    "code": "600868",
+    "name": "梅雁吉祥",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 704,
+    "code": "300016",
+    "name": "北陆药业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 705,
+    "code": "603042",
+    "name": "华脉科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 706,
+    "code": "002269",
+    "name": "美邦服饰",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 707,
+    "code": "301281",
+    "name": "科源制药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 708,
+    "code": "688343",
+    "name": "云天励飞",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 709,
+    "code": "002727",
+    "name": "一心堂",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 710,
+    "code": "603883",
+    "name": "老百姓",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 711,
+    "code": "01193",
+    "name": "华润燃气",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 712,
+    "code": "002027",
+    "name": "分众传媒",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 713,
+    "code": "601038",
+    "name": "一拖股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 714,
+    "code": "000543",
+    "name": "皖能电力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 715,
+    "code": "000965",
+    "name": "天保基建",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 716,
+    "code": "002651",
+    "name": "利君股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 717,
+    "code": "300559",
+    "name": "佳发教育",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 718,
+    "code": "000059",
+    "name": "华锦股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 719,
+    "code": "688188",
+    "name": "柏楚电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 720,
+    "code": "00836",
+    "name": "华润电力",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 721,
+    "code": "601319",
+    "name": "中国人保",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 722,
+    "code": "300253",
+    "name": "卫宁健康",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 723,
+    "code": "00322",
+    "name": "康师傅控股",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 724,
+    "code": "002373",
+    "name": "千方科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 725,
+    "code": "300220",
+    "name": "金运激光",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 726,
+    "code": "002998",
+    "name": "优彩资源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 727,
+    "code": "002663",
+    "name": "普邦股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 728,
+    "code": "002057",
+    "name": "中钢天源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 729,
+    "code": "600711",
+    "name": "盛屯矿业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 730,
+    "code": "01585",
+    "name": "雅迪控股",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 731,
+    "code": "301081",
+    "name": "严牌股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 732,
+    "code": "601668",
+    "name": "中国建筑",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 733,
+    "code": "600733",
+    "name": "北汽蓝谷",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 734,
+    "code": "300760",
+    "name": "迈瑞医疗",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 735,
+    "code": "600785",
+    "name": "新华百货",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 736,
+    "code": "00177",
+    "name": "江苏宁沪高速公路",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 737,
+    "code": "00939",
+    "name": "建设银行",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 738,
+    "code": "01919",
+    "name": "中远海控",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 739,
+    "code": "01988",
+    "name": "民生银行",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 740,
+    "code": "03618",
+    "name": "重庆农村商业银行",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 741,
+    "code": "00956",
+    "name": "新天绿色能源",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 742,
+    "code": "03328",
+    "name": "交通银行",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 743,
+    "code": "00392",
+    "name": "北京控股",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 744,
+    "code": "00998",
+    "name": "中信银行",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 745,
+    "code": "603187",
+    "name": "海容冷链",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 746,
+    "code": "300552",
+    "name": "万集科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 747,
+    "code": "600036",
+    "name": "招商银行",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 748,
+    "code": "601600",
+    "name": "中国铝业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 749,
+    "code": "600690",
+    "name": "海尔智家",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 750,
+    "code": "00371",
+    "name": "北控水务集团",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 751,
+    "code": "00683",
+    "name": "嘉里建设",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 752,
+    "code": "002969",
+    "name": "嘉美包装",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 753,
+    "code": "002156",
+    "name": "通富微电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 754,
+    "code": "00316",
+    "name": "东方海外国际",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 755,
+    "code": "003023",
+    "name": "彩虹集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 756,
+    "code": "01114",
+    "name": "BRILLIANCE CHI",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 757,
+    "code": "300699",
+    "name": "光威复材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 758,
+    "code": "300503",
+    "name": "昊志机电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 759,
+    "code": "600489",
+    "name": "中金黄金",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 760,
+    "code": "000718",
+    "name": "苏宁环球",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 761,
+    "code": "600754",
+    "name": "锦江酒店",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 762,
+    "code": "600372",
+    "name": "中航机载",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 763,
+    "code": "002125",
+    "name": "湘潭电化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 764,
+    "code": "600854",
+    "name": "春兰股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 765,
+    "code": "600276",
+    "name": "恒瑞医药",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 766,
+    "code": "600887",
+    "name": "伊利股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 767,
+    "code": "688175",
+    "name": "高凌信息",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 768,
+    "code": "000932",
+    "name": "华菱钢铁",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 769,
+    "code": "002067",
+    "name": "景兴纸业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 770,
+    "code": "300416",
+    "name": "苏试试验",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 771,
+    "code": "300759",
+    "name": "康龙化成",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 772,
+    "code": "600989",
+    "name": "宝丰能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 773,
+    "code": "600661",
+    "name": "昂立教育",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 774,
+    "code": "000921",
+    "name": "海信家电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 775,
+    "code": "600346",
+    "name": "恒力石化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 776,
+    "code": "001979",
+    "name": "招商蛇口",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 777,
+    "code": "600330",
+    "name": "天通股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 778,
+    "code": "301161",
+    "name": "唯万密封",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 779,
+    "code": "300454",
+    "name": "深信服",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 780,
+    "code": "603421",
+    "name": "鼎信通讯",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 781,
+    "code": "600235",
+    "name": "民丰特纸",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 782,
+    "code": "600688",
+    "name": "上海石化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 783,
+    "code": "000762",
+    "name": "西藏矿业",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 784,
+    "code": "300817",
+    "name": "双飞集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 785,
+    "code": "002345",
+    "name": "潮宏基",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 786,
+    "code": "688531",
+    "name": "日联科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 787,
+    "code": "600900",
+    "name": "长江电力",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 788,
+    "code": "002293",
+    "name": "罗莱生活",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 789,
+    "code": "603808",
+    "name": "歌力思",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 790,
+    "code": "603880",
+    "name": "南卫股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 791,
+    "code": "300955",
+    "name": "嘉亨家化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 792,
+    "code": "600740",
+    "name": "山西焦化",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 793,
+    "code": "300498",
+    "name": "温氏股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 794,
+    "code": "002832",
+    "name": "比音勒芬",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 795,
+    "code": "000514",
+    "name": "渝开发",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 796,
+    "code": "002294",
+    "name": "信立泰",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 797,
+    "code": "002031",
+    "name": "巨轮智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 798,
+    "code": "002146",
+    "name": "荣盛发展",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 799,
+    "code": "300658",
+    "name": "延江股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 800,
+    "code": "002607",
+    "name": "中公教育",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 801,
+    "code": "300956",
+    "name": "英力股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 802,
+    "code": "605337",
+    "name": "李子园",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 803,
+    "code": "002746",
+    "name": "仙坛股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 804,
+    "code": "002314",
+    "name": "南山控股",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 805,
+    "code": "00940",
+    "name": "中国动物保健品",
+    "pct": 0.0,
+    "market": "HK"
+   }
+  ],
+  "count": 805
+ },
+ "021842": {
+  "ts": "2026-09-05 17:38:37",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 8.42,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "MKSI",
+    "name": "MKS Inc",
+    "pct": 7.47,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 7.47,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 7.17,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 5.37,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 4.38,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 3.68,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 3.21,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "6857",
+    "name": "爱德万测试",
+    "pct": 2.75,
+    "market": "JP"
+   },
+   {
+    "seq": 10,
+    "code": "NOK",
+    "name": "诺基亚",
+    "pct": 2.66,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 2.62,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "WOLF",
+    "name": "Wolfspeed Inc",
+    "pct": 2.33,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 2.31,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 2.29,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 2.06,
+    "market": "JP"
+   },
+   {
+    "seq": 16,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.86,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "6525JT",
+    "name": "国际电气株式会社",
+    "pct": 1.79,
+    "market": "SKIP"
+   },
+   {
+    "seq": 18,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 1.71,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "6871JP",
+    "name": "Micronics日本有限公司",
+    "pct": 1.65,
+    "market": "SKIP"
+   },
+   {
+    "seq": 20,
+    "code": "FORM",
+    "name": "FormFactor Inc",
+    "pct": 1.61,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.58,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "VSH",
+    "name": "威世科技",
+    "pct": 1.57,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 1.36,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "01651",
+    "name": "津上机床中国",
+    "pct": 1.32,
+    "market": "HK"
+   },
+   {
+    "seq": 25,
+    "code": "00668",
+    "name": "安克创新",
+    "pct": 1.25,
+    "market": "HK"
+   },
+   {
+    "seq": 26,
+    "code": "688347",
+    "name": "华虹宏力",
+    "pct": 1.13,
+    "market": "CN"
+   },
+   {
+    "seq": 27,
+    "code": "SMTC",
+    "name": "先科电子",
+    "pct": 1.05,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "ETN",
+    "name": "伊顿",
+    "pct": 0.91,
+    "market": "US"
+   },
+   {
+    "seq": 29,
+    "code": "TXN",
+    "name": "德州仪器",
+    "pct": 0.91,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "00522",
+    "name": "ASMPT",
+    "pct": 0.69,
+    "market": "HK"
+   },
+   {
+    "seq": 31,
+    "code": "6368",
+    "name": "Organo Corp",
+    "pct": 0.49,
+    "market": "SKIP"
+   },
+   {
+    "seq": 32,
+    "code": "01415",
+    "name": "高伟电子",
+    "pct": 0.17,
+    "market": "HK"
+   },
+   {
+    "seq": 33,
+    "code": "03393",
+    "name": "威胜控股",
+    "pct": 0.03,
+    "market": "HK"
+   },
+   {
+    "seq": 34,
+    "code": "688820",
+    "name": "盛合晶微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 35,
+    "code": "688808",
+    "name": "联讯仪器",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 36,
+    "code": "688797",
+    "name": "臻宝科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 37,
+    "code": "688635",
+    "name": "长进光子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 38,
+    "code": "603459",
+    "name": "红板科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 39,
+    "code": "688811",
+    "name": "有研复材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 40,
+    "code": "603407",
+    "name": "长裕集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 41,
+    "code": "603435",
+    "name": "嘉德利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 42,
+    "code": "920189",
+    "name": "康美特",
+    "pct": 0.0,
+    "market": "CN"
+   }
+  ],
+  "count": 42
+ },
+ "022184": {
+  "ts": "2026-09-05 17:38:38",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "00522",
+    "name": "ASMPT",
+    "pct": 5.62,
+    "market": "HK"
+   },
+   {
+    "seq": 2,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 5.51,
+    "market": "CN"
+   },
+   {
+    "seq": 3,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 5.04,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 4.7,
+    "market": "CN"
+   },
+   {
+    "seq": 5,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 4.62,
+    "market": "KR"
+   },
+   {
+    "seq": 6,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 4.58,
+    "market": "KR"
+   },
+   {
+    "seq": 7,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 4.58,
+    "market": "JP"
+   },
+   {
+    "seq": 8,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 4.31,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 4.28,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 4.22,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "00992",
+    "name": "联想集团",
+    "pct": 3.8,
+    "market": "HK"
+   },
+   {
+    "seq": 12,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 3.79,
+    "market": "HK"
+   },
+   {
+    "seq": 13,
+    "code": "01888",
+    "name": "建滔积层板",
+    "pct": 3.74,
+    "market": "HK"
+   },
+   {
+    "seq": 14,
+    "code": "03690",
+    "name": "美团-W",
+    "pct": 3.55,
+    "market": "HK"
+   },
+   {
+    "seq": 15,
+    "code": "09988",
+    "name": "阿里巴巴-W",
+    "pct": 3.5,
+    "market": "HK"
+   },
+   {
+    "seq": 16,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 3.33,
+    "market": "HK"
+   },
+   {
+    "seq": 17,
+    "code": "01024",
+    "name": "快手-W",
+    "pct": 3.33,
+    "market": "HK"
+   },
+   {
+    "seq": 18,
+    "code": "00189",
+    "name": "东岳集团",
+    "pct": 3.24,
+    "market": "HK"
+   },
+   {
+    "seq": 19,
+    "code": "09899",
+    "name": "网易云音乐",
+    "pct": 3.15,
+    "market": "HK"
+   },
+   {
+    "seq": 20,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 2.69,
+    "market": "HK"
+   },
+   {
+    "seq": 21,
+    "code": "06869",
+    "name": "长飞光纤光缆",
+    "pct": 2.41,
+    "market": "HK"
+   },
+   {
+    "seq": 22,
+    "code": "06166",
+    "name": "剑桥科技",
+    "pct": 1.71,
+    "market": "HK"
+   },
+   {
+    "seq": 23,
+    "code": "01729",
+    "name": "汇聚科技",
+    "pct": 1.2,
+    "market": "HK"
+   },
+   {
+    "seq": 24,
+    "code": "02155",
+    "name": "森松国际",
+    "pct": 1.19,
+    "market": "HK"
+   },
+   {
+    "seq": 25,
+    "code": "03323",
+    "name": "中国建材",
+    "pct": 1.01,
+    "market": "HK"
+   },
+   {
+    "seq": 26,
+    "code": "03918",
+    "name": "金界控股",
+    "pct": 0.85,
+    "market": "HK"
+   },
+   {
+    "seq": 27,
+    "code": "09999",
+    "name": "网易",
+    "pct": 0.76,
+    "market": "HK"
+   },
+   {
+    "seq": 28,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 0.51,
+    "market": "HK"
+   },
+   {
+    "seq": 29,
+    "code": "03200",
+    "name": "大族数控",
+    "pct": 0.2,
+    "market": "HK"
+   },
+   {
+    "seq": 30,
+    "code": "03277",
+    "name": "长光辰芯",
+    "pct": 0.19,
+    "market": "HK"
+   },
+   {
+    "seq": 31,
+    "code": "02382",
+    "name": "舜宇光学科技",
+    "pct": 0.15,
+    "market": "HK"
+   },
+   {
+    "seq": 32,
+    "code": "06067",
+    "name": "星源材质",
+    "pct": 0.13,
+    "market": "HK"
+   },
+   {
+    "seq": 33,
+    "code": "06082",
+    "name": "壁仞科技",
+    "pct": 0.1,
+    "market": "HK"
+   },
+   {
+    "seq": 34,
+    "code": "688036",
+    "name": "传音控股",
+    "pct": 0.09,
+    "market": "CN"
+   },
+   {
+    "seq": 35,
+    "code": "06656",
+    "name": "思格新能",
+    "pct": 0.06,
+    "market": "HK"
+   },
+   {
+    "seq": 36,
+    "code": "01779",
+    "name": "天辰生物-B",
+    "pct": 0.04,
+    "market": "HK"
+   },
+   {
+    "seq": 37,
+    "code": "09630",
+    "name": "芯碁微装",
+    "pct": 0.04,
+    "market": "HK"
+   },
+   {
+    "seq": 38,
+    "code": "07666",
+    "name": "剂泰科技-P",
+    "pct": 0.03,
+    "market": "HK"
+   },
+   {
+    "seq": 39,
+    "code": "07688",
+    "name": "拓璞数控",
+    "pct": 0.02,
+    "market": "HK"
+   },
+   {
+    "seq": 40,
+    "code": "001248",
+    "name": "华润新能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 41,
+    "code": "688808",
+    "name": "联讯仪器",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 42,
+    "code": "001399",
+    "name": "惠科股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 43,
+    "code": "603459",
+    "name": "红板科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 44,
+    "code": "301669",
+    "name": "高特电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 45,
+    "code": "601112",
+    "name": "振石股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 46,
+    "code": "301680",
+    "name": "固德电材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 47,
+    "code": "603352",
+    "name": "至信股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 48,
+    "code": "603293",
+    "name": "埃泰克",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 49,
+    "code": "603284",
+    "name": "林平发展",
+    "pct": 0.0,
+    "market": "CN"
+   }
+  ],
+  "count": 49
+ },
+ "012922": {
+  "ts": "2026-09-05 17:38:38",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 6.41,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 5.89,
+    "market": "JP"
+   },
+   {
+    "seq": 3,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 5.54,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 4.96,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 4.68,
+    "market": "CN"
+   },
+   {
+    "seq": 6,
+    "code": "300308",
+    "name": "中际旭创",
+    "pct": 4.61,
+    "market": "CN"
+   },
+   {
+    "seq": 7,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 4.46,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 4.26,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "688498",
+    "name": "源杰科技",
+    "pct": 3.34,
+    "market": "CN"
+   },
+   {
+    "seq": 10,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 3.33,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 3.23,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 3.22,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 3.03,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 3.01,
+    "market": "CN"
+   },
+   {
+    "seq": 15,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 2.9,
+    "market": "HK"
+   },
+   {
+    "seq": 16,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 2.75,
+    "market": "KR"
+   },
+   {
+    "seq": 17,
+    "code": "300408",
+    "name": "三环集团",
+    "pct": 2.72,
+    "market": "CN"
+   },
+   {
+    "seq": 18,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 2.45,
+    "market": "HK"
+   },
+   {
+    "seq": 19,
+    "code": "688256",
+    "name": "寒武纪",
+    "pct": 2.21,
+    "market": "CN"
+   },
+   {
+    "seq": 20,
+    "code": "002384",
+    "name": "东山精密",
+    "pct": 2.12,
+    "market": "CN"
+   },
+   {
+    "seq": 21,
+    "code": "301511",
+    "name": "德福科技",
+    "pct": 1.55,
+    "market": "CN"
+   },
+   {
+    "seq": 22,
+    "code": "01888",
+    "name": "建滔积层板",
+    "pct": 1.31,
+    "market": "HK"
+   },
+   {
+    "seq": 23,
+    "code": "6981",
+    "name": "村田制作所",
+    "pct": 1.23,
+    "market": "SKIP"
+   },
+   {
+    "seq": 24,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 1.23,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "02513",
+    "name": "智谱",
+    "pct": 1.11,
+    "market": "HK"
+   },
+   {
+    "seq": 26,
+    "code": "UMC",
+    "name": "联华电子",
+    "pct": 0.93,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "002371",
+    "name": "北方华创",
+    "pct": 0.76,
+    "market": "CN"
+   },
+   {
+    "seq": 28,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 0.76,
+    "market": "KR"
+   },
+   {
+    "seq": 29,
+    "code": "4062",
+    "name": "Ibiden Co Ltd",
+    "pct": 0.68,
+    "market": "SKIP"
+   },
+   {
+    "seq": 30,
+    "code": "300661",
+    "name": "圣邦股份",
+    "pct": 0.65,
+    "market": "CN"
+   },
+   {
+    "seq": 31,
+    "code": "301377",
+    "name": "鼎泰高科",
+    "pct": 0.65,
+    "market": "CN"
+   },
+   {
+    "seq": 32,
+    "code": "688409",
+    "name": "富创精密",
+    "pct": 0.61,
+    "market": "CN"
+   },
+   {
+    "seq": 33,
+    "code": "8035",
+    "name": "东京电子",
+    "pct": 0.59,
+    "market": "SKIP"
+   },
+   {
+    "seq": 34,
+    "code": "688012",
+    "name": "中微公司",
+    "pct": 0.49,
+    "market": "CN"
+   },
+   {
+    "seq": 35,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 0.45,
+    "market": "US"
+   },
+   {
+    "seq": 36,
+    "code": "CIEN",
+    "name": "Ciena科技",
+    "pct": 0.41,
+    "market": "US"
+   },
+   {
+    "seq": 37,
+    "code": "688368",
+    "name": "晶丰明源",
+    "pct": 0.26,
+    "market": "CN"
+   },
+   {
+    "seq": 38,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 0.25,
+    "market": "US"
+   },
+   {
+    "seq": 39,
+    "code": "00100",
+    "name": "MINIMAX-W",
+    "pct": 0.25,
+    "market": "HK"
+   },
+   {
+    "seq": 40,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 0.24,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "3037",
+    "name": "欣兴",
+    "pct": 0.23,
+    "market": "SKIP"
+   },
+   {
+    "seq": 42,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 0.18,
+    "market": "US"
+   },
+   {
+    "seq": 43,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 0.17,
+    "market": "US"
+   },
+   {
+    "seq": 44,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 0.16,
+    "market": "US"
+   },
+   {
+    "seq": 45,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 0.16,
+    "market": "US"
+   },
+   {
+    "seq": 46,
+    "code": "AIXAGR",
+    "name": "爱思强股份有限公司",
+    "pct": 0.15,
+    "market": "US"
+   },
+   {
+    "seq": 47,
+    "code": "5332",
+    "name": "东陶",
+    "pct": 0.14,
+    "market": "SKIP"
+   },
+   {
+    "seq": 48,
+    "code": "603256",
+    "name": "宏和科技",
+    "pct": 0.13,
+    "market": "CN"
+   },
+   {
+    "seq": 49,
+    "code": "688072",
+    "name": "拓荆科技",
+    "pct": 0.13,
+    "market": "CN"
+   },
+   {
+    "seq": 50,
+    "code": "301217",
+    "name": "铜冠铜箔",
+    "pct": 0.12,
+    "market": "CN"
+   },
+   {
+    "seq": 51,
+    "code": "BE",
+    "name": "Bloom Energy Corp-A",
+    "pct": 0.12,
+    "market": "US"
+   },
+   {
+    "seq": 52,
+    "code": "000657",
+    "name": "中钨高新",
+    "pct": 0.09,
+    "market": "CN"
+   },
+   {
+    "seq": 53,
+    "code": "002851",
+    "name": "麦格米特",
+    "pct": 0.07,
+    "market": "CN"
+   },
+   {
+    "seq": 54,
+    "code": "002436",
+    "name": "兴森科技",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 55,
+    "code": "000938",
+    "name": "紫光股份",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 56,
+    "code": "002463",
+    "name": "沪电股份",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 57,
+    "code": "688347",
+    "name": "华虹宏力",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 58,
+    "code": "688795",
+    "name": "摩尔线程",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 59,
+    "code": "688020",
+    "name": "方邦股份",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 60,
+    "code": "01768",
+    "name": "鸣鸣很忙",
+    "pct": 0.02,
+    "market": "HK"
+   },
+   {
+    "seq": 61,
+    "code": "688802",
+    "name": "沐曦股份",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 62,
+    "code": "688783",
+    "name": "西安奕材",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 63,
+    "code": "PAYP",
+    "name": "PayPay Corp ADR",
+    "pct": 0.0,
+    "market": "US"
+   },
+   {
+    "seq": 64,
+    "code": "301666",
+    "name": "大普微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 65,
+    "code": "301362",
+    "name": "民爆光电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 66,
+    "code": "688759",
+    "name": "必贝特",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 67,
+    "code": "688820",
+    "name": "盛合晶微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 68,
+    "code": "688790",
+    "name": "昂瑞微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 69,
+    "code": "688781",
+    "name": "视涯科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 70,
+    "code": "688808",
+    "name": "联讯仪器",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 71,
+    "code": "001399",
+    "name": "惠科股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 72,
+    "code": "688809",
+    "name": "强一股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 73,
+    "code": "688818",
+    "name": "电科蓝天",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 74,
+    "code": "301682",
+    "name": "宏明电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 75,
+    "code": "688797",
+    "name": "臻宝科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 76,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 77,
+    "code": "688712",
+    "name": "北芯生命",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 78,
+    "code": "688785",
+    "name": "恒运昌",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 79,
+    "code": "688813",
+    "name": "泰金新能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 80,
+    "code": "688635",
+    "name": "长进光子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 81,
+    "code": "001257",
+    "name": "盛龙股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 82,
+    "code": "603459",
+    "name": "红板科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 83,
+    "code": "001365",
+    "name": "天海电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 84,
+    "code": "688811",
+    "name": "有研复材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 85,
+    "code": "301696",
+    "name": "三瑞智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 86,
+    "code": "001237",
+    "name": "惠康科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 87,
+    "code": "301669",
+    "name": "高特电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 88,
+    "code": "301687",
+    "name": "新广益",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 89,
+    "code": "001393",
+    "name": "维通利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 90,
+    "code": "301531",
+    "name": "春光集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 91,
+    "code": "301599",
+    "name": "理奇智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 92,
+    "code": "601112",
+    "name": "振石股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 93,
+    "code": "301680",
+    "name": "固德电材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 94,
+    "code": "001369",
+    "name": "双欣材料",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 95,
+    "code": "301683",
+    "name": "慧谷新材",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 96,
+    "code": "001248",
+    "name": "华润新能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 97,
+    "code": "688816",
+    "name": "易思维",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 98,
+    "code": "301513",
+    "name": "尚水智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 99,
+    "code": "603435",
+    "name": "嘉德利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 100,
+    "code": "603352",
+    "name": "至信股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 101,
+    "code": "001396",
+    "name": "誉帆科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 102,
+    "code": "603293",
+    "name": "埃泰克",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 103,
+    "code": "001312",
+    "name": "福恩股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 104,
+    "code": "603284",
+    "name": "林平发展",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 105,
+    "code": "001220",
+    "name": "世盟股份",
+    "pct": 0.0,
+    "market": "CN"
+   }
+  ],
+  "count": 105
+ },
+ "080006": {
+  "ts": "2026-09-05 17:38:38",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 6.61,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 5.68,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 4.81,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 4.12,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "MSFT",
+    "name": "微软",
+    "pct": 3.78,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 3.42,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 3.12,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "TSLA",
+    "name": "特斯拉",
+    "pct": 2.82,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 2.82,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 2.78,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 2.64,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.63,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WMT",
+    "name": "沃尔玛",
+    "pct": 2.45,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.36,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "CSCO",
+    "name": "思科",
+    "pct": 2.01,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "COST",
+    "name": "开市客",
+    "pct": 1.81,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.71,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 1.48,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "NFLX",
+    "name": "奈飞",
+    "pct": 1.31,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "PLTR",
+    "name": "Palantir Technologies Inc-A",
+    "pct": 1.2,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "TXN",
+    "name": "德州仪器",
+    "pct": 1.18,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 1.14,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.11,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "LIN",
+    "name": "Linde plc",
+    "pct": 1.06,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 0.95,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 0.94,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 0.87,
+    "market": "US"
+   },
+   {
+    "seq": 29,
+    "code": "CRWD",
+    "name": "CrowdStrike Holdings Inc-A",
+    "pct": 0.85,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "PEP",
+    "name": "百事",
+    "pct": 0.82,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "AMGN",
+    "name": "安进",
+    "pct": 0.81,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 0.8,
+    "market": "US"
+   },
+   {
+    "seq": 33,
+    "code": "ADI",
+    "name": "亚德诺",
+    "pct": 0.8,
+    "market": "US"
+   },
+   {
+    "seq": 34,
+    "code": "TMUS",
+    "name": "T-Mobile US Inc",
+    "pct": 0.75,
+    "market": "US"
+   },
+   {
+    "seq": 35,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 0.71,
+    "market": "US"
+   },
+   {
+    "seq": 36,
+    "code": "GILD",
+    "name": "吉利德科学",
+    "pct": 0.68,
+    "market": "US"
+   },
+   {
+    "seq": 37,
+    "code": "HON",
+    "name": "霍尼韦尔",
+    "pct": 0.65,
+    "market": "US"
+   },
+   {
+    "seq": 38,
+    "code": "APP",
+    "name": "Applovin Corp-A",
+    "pct": 0.64,
+    "market": "US"
+   },
+   {
+    "seq": 39,
+    "code": "ISRG",
+    "name": "直觉外科",
+    "pct": 0.62,
+    "market": "US"
+   },
+   {
+    "seq": 40,
+    "code": "VRTX",
+    "name": "福泰制药",
+    "pct": 0.56,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "BKNG",
+    "name": "Booking Holdings",
+    "pct": 0.53,
+    "market": "US"
+   },
+   {
+    "seq": 42,
+    "code": "SBUX",
+    "name": "星巴克",
+    "pct": 0.51,
+    "market": "US"
+   },
+   {
+    "seq": 43,
+    "code": "FTNT",
+    "name": "防特网",
+    "pct": 0.46,
+    "market": "US"
+   },
+   {
+    "seq": 44,
+    "code": "SHOP",
+    "name": "Shopify Inc-A",
+    "pct": 0.44,
+    "market": "US"
+   },
+   {
+    "seq": 45,
+    "code": "MNST",
+    "name": "怪物饮料",
+    "pct": 0.42,
+    "market": "US"
+   },
+   {
+    "seq": 46,
+    "code": "CDNS",
+    "name": "铿腾电子",
+    "pct": 0.42,
+    "market": "US"
+   },
+   {
+    "seq": 47,
+    "code": "MAR",
+    "name": "万豪国际",
+    "pct": 0.41,
+    "market": "US"
+   },
+   {
+    "seq": 48,
+    "code": "ADP",
+    "name": "自动数据处理",
+    "pct": 0.4,
+    "market": "US"
+   },
+   {
+    "seq": 49,
+    "code": "CSX",
+    "name": "CSX运输",
+    "pct": 0.39,
+    "market": "US"
+   },
+   {
+    "seq": 50,
+    "code": "CMCSA",
+    "name": "康卡斯特",
+    "pct": 0.39,
+    "market": "US"
+   },
+   {
+    "seq": 51,
+    "code": "MELI",
+    "name": "MercadoLibre Inc",
+    "pct": 0.38,
+    "market": "US"
+   },
+   {
+    "seq": 52,
+    "code": "SNPS",
+    "name": "新思科技",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 53,
+    "code": "ADBE",
+    "name": "奥多比",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 54,
+    "code": "CEG",
+    "name": "Constellation Energy Corp",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 55,
+    "code": "DDOG",
+    "name": "Datadog Inc-A",
+    "pct": 0.35,
+    "market": "US"
+   },
+   {
+    "seq": 56,
+    "code": "MDLZ",
+    "name": "亿滋国际",
+    "pct": 0.33,
+    "market": "US"
+   },
+   {
+    "seq": 57,
+    "code": "AEP",
+    "name": "美国电力",
+    "pct": 0.33,
+    "market": "US"
+   },
+   {
+    "seq": 58,
+    "code": "NXPI",
+    "name": "恩智浦半导体",
+    "pct": 0.32,
+    "market": "US"
+   },
+   {
+    "seq": 59,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 0.32,
+    "market": "US"
+   },
+   {
+    "seq": 60,
+    "code": "HONA",
+    "name": "Honeywell Aerospace Inc",
+    "pct": 0.31,
+    "market": "US"
+   },
+   {
+    "seq": 61,
+    "code": "00967",
+    "name": "桑德国际",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 62,
+    "code": "00940",
+    "name": "中国动物保健品",
+    "pct": 0.0,
+    "market": "HK"
+   }
+  ],
+  "count": 62
+ },
+ "024239": {
+  "ts": "2026-09-05 17:38:38",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 3.11,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 2.85,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.6,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 1.57,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "UMC",
+    "name": "联华电子",
+    "pct": 1.51,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.51,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 1.49,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 1.46,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "01888",
+    "name": "建滔积层板",
+    "pct": 1.38,
+    "market": "HK"
+   },
+   {
+    "seq": 10,
+    "code": "00522",
+    "name": "ASMPT",
+    "pct": 1.37,
+    "market": "HK"
+   },
+   {
+    "seq": 11,
+    "code": "03986",
+    "name": "兆易创新",
+    "pct": 1.35,
+    "market": "HK"
+   },
+   {
+    "seq": 12,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 1.3,
+    "market": "HK"
+   },
+   {
+    "seq": 13,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 1.27,
+    "market": "HK"
+   },
+   {
+    "seq": 14,
+    "code": "09903",
+    "name": "天数智芯",
+    "pct": 1.26,
+    "market": "HK"
+   },
+   {
+    "seq": 15,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.24,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "688519",
+    "name": "南亚新材",
+    "pct": 1.23,
+    "market": "CN"
+   },
+   {
+    "seq": 17,
+    "code": "02476",
+    "name": "胜宏科技",
+    "pct": 1.23,
+    "market": "HK"
+   },
+   {
+    "seq": 18,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 1.22,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "03200",
+    "name": "大族数控",
+    "pct": 1.22,
+    "market": "HK"
+   },
+   {
+    "seq": 20,
+    "code": "06166",
+    "name": "剑桥科技",
+    "pct": 1.22,
+    "market": "HK"
+   },
+   {
+    "seq": 21,
+    "code": "06869",
+    "name": "长飞光纤光缆",
+    "pct": 1.21,
+    "market": "HK"
+   },
+   {
+    "seq": 22,
+    "code": "002463",
+    "name": "沪电股份",
+    "pct": 1.2,
+    "market": "CN"
+   },
+   {
+    "seq": 23,
+    "code": "301526",
+    "name": "国际复材",
+    "pct": 1.18,
+    "market": "CN"
+   },
+   {
+    "seq": 24,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 1.17,
+    "market": "HK"
+   },
+   {
+    "seq": 25,
+    "code": "688498",
+    "name": "源杰科技",
+    "pct": 1.17,
+    "market": "CN"
+   },
+   {
+    "seq": 26,
+    "code": "002384",
+    "name": "东山精密",
+    "pct": 1.16,
+    "market": "CN"
+   },
+   {
+    "seq": 27,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 1.15,
+    "market": "CN"
+   },
+   {
+    "seq": 28,
+    "code": "603256",
+    "name": "宏和科技",
+    "pct": 1.12,
+    "market": "CN"
+   },
+   {
+    "seq": 29,
+    "code": "300308",
+    "name": "中际旭创",
+    "pct": 1.1,
+    "market": "CN"
+   },
+   {
+    "seq": 30,
+    "code": "301377",
+    "name": "鼎泰高科",
+    "pct": 1.1,
+    "market": "CN"
+   },
+   {
+    "seq": 31,
+    "code": "002484",
+    "name": "江海股份",
+    "pct": 1.09,
+    "market": "CN"
+   },
+   {
+    "seq": 32,
+    "code": "688808",
+    "name": "联讯仪器",
+    "pct": 1.07,
+    "market": "CN"
+   },
+   {
+    "seq": 33,
+    "code": "688146",
+    "name": "中船特气",
+    "pct": 1.03,
+    "market": "CN"
+   },
+   {
+    "seq": 34,
+    "code": "603186",
+    "name": "华正新材",
+    "pct": 1.02,
+    "market": "CN"
+   },
+   {
+    "seq": 35,
+    "code": "06809",
+    "name": "澜起科技",
+    "pct": 0.93,
+    "market": "HK"
+   },
+   {
+    "seq": 36,
+    "code": "02359",
+    "name": "药明康德",
+    "pct": 0.91,
+    "market": "HK"
+   },
+   {
+    "seq": 37,
+    "code": "603773",
+    "name": "沃格光电",
+    "pct": 0.89,
+    "market": "CN"
+   },
+   {
+    "seq": 38,
+    "code": "02513",
+    "name": "智谱",
+    "pct": 0.88,
+    "market": "HK"
+   },
+   {
+    "seq": 39,
+    "code": "688300",
+    "name": "联瑞新材",
+    "pct": 0.83,
+    "market": "CN"
+   },
+   {
+    "seq": 40,
+    "code": "300666",
+    "name": "江丰电子",
+    "pct": 0.82,
+    "market": "CN"
+   },
+   {
+    "seq": 41,
+    "code": "02338",
+    "name": "潍柴动力",
+    "pct": 0.82,
+    "market": "HK"
+   },
+   {
+    "seq": 42,
+    "code": "06082",
+    "name": "壁仞科技",
+    "pct": 0.8,
+    "market": "HK"
+   },
+   {
+    "seq": 43,
+    "code": "300620",
+    "name": "光库科技",
+    "pct": 0.79,
+    "market": "CN"
+   },
+   {
+    "seq": 44,
+    "code": "301319",
+    "name": "唯特偶",
+    "pct": 0.76,
+    "market": "CN"
+   },
+   {
+    "seq": 45,
+    "code": "002916",
+    "name": "深南电路",
+    "pct": 0.71,
+    "market": "CN"
+   },
+   {
+    "seq": 46,
+    "code": "301511",
+    "name": "德福科技",
+    "pct": 0.7,
+    "market": "CN"
+   },
+   {
+    "seq": 47,
+    "code": "002281",
+    "name": "光迅科技",
+    "pct": 0.64,
+    "market": "CN"
+   },
+   {
+    "seq": 48,
+    "code": "06088",
+    "name": "FIT HON TENG",
+    "pct": 0.63,
+    "market": "HK"
+   },
+   {
+    "seq": 49,
+    "code": "002436",
+    "name": "兴森科技",
+    "pct": 0.61,
+    "market": "CN"
+   },
+   {
+    "seq": 50,
+    "code": "00992",
+    "name": "联想集团",
+    "pct": 0.59,
+    "market": "HK"
+   },
+   {
+    "seq": 51,
+    "code": "300394",
+    "name": "天孚通信",
+    "pct": 0.58,
+    "market": "CN"
+   },
+   {
+    "seq": 52,
+    "code": "002938",
+    "name": "鹏鼎控股",
+    "pct": 0.57,
+    "market": "CN"
+   },
+   {
+    "seq": 53,
+    "code": "000636",
+    "name": "风华高科",
+    "pct": 0.56,
+    "market": "CN"
+   },
+   {
+    "seq": 54,
+    "code": "01729",
+    "name": "汇聚科技",
+    "pct": 0.55,
+    "market": "HK"
+   },
+   {
+    "seq": 55,
+    "code": "002138",
+    "name": "顺络电子",
+    "pct": 0.51,
+    "market": "CN"
+   },
+   {
+    "seq": 56,
+    "code": "688260",
+    "name": "昀冢科技",
+    "pct": 0.47,
+    "market": "CN"
+   },
+   {
+    "seq": 57,
+    "code": "601208",
+    "name": "东材科技",
+    "pct": 0.46,
+    "market": "CN"
+   },
+   {
+    "seq": 58,
+    "code": "02631",
+    "name": "天岳先进",
+    "pct": 0.46,
+    "market": "HK"
+   },
+   {
+    "seq": 59,
+    "code": "600105",
+    "name": "永鼎股份",
+    "pct": 0.45,
+    "market": "CN"
+   },
+   {
+    "seq": 60,
+    "code": "002636",
+    "name": "金安国纪",
+    "pct": 0.44,
+    "market": "CN"
+   },
+   {
+    "seq": 61,
+    "code": "02676",
+    "name": "纳芯微",
+    "pct": 0.42,
+    "market": "HK"
+   },
+   {
+    "seq": 62,
+    "code": "01989",
+    "name": "广合科技",
+    "pct": 0.4,
+    "market": "HK"
+   },
+   {
+    "seq": 63,
+    "code": "300757",
+    "name": "罗博特科",
+    "pct": 0.4,
+    "market": "CN"
+   },
+   {
+    "seq": 64,
+    "code": "02382",
+    "name": "舜宇光学科技",
+    "pct": 0.4,
+    "market": "HK"
+   },
+   {
+    "seq": 65,
+    "code": "605358",
+    "name": "立昂微",
+    "pct": 0.39,
+    "market": "CN"
+   },
+   {
+    "seq": 66,
+    "code": "003036",
+    "name": "泰坦股份",
+    "pct": 0.39,
+    "market": "CN"
+   },
+   {
+    "seq": 67,
+    "code": "300814",
+    "name": "中富电路",
+    "pct": 0.36,
+    "market": "CN"
+   },
+   {
+    "seq": 68,
+    "code": "603823",
+    "name": "百合花",
+    "pct": 0.34,
+    "market": "CN"
+   },
+   {
+    "seq": 69,
+    "code": "002859",
+    "name": "洁美科技",
+    "pct": 0.34,
+    "market": "CN"
+   },
+   {
+    "seq": 70,
+    "code": "600487",
+    "name": "亨通光电",
+    "pct": 0.32,
+    "market": "CN"
+   },
+   {
+    "seq": 71,
+    "code": "06613",
+    "name": "蓝思科技",
+    "pct": 0.3,
+    "market": "HK"
+   },
+   {
+    "seq": 72,
+    "code": "688630",
+    "name": "芯碁微装",
+    "pct": 0.29,
+    "market": "CN"
+   },
+   {
+    "seq": 73,
+    "code": "600869",
+    "name": "远东股份",
+    "pct": 0.28,
+    "market": "CN"
+   },
+   {
+    "seq": 74,
+    "code": "301123",
+    "name": "奕东电子",
+    "pct": 0.27,
+    "market": "CN"
+   },
+   {
+    "seq": 75,
+    "code": "00669",
+    "name": "创科实业",
+    "pct": 0.27,
+    "market": "HK"
+   },
+   {
+    "seq": 76,
+    "code": "300223",
+    "name": "君正股份",
+    "pct": 0.27,
+    "market": "CN"
+   },
+   {
+    "seq": 77,
+    "code": "605376",
+    "name": "博迁新材",
+    "pct": 0.26,
+    "market": "CN"
+   },
+   {
+    "seq": 78,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 0.26,
+    "market": "US"
+   },
+   {
+    "seq": 79,
+    "code": "688257",
+    "name": "新锐股份",
+    "pct": 0.25,
+    "market": "CN"
+   },
+   {
+    "seq": 80,
+    "code": "300285",
+    "name": "国瓷材料",
+    "pct": 0.25,
+    "market": "CN"
+   },
+   {
+    "seq": 81,
+    "code": "000988",
+    "name": "华工科技",
+    "pct": 0.23,
+    "market": "CN"
+   },
+   {
+    "seq": 82,
+    "code": "03750",
+    "name": "宁德时代",
+    "pct": 0.23,
+    "market": "HK"
+   },
+   {
+    "seq": 83,
+    "code": "603061",
+    "name": "金海通",
+    "pct": 0.21,
+    "market": "CN"
+   },
+   {
+    "seq": 84,
+    "code": "688167",
+    "name": "炬光科技",
+    "pct": 0.2,
+    "market": "CN"
+   },
+   {
+    "seq": 85,
+    "code": "688610",
+    "name": "埃科光电",
+    "pct": 0.2,
+    "market": "CN"
+   },
+   {
+    "seq": 86,
+    "code": "605589",
+    "name": "圣泉集团",
+    "pct": 0.2,
+    "market": "CN"
+   },
+   {
+    "seq": 87,
+    "code": "600522",
+    "name": "中天科技",
+    "pct": 0.19,
+    "market": "CN"
+   },
+   {
+    "seq": 88,
+    "code": "02315",
+    "name": "百奥赛图-B",
+    "pct": 0.18,
+    "market": "HK"
+   },
+   {
+    "seq": 89,
+    "code": "688603",
+    "name": "天承科技",
+    "pct": 0.18,
+    "market": "CN"
+   },
+   {
+    "seq": 90,
+    "code": "00189",
+    "name": "东岳集团",
+    "pct": 0.18,
+    "market": "HK"
+   },
+   {
+    "seq": 91,
+    "code": "600367",
+    "name": "红星发展",
+    "pct": 0.18,
+    "market": "CN"
+   },
+   {
+    "seq": 92,
+    "code": "301013",
+    "name": "利和兴",
+    "pct": 0.18,
+    "market": "CN"
+   },
+   {
+    "seq": 93,
+    "code": "300868",
+    "name": "杰美特",
+    "pct": 0.17,
+    "market": "CN"
+   },
+   {
+    "seq": 94,
+    "code": "603078",
+    "name": "江化微",
+    "pct": 0.16,
+    "market": "CN"
+   },
+   {
+    "seq": 95,
+    "code": "002409",
+    "name": "雅克科技",
+    "pct": 0.15,
+    "market": "CN"
+   },
+   {
+    "seq": 96,
+    "code": "600552",
+    "name": "凯盛科技",
+    "pct": 0.15,
+    "market": "CN"
+   },
+   {
+    "seq": 97,
+    "code": "002080",
+    "name": "中材科技",
+    "pct": 0.14,
+    "market": "CN"
+   },
+   {
+    "seq": 98,
+    "code": "688456",
+    "name": "有研粉材",
+    "pct": 0.13,
+    "market": "CN"
+   },
+   {
+    "seq": 99,
+    "code": "09995",
+    "name": "荣昌生物",
+    "pct": 0.13,
+    "market": "HK"
+   },
+   {
+    "seq": 100,
+    "code": "301396",
+    "name": "宏景科技",
+    "pct": 0.12,
+    "market": "CN"
+   },
+   {
+    "seq": 101,
+    "code": "301217",
+    "name": "铜冠铜箔",
+    "pct": 0.12,
+    "market": "CN"
+   },
+   {
+    "seq": 102,
+    "code": "002428",
+    "name": "云南锗业",
+    "pct": 0.12,
+    "market": "CN"
+   },
+   {
+    "seq": 103,
+    "code": "02715",
+    "name": "埃斯顿",
+    "pct": 0.12,
+    "market": "HK"
+   },
+   {
+    "seq": 104,
+    "code": "300811",
+    "name": "铂科新材",
+    "pct": 0.12,
+    "market": "CN"
+   },
+   {
+    "seq": 105,
+    "code": "688409",
+    "name": "富创精密",
+    "pct": 0.11,
+    "market": "CN"
+   },
+   {
+    "seq": 106,
+    "code": "300408",
+    "name": "三环集团",
+    "pct": 0.11,
+    "market": "CN"
+   },
+   {
+    "seq": 107,
+    "code": "688141",
+    "name": "杰华特",
+    "pct": 0.11,
+    "market": "CN"
+   },
+   {
+    "seq": 108,
+    "code": "000657",
+    "name": "中钨高新",
+    "pct": 0.11,
+    "market": "CN"
+   },
+   {
+    "seq": 109,
+    "code": "600353",
+    "name": "旭光电子",
+    "pct": 0.1,
+    "market": "CN"
+   },
+   {
+    "seq": 110,
+    "code": "688017",
+    "name": "绿的谐波",
+    "pct": 0.1,
+    "market": "CN"
+   },
+   {
+    "seq": 111,
+    "code": "688059",
+    "name": "华锐精密",
+    "pct": 0.09,
+    "market": "CN"
+   },
+   {
+    "seq": 112,
+    "code": "688126",
+    "name": "沪硅产业",
+    "pct": 0.09,
+    "market": "CN"
+   },
+   {
+    "seq": 113,
+    "code": "300398",
+    "name": "飞凯材料",
+    "pct": 0.08,
+    "market": "CN"
+   },
+   {
+    "seq": 114,
+    "code": "603738",
+    "name": "泰晶科技",
+    "pct": 0.08,
+    "market": "CN"
+   },
+   {
+    "seq": 115,
+    "code": "002975",
+    "name": "博杰股份",
+    "pct": 0.08,
+    "market": "CN"
+   },
+   {
+    "seq": 116,
+    "code": "603203",
+    "name": "快克智能",
+    "pct": 0.08,
+    "market": "CN"
+   },
+   {
+    "seq": 117,
+    "code": "688401",
+    "name": "路维光电",
+    "pct": 0.07,
+    "market": "CN"
+   },
+   {
+    "seq": 118,
+    "code": "688143",
+    "name": "长盈通",
+    "pct": 0.07,
+    "market": "CN"
+   },
+   {
+    "seq": 119,
+    "code": "688233",
+    "name": "神工股份",
+    "pct": 0.07,
+    "market": "CN"
+   },
+   {
+    "seq": 120,
+    "code": "VICR",
+    "name": "Vicor Corp",
+    "pct": 0.06,
+    "market": "US"
+   },
+   {
+    "seq": 121,
+    "code": "002008",
+    "name": "大族激光",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 122,
+    "code": "688627",
+    "name": "精智达",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 123,
+    "code": "688082",
+    "name": "盛美上海",
+    "pct": 0.06,
+    "market": "CN"
+   },
+   {
+    "seq": 124,
+    "code": "301568",
+    "name": "思泰克",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 125,
+    "code": "688352",
+    "name": "颀中科技",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 126,
+    "code": "688308",
+    "name": "欧科亿",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 127,
+    "code": "688507",
+    "name": "索辰科技",
+    "pct": 0.05,
+    "market": "CN"
+   },
+   {
+    "seq": 128,
+    "code": "301188",
+    "name": "力诺药包",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 129,
+    "code": "603663",
+    "name": "三祥新材",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 130,
+    "code": "688669",
+    "name": "聚石化学",
+    "pct": 0.04,
+    "market": "CN"
+   },
+   {
+    "seq": 131,
+    "code": "603267",
+    "name": "鸿远电子",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 132,
+    "code": "300319",
+    "name": "麦捷科技",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 133,
+    "code": "300395",
+    "name": "菲利华",
+    "pct": 0.03,
+    "market": "CN"
+   },
+   {
+    "seq": 134,
+    "code": "688012",
+    "name": "中微公司",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 135,
+    "code": "301308",
+    "name": "江波龙",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 136,
+    "code": "688551",
+    "name": "科威尔",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 137,
+    "code": "688783",
+    "name": "西安奕材",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 138,
+    "code": "688359",
+    "name": "三孚新科",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 139,
+    "code": "002585",
+    "name": "双星新材",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 140,
+    "code": "688313",
+    "name": "仕佳光子",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 141,
+    "code": "688045",
+    "name": "必易微",
+    "pct": 0.02,
+    "market": "CN"
+   },
+   {
+    "seq": 142,
+    "code": "688112",
+    "name": "鼎阳科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 143,
+    "code": "688629",
+    "name": "华丰科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 144,
+    "code": "600206",
+    "name": "有研新材",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 145,
+    "code": "002552",
+    "name": "宝鼎科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 146,
+    "code": "688362",
+    "name": "甬矽电子",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 147,
+    "code": "688037",
+    "name": "芯源微",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 148,
+    "code": "600707",
+    "name": "彩虹股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 149,
+    "code": "605111",
+    "name": "新洁能",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 150,
+    "code": "301392",
+    "name": "汇成真空",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 151,
+    "code": "000021",
+    "name": "深科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 152,
+    "code": "688127",
+    "name": "蓝特光学",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 153,
+    "code": "300054",
+    "name": "鼎龙股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 154,
+    "code": "688403",
+    "name": "汇成股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 155,
+    "code": "300346",
+    "name": "南大光电",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 156,
+    "code": "688545",
+    "name": "兴福电子",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 157,
+    "code": "603283",
+    "name": "赛腾股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 158,
+    "code": "603650",
+    "name": "彤程新材",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 159,
+    "code": "688809",
+    "name": "强一股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 160,
+    "code": "300706",
+    "name": "阿石创",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 161,
+    "code": "688521",
+    "name": "芯原股份",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 162,
+    "code": "300720",
+    "name": "海川智能",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 163,
+    "code": "301630",
+    "name": "同宇新材",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 164,
+    "code": "688056",
+    "name": "莱伯泰科",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 165,
+    "code": "301099",
+    "name": "雅创电子",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 166,
+    "code": "301205",
+    "name": "联特科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 167,
+    "code": "002371",
+    "name": "北方华创",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 168,
+    "code": "688702",
+    "name": "盛科通信",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 169,
+    "code": "300700",
+    "name": "岱勒新材",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 170,
+    "code": "688797",
+    "name": "臻宝科技",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 171,
+    "code": "301389",
+    "name": "隆扬电子",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 172,
+    "code": "688432",
+    "name": "有研硅",
+    "pct": 0.01,
+    "market": "CN"
+   },
+   {
+    "seq": 173,
+    "code": "300747",
+    "name": "锐科激光",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 174,
+    "code": "688368",
+    "name": "晶丰明源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 175,
+    "code": "001399",
+    "name": "惠科股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 176,
+    "code": "601869",
+    "name": "长飞光纤",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 177,
+    "code": "301362",
+    "name": "民爆光电",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 178,
+    "code": "603629",
+    "name": "利通电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 179,
+    "code": "688048",
+    "name": "长光华芯",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 180,
+    "code": "688766",
+    "name": "普冉股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 181,
+    "code": "688025",
+    "name": "杰普特",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 182,
+    "code": "301531",
+    "name": "春光集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 183,
+    "code": "300567",
+    "name": "精测电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 184,
+    "code": "300782",
+    "name": "卓胜微",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 185,
+    "code": "09988",
+    "name": "阿里巴巴-W",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 186,
+    "code": "603688",
+    "name": "石英股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 187,
+    "code": "603115",
+    "name": "海星股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 188,
+    "code": "300938",
+    "name": "信测标准",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 189,
+    "code": "002837",
+    "name": "英维克",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 190,
+    "code": "002851",
+    "name": "麦格米特",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 191,
+    "code": "688635",
+    "name": "长进光子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 192,
+    "code": "601231",
+    "name": "环旭电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 193,
+    "code": "600330",
+    "name": "天通股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 194,
+    "code": "001365",
+    "name": "天海电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 195,
+    "code": "003031",
+    "name": "中瓷电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 196,
+    "code": "603618",
+    "name": "杭电股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 197,
+    "code": "002222",
+    "name": "福晶科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 198,
+    "code": "001237",
+    "name": "惠康科技",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 199,
+    "code": "301669",
+    "name": "高特电子",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 200,
+    "code": "001248",
+    "name": "华润新能源",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 201,
+    "code": "001393",
+    "name": "维通利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 202,
+    "code": "301599",
+    "name": "理奇智能",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 203,
+    "code": "605117",
+    "name": "德业股份",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 204,
+    "code": "603407",
+    "name": "长裕集团",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 205,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 206,
+    "code": "688001",
+    "name": "华兴源创",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 207,
+    "code": "603435",
+    "name": "嘉德利",
+    "pct": 0.0,
+    "market": "CN"
+   },
+   {
+    "seq": 208,
+    "code": "01024",
+    "name": "快手-W",
+    "pct": 0.0,
+    "market": "HK"
+   },
+   {
+    "seq": 209,
+    "code": "01415",
+    "name": "高伟电子",
+    "pct": 0.0,
+    "market": "HK"
+   }
+  ],
+  "count": 209
+ }
+}
