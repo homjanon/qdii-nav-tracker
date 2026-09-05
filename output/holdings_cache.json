@@ -1,6 +1,6 @@
 {
  "014002|current|": {
-  "ts": "2026-09-04 22:01:38",
+  "ts": "2026-09-05 17:04:06",
   "year": "",
   "month": "",
   "holdings": [
@@ -73,11 +73,81 @@
     "name": "SK海力士",
     "pct": 3.77,
     "market": "KR"
+   },
+   {
+    "seq": 11,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 3.02,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 2.52,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.46,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 2.2,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.4,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.34,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "CIEN",
+    "name": "Ciena科技",
+    "pct": 1.27,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 0.74,
+    "market": "US"
    }
   ]
  },
  "002891|2026|3": {
-  "ts": "2026-09-04 22:01:12",
+  "ts": "2026-09-05 17:03:15",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -149,12 +219,82 @@
     "code": "ALAB",
     "name": "Astera Labs Inc",
     "pct": 3.47,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 3.35,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 1.89,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "6981",
+    "name": "村田制作所",
+    "pct": 1.88,
+    "market": "SKIP"
+   },
+   {
+    "seq": 14,
+    "code": "AXTI",
+    "name": "AXT Inc",
+    "pct": 1.88,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 1.73,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "300223",
+    "name": "君正股份",
+    "pct": 1.69,
+    "market": "CN"
+   },
+   {
+    "seq": 17,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 1.69,
+    "market": "CN"
+   },
+   {
+    "seq": 18,
+    "code": "688498",
+    "name": "源杰科技",
+    "pct": 1.66,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "AAOI",
+    "name": "应用光电",
+    "pct": 1.65,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 1.58,
     "market": "US"
    }
   ]
  },
  "002891|current|": {
-  "ts": "2026-09-04 22:01:12",
+  "ts": "2026-09-05 17:03:15",
   "year": "",
   "month": "",
   "holdings": [
@@ -227,11 +367,81 @@
     "name": "Astera Labs Inc",
     "pct": 3.47,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 3.35,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 1.89,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "6981",
+    "name": "村田制作所",
+    "pct": 1.88,
+    "market": "SKIP"
+   },
+   {
+    "seq": 14,
+    "code": "AXTI",
+    "name": "AXT Inc",
+    "pct": 1.88,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 1.73,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "300223",
+    "name": "君正股份",
+    "pct": 1.69,
+    "market": "CN"
+   },
+   {
+    "seq": 17,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 1.69,
+    "market": "CN"
+   },
+   {
+    "seq": 18,
+    "code": "688498",
+    "name": "源杰科技",
+    "pct": 1.66,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "AAOI",
+    "name": "应用光电",
+    "pct": 1.65,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 1.58,
+    "market": "US"
    }
   ]
  },
  "008254|2026|3": {
-  "ts": "2026-09-04 22:01:34",
+  "ts": "2026-09-05 17:03:53",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -304,11 +514,81 @@
     "name": "英伟达",
     "pct": 2.37,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 2.23,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 2.05,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 2.05,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 2.01,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 1.95,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "KLIC",
+    "name": "库力索法工业",
+    "pct": 1.87,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 1.26,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 1.14,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "ASX",
+    "name": "日月光半导体",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.1,
+    "market": "US"
    }
   ]
  },
  "008254|current|": {
-  "ts": "2026-09-04 22:01:34",
+  "ts": "2026-09-05 17:03:54",
   "year": "",
   "month": "",
   "holdings": [
@@ -381,11 +661,81 @@
     "name": "英伟达",
     "pct": 2.37,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 2.23,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 2.05,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "GLW",
+    "name": "康宁",
+    "pct": 2.05,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 2.01,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 1.95,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "KLIC",
+    "name": "库力索法工业",
+    "pct": 1.87,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 1.26,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 1.14,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "ASX",
+    "name": "日月光半导体",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.1,
+    "market": "US"
    }
   ]
  },
  "014002|2026|3": {
-  "ts": "2026-09-04 22:01:38",
+  "ts": "2026-09-05 17:04:06",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -458,11 +808,81 @@
     "name": "SK海力士",
     "pct": 3.77,
     "market": "KR"
+   },
+   {
+    "seq": 11,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 3.02,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "TSM",
+    "name": "台积电",
+    "pct": 2.52,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.46,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "CRDO",
+    "name": "Credo Technology Group Holding Ltd",
+    "pct": 2.2,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.4,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.34,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "CIEN",
+    "name": "Ciena科技",
+    "pct": 1.27,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 1.1,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 0.74,
+    "market": "US"
    }
   ]
  },
  "015202|2026|3": {
-  "ts": "2026-09-04 22:01:42",
+  "ts": "2026-09-05 17:04:18",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -534,12 +954,82 @@
     "code": "INTC",
     "name": "英特尔",
     "pct": 2.97,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 2.95,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.55,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 2.33,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.3,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "ADI",
+    "name": "亚德诺",
+    "pct": 2.12,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.89,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.85,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.76,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 1.44,
     "market": "US"
    }
   ]
  },
  "015202|current|": {
-  "ts": "2026-09-04 22:01:43",
+  "ts": "2026-09-05 17:04:19",
   "year": "",
   "month": "",
   "holdings": [
@@ -612,11 +1102,81 @@
     "name": "英特尔",
     "pct": 2.97,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 2.95,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.55,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 2.33,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.3,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "ADI",
+    "name": "亚德诺",
+    "pct": 2.12,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.89,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.85,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.76,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 1.44,
+    "market": "US"
    }
   ]
  },
  "016702|2026|3": {
-  "ts": "2026-09-04 22:01:46",
+  "ts": "2026-09-05 17:04:30",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -688,12 +1248,82 @@
     "code": "TSM",
     "name": "台积电",
     "pct": 3.31,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "TSLA",
+    "name": "特斯拉",
+    "pct": 3.19,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 2.86,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.81,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 2.22,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 1.97,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.87,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 1.78,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 1.57,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 1.45,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 1.43,
     "market": "US"
    }
   ]
  },
  "016702|current|": {
-  "ts": "2026-09-04 22:01:46",
+  "ts": "2026-09-05 17:04:30",
   "year": "",
   "month": "",
   "holdings": [
@@ -766,11 +1396,81 @@
     "name": "台积电",
     "pct": 3.31,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "TSLA",
+    "name": "特斯拉",
+    "pct": 3.19,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 2.86,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.81,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 2.22,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 1.97,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.87,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 1.78,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 1.57,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 1.45,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 1.43,
+    "market": "US"
    }
   ]
  },
  "018147|2026|3": {
-  "ts": "2026-09-04 22:01:49",
+  "ts": "2026-09-05 17:04:41",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -842,12 +1542,82 @@
     "code": "GLW",
     "name": "康宁",
     "pct": 3.35,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "SITM",
+    "name": "SiTime Corp",
+    "pct": 3.21,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 3.0,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "MPWR",
+    "name": "Monolithic Power Systems Inc",
+    "pct": 2.98,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.54,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 2.04,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "2383",
+    "name": "台光电",
+    "pct": 1.64,
+    "market": "SKIP"
+   },
+   {
+    "seq": 17,
+    "code": "JP3914400001",
+    "name": "村田制作所",
+    "pct": 1.49,
+    "market": "SKIP"
+   },
+   {
+    "seq": 18,
+    "code": "KR7009150004",
+    "name": "三星电机公司",
+    "pct": 0.78,
+    "market": "SKIP"
+   },
+   {
+    "seq": 19,
+    "code": "JP3452000007",
+    "name": "太阳诱电株式会社",
+    "pct": 0.61,
+    "market": "SKIP"
+   },
+   {
+    "seq": 20,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 0.42,
     "market": "US"
    }
   ]
  },
  "018147|current|": {
-  "ts": "2026-09-04 22:01:49",
+  "ts": "2026-09-05 17:04:41",
   "year": "",
   "month": "",
   "holdings": [
@@ -920,11 +1690,81 @@
     "name": "康宁",
     "pct": 3.35,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "SITM",
+    "name": "SiTime Corp",
+    "pct": 3.21,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 3.0,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "MPWR",
+    "name": "Monolithic Power Systems Inc",
+    "pct": 2.98,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.54,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 2.04,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "2383",
+    "name": "台光电",
+    "pct": 1.64,
+    "market": "SKIP"
+   },
+   {
+    "seq": 17,
+    "code": "JP3914400001",
+    "name": "村田制作所",
+    "pct": 1.49,
+    "market": "SKIP"
+   },
+   {
+    "seq": 18,
+    "code": "KR7009150004",
+    "name": "三星电机公司",
+    "pct": 0.78,
+    "market": "SKIP"
+   },
+   {
+    "seq": 19,
+    "code": "JP3452000007",
+    "name": "太阳诱电株式会社",
+    "pct": 0.61,
+    "market": "SKIP"
+   },
+   {
+    "seq": 20,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 0.42,
+    "market": "US"
    }
   ]
  },
  "021277|2026|3": {
-  "ts": "2026-09-04 22:01:52",
+  "ts": "2026-09-05 17:04:50",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -997,11 +1837,81 @@
     "name": "三环集团",
     "pct": 3.1,
     "market": "CN"
+   },
+   {
+    "seq": 11,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 2.84,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 2.64,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 2.57,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 2.55,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "002371",
+    "name": "北方华创",
+    "pct": 2.24,
+    "market": "CN"
+   },
+   {
+    "seq": 16,
+    "code": "4004",
+    "name": "Resonac Holdings Corp",
+    "pct": 2.07,
+    "market": "SKIP"
+   },
+   {
+    "seq": 17,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 1.93,
+    "market": "KR"
+   },
+   {
+    "seq": 18,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 1.65,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "688012",
+    "name": "中微公司",
+    "pct": 1.33,
+    "market": "CN"
+   },
+   {
+    "seq": 20,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 1.15,
+    "market": "KR"
    }
   ]
  },
  "021277|current|": {
-  "ts": "2026-09-04 22:01:53",
+  "ts": "2026-09-05 17:04:50",
   "year": "",
   "month": "",
   "holdings": [
@@ -1074,11 +1984,81 @@
     "name": "三环集团",
     "pct": 3.1,
     "market": "CN"
+   },
+   {
+    "seq": 11,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 2.84,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 2.64,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 2.57,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "AMZN",
+    "name": "亚马逊",
+    "pct": 2.55,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "002371",
+    "name": "北方华创",
+    "pct": 2.24,
+    "market": "CN"
+   },
+   {
+    "seq": 16,
+    "code": "4004",
+    "name": "Resonac Holdings Corp",
+    "pct": 2.07,
+    "market": "SKIP"
+   },
+   {
+    "seq": 17,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 1.93,
+    "market": "KR"
+   },
+   {
+    "seq": 18,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 1.65,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "688012",
+    "name": "中微公司",
+    "pct": 1.33,
+    "market": "CN"
+   },
+   {
+    "seq": 20,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 1.15,
+    "market": "KR"
    }
   ]
  },
  "021842|2026|3": {
-  "ts": "2026-09-04 22:01:58",
+  "ts": "2026-09-05 17:05:02",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -1150,12 +2130,82 @@
     "code": "NOK",
     "name": "诺基亚",
     "pct": 2.66,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 2.62,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "WOLF",
+    "name": "Wolfspeed Inc",
+    "pct": 2.33,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 2.31,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 2.29,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 2.06,
+    "market": "JP"
+   },
+   {
+    "seq": 16,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.86,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "6525JT",
+    "name": "国际电气株式会社",
+    "pct": 1.79,
+    "market": "SKIP"
+   },
+   {
+    "seq": 18,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 1.71,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "6871JP",
+    "name": "Micronics日本有限公司",
+    "pct": 1.65,
+    "market": "SKIP"
+   },
+   {
+    "seq": 20,
+    "code": "FORM",
+    "name": "FormFactor Inc",
+    "pct": 1.61,
     "market": "US"
    }
   ]
  },
  "021842|current|": {
-  "ts": "2026-09-04 22:01:59",
+  "ts": "2026-09-05 17:05:02",
   "year": "",
   "month": "",
   "holdings": [
@@ -1228,165 +2278,81 @@
     "name": "诺基亚",
     "pct": 2.66,
     "market": "US"
-   }
-  ]
- },
- "022184|2026|3": {
-  "ts": "2026-09-04 22:02:01",
-  "year": 2026,
-  "month": 3,
-  "holdings": [
-   {
-    "seq": 1,
-    "code": "00522",
-    "name": "ASMPT",
-    "pct": 5.62,
-    "market": "HK"
    },
    {
-    "seq": 2,
-    "code": "603986",
-    "name": "兆易创新",
-    "pct": 5.51,
-    "market": "CN"
-   },
-   {
-    "seq": 3,
-    "code": "SNDK",
-    "name": "闪迪",
-    "pct": 5.04,
+    "seq": 11,
+    "code": "TSEM",
+    "name": "Tower半导体",
+    "pct": 2.62,
     "market": "US"
    },
    {
-    "seq": 4,
-    "code": "600183",
-    "name": "生益科技",
-    "pct": 4.7,
-    "market": "CN"
+    "seq": 12,
+    "code": "WOLF",
+    "name": "Wolfspeed Inc",
+    "pct": 2.33,
+    "market": "US"
    },
    {
-    "seq": 5,
-    "code": "000660",
-    "name": "SK海力士",
-    "pct": 4.62,
-    "market": "KR"
+    "seq": 13,
+    "code": "KEYS",
+    "name": "是德科技",
+    "pct": 2.31,
+    "market": "US"
    },
    {
-    "seq": 6,
-    "code": "005930",
-    "name": "三星电子",
-    "pct": 4.58,
-    "market": "KR"
+    "seq": 14,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 2.29,
+    "market": "US"
    },
    {
-    "seq": 7,
+    "seq": 15,
     "code": "285A",
     "name": "KIOXIA",
-    "pct": 4.58,
+    "pct": 2.06,
     "market": "JP"
    },
    {
-    "seq": 8,
-    "code": "MU",
-    "name": "美光科技",
-    "pct": 4.31,
+    "seq": 16,
+    "code": "LITE",
+    "name": "Lumentum Holdings Inc",
+    "pct": 1.86,
     "market": "US"
    },
    {
-    "seq": 9,
-    "code": "STX",
-    "name": "希捷科技",
-    "pct": 4.28,
+    "seq": 17,
+    "code": "6525JT",
+    "name": "国际电气株式会社",
+    "pct": 1.79,
+    "market": "SKIP"
+   },
+   {
+    "seq": 18,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 1.71,
     "market": "US"
    },
    {
-    "seq": 10,
-    "code": "WDC",
-    "name": "西部数据",
-    "pct": 4.22,
-    "market": "US"
-   }
-  ]
- },
- "022184|current|": {
-  "ts": "2026-09-04 22:02:02",
-  "year": "",
-  "month": "",
-  "holdings": [
-   {
-    "seq": 1,
-    "code": "00522",
-    "name": "ASMPT",
-    "pct": 5.62,
-    "market": "HK"
+    "seq": 19,
+    "code": "6871JP",
+    "name": "Micronics日本有限公司",
+    "pct": 1.65,
+    "market": "SKIP"
    },
    {
-    "seq": 2,
-    "code": "603986",
-    "name": "兆易创新",
-    "pct": 5.51,
-    "market": "CN"
-   },
-   {
-    "seq": 3,
-    "code": "SNDK",
-    "name": "闪迪",
-    "pct": 5.04,
-    "market": "US"
-   },
-   {
-    "seq": 4,
-    "code": "600183",
-    "name": "生益科技",
-    "pct": 4.7,
-    "market": "CN"
-   },
-   {
-    "seq": 5,
-    "code": "000660",
-    "name": "SK海力士",
-    "pct": 4.62,
-    "market": "KR"
-   },
-   {
-    "seq": 6,
-    "code": "005930",
-    "name": "三星电子",
-    "pct": 4.58,
-    "market": "KR"
-   },
-   {
-    "seq": 7,
-    "code": "285A",
-    "name": "KIOXIA",
-    "pct": 4.58,
-    "market": "JP"
-   },
-   {
-    "seq": 8,
-    "code": "MU",
-    "name": "美光科技",
-    "pct": 4.31,
-    "market": "US"
-   },
-   {
-    "seq": 9,
-    "code": "STX",
-    "name": "希捷科技",
-    "pct": 4.28,
-    "market": "US"
-   },
-   {
-    "seq": 10,
-    "code": "WDC",
-    "name": "西部数据",
-    "pct": 4.22,
+    "seq": 20,
+    "code": "FORM",
+    "name": "FormFactor Inc",
+    "pct": 1.61,
     "market": "US"
    }
   ]
  },
  "012922|2026|3": {
-  "ts": "2026-09-04 22:02:07",
+  "ts": "2026-09-05 17:05:28",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -1459,11 +2425,81 @@
     "name": "阿斯麦",
     "pct": 3.33,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 3.23,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 3.22,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 3.03,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 3.01,
+    "market": "CN"
+   },
+   {
+    "seq": 15,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 2.9,
+    "market": "HK"
+   },
+   {
+    "seq": 16,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 2.75,
+    "market": "KR"
+   },
+   {
+    "seq": 17,
+    "code": "300408",
+    "name": "三环集团",
+    "pct": 2.72,
+    "market": "CN"
+   },
+   {
+    "seq": 18,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 2.45,
+    "market": "HK"
+   },
+   {
+    "seq": 19,
+    "code": "688256",
+    "name": "寒武纪",
+    "pct": 2.21,
+    "market": "CN"
+   },
+   {
+    "seq": 20,
+    "code": "002384",
+    "name": "东山精密",
+    "pct": 2.12,
+    "market": "CN"
    }
   ]
  },
  "012922|current|": {
-  "ts": "2026-09-04 22:02:08",
+  "ts": "2026-09-05 17:05:28",
   "year": "",
   "month": "",
   "holdings": [
@@ -1536,11 +2572,375 @@
     "name": "阿斯麦",
     "pct": 3.33,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 3.23,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 3.22,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 3.03,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 3.01,
+    "market": "CN"
+   },
+   {
+    "seq": 15,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 2.9,
+    "market": "HK"
+   },
+   {
+    "seq": 16,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 2.75,
+    "market": "KR"
+   },
+   {
+    "seq": 17,
+    "code": "300408",
+    "name": "三环集团",
+    "pct": 2.72,
+    "market": "CN"
+   },
+   {
+    "seq": 18,
+    "code": "01347",
+    "name": "华虹宏力",
+    "pct": 2.45,
+    "market": "HK"
+   },
+   {
+    "seq": 19,
+    "code": "688256",
+    "name": "寒武纪",
+    "pct": 2.21,
+    "market": "CN"
+   },
+   {
+    "seq": 20,
+    "code": "002384",
+    "name": "东山精密",
+    "pct": 2.12,
+    "market": "CN"
+   }
+  ]
+ },
+ "022184|2026|3": {
+  "ts": "2026-09-05 17:05:12",
+  "year": 2026,
+  "month": 3,
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "00522",
+    "name": "ASMPT",
+    "pct": 5.62,
+    "market": "HK"
+   },
+   {
+    "seq": 2,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 5.51,
+    "market": "CN"
+   },
+   {
+    "seq": 3,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 5.04,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 4.7,
+    "market": "CN"
+   },
+   {
+    "seq": 5,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 4.62,
+    "market": "KR"
+   },
+   {
+    "seq": 6,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 4.58,
+    "market": "KR"
+   },
+   {
+    "seq": 7,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 4.58,
+    "market": "JP"
+   },
+   {
+    "seq": 8,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 4.31,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 4.28,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 4.22,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "00992",
+    "name": "联想集团",
+    "pct": 3.8,
+    "market": "HK"
+   },
+   {
+    "seq": 12,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 3.79,
+    "market": "HK"
+   },
+   {
+    "seq": 13,
+    "code": "01888",
+    "name": "建滔积层板",
+    "pct": 3.74,
+    "market": "HK"
+   },
+   {
+    "seq": 14,
+    "code": "03690",
+    "name": "美团-W",
+    "pct": 3.55,
+    "market": "HK"
+   },
+   {
+    "seq": 15,
+    "code": "09988",
+    "name": "阿里巴巴-W",
+    "pct": 3.5,
+    "market": "HK"
+   },
+   {
+    "seq": 16,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 3.33,
+    "market": "HK"
+   },
+   {
+    "seq": 17,
+    "code": "01024",
+    "name": "快手-W",
+    "pct": 3.33,
+    "market": "HK"
+   },
+   {
+    "seq": 18,
+    "code": "00189",
+    "name": "东岳集团",
+    "pct": 3.24,
+    "market": "HK"
+   },
+   {
+    "seq": 19,
+    "code": "09899",
+    "name": "网易云音乐",
+    "pct": 3.15,
+    "market": "HK"
+   },
+   {
+    "seq": 20,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 2.69,
+    "market": "HK"
+   }
+  ]
+ },
+ "022184|current|": {
+  "ts": "2026-09-05 17:05:13",
+  "year": "",
+  "month": "",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "00522",
+    "name": "ASMPT",
+    "pct": 5.62,
+    "market": "HK"
+   },
+   {
+    "seq": 2,
+    "code": "603986",
+    "name": "兆易创新",
+    "pct": 5.51,
+    "market": "CN"
+   },
+   {
+    "seq": 3,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 5.04,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "600183",
+    "name": "生益科技",
+    "pct": 4.7,
+    "market": "CN"
+   },
+   {
+    "seq": 5,
+    "code": "000660",
+    "name": "SK海力士",
+    "pct": 4.62,
+    "market": "KR"
+   },
+   {
+    "seq": 6,
+    "code": "005930",
+    "name": "三星电子",
+    "pct": 4.58,
+    "market": "KR"
+   },
+   {
+    "seq": 7,
+    "code": "285A",
+    "name": "KIOXIA",
+    "pct": 4.58,
+    "market": "JP"
+   },
+   {
+    "seq": 8,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 4.31,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 4.28,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 4.22,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "00992",
+    "name": "联想集团",
+    "pct": 3.8,
+    "market": "HK"
+   },
+   {
+    "seq": 12,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 3.79,
+    "market": "HK"
+   },
+   {
+    "seq": 13,
+    "code": "01888",
+    "name": "建滔积层板",
+    "pct": 3.74,
+    "market": "HK"
+   },
+   {
+    "seq": 14,
+    "code": "03690",
+    "name": "美团-W",
+    "pct": 3.55,
+    "market": "HK"
+   },
+   {
+    "seq": 15,
+    "code": "09988",
+    "name": "阿里巴巴-W",
+    "pct": 3.5,
+    "market": "HK"
+   },
+   {
+    "seq": 16,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 3.33,
+    "market": "HK"
+   },
+   {
+    "seq": 17,
+    "code": "01024",
+    "name": "快手-W",
+    "pct": 3.33,
+    "market": "HK"
+   },
+   {
+    "seq": 18,
+    "code": "00189",
+    "name": "东岳集团",
+    "pct": 3.24,
+    "market": "HK"
+   },
+   {
+    "seq": 19,
+    "code": "09899",
+    "name": "网易云音乐",
+    "pct": 3.15,
+    "market": "HK"
+   },
+   {
+    "seq": 20,
+    "code": "00700",
+    "name": "腾讯控股",
+    "pct": 2.69,
+    "market": "HK"
    }
   ]
  },
  "080006|2026|3": {
-  "ts": "2026-09-04 22:02:14",
+  "ts": "2026-09-05 17:05:41",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -1612,12 +3012,82 @@
     "code": "GOOGL",
     "name": "谷歌-A",
     "pct": 2.78,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 2.64,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.63,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WMT",
+    "name": "沃尔玛",
+    "pct": 2.45,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.36,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "CSCO",
+    "name": "思科",
+    "pct": 2.01,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "COST",
+    "name": "开市客",
+    "pct": 1.81,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.71,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 1.48,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "NFLX",
+    "name": "奈飞",
+    "pct": 1.31,
     "market": "US"
    }
   ]
  },
  "080006|current|": {
-  "ts": "2026-09-04 22:02:15",
+  "ts": "2026-09-05 17:05:41",
   "year": "",
   "month": "",
   "holdings": [
@@ -1690,11 +3160,81 @@
     "name": "谷歌-A",
     "pct": 2.78,
     "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 2.64,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 2.63,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.49,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "WMT",
+    "name": "沃尔玛",
+    "pct": 2.45,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.36,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "CSCO",
+    "name": "思科",
+    "pct": 2.01,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "COST",
+    "name": "开市客",
+    "pct": 1.81,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.71,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 1.48,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "NFLX",
+    "name": "奈飞",
+    "pct": 1.31,
+    "market": "US"
    }
   ]
  },
  "024239|2026|3": {
-  "ts": "2026-09-04 22:02:18",
+  "ts": "2026-09-05 17:05:52",
   "year": 2026,
   "month": 3,
   "holdings": [
@@ -1767,11 +3307,81 @@
     "name": "ASMPT",
     "pct": 1.37,
     "market": "HK"
+   },
+   {
+    "seq": 11,
+    "code": "03986",
+    "name": "兆易创新",
+    "pct": 1.35,
+    "market": "HK"
+   },
+   {
+    "seq": 12,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 1.3,
+    "market": "HK"
+   },
+   {
+    "seq": 13,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 1.27,
+    "market": "HK"
+   },
+   {
+    "seq": 14,
+    "code": "09903",
+    "name": "天数智芯",
+    "pct": 1.26,
+    "market": "HK"
+   },
+   {
+    "seq": 15,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.24,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "688519",
+    "name": "南亚新材",
+    "pct": 1.23,
+    "market": "CN"
+   },
+   {
+    "seq": 17,
+    "code": "02476",
+    "name": "胜宏科技",
+    "pct": 1.23,
+    "market": "HK"
+   },
+   {
+    "seq": 18,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 1.22,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "03200",
+    "name": "大族数控",
+    "pct": 1.22,
+    "market": "HK"
+   },
+   {
+    "seq": 20,
+    "code": "06166",
+    "name": "剑桥科技",
+    "pct": 1.22,
+    "market": "HK"
    }
   ]
  },
  "024239|current|": {
-  "ts": "2026-09-04 22:02:18",
+  "ts": "2026-09-05 17:05:52",
   "year": "",
   "month": "",
   "holdings": [
@@ -1843,6 +3453,76 @@
     "code": "00522",
     "name": "ASMPT",
     "pct": 1.37,
+    "market": "HK"
+   },
+   {
+    "seq": 11,
+    "code": "03986",
+    "name": "兆易创新",
+    "pct": 1.35,
+    "market": "HK"
+   },
+   {
+    "seq": 12,
+    "code": "00981",
+    "name": "中芯国际",
+    "pct": 1.3,
+    "market": "HK"
+   },
+   {
+    "seq": 13,
+    "code": "00148",
+    "name": "建滔集团",
+    "pct": 1.27,
+    "market": "HK"
+   },
+   {
+    "seq": 14,
+    "code": "09903",
+    "name": "天数智芯",
+    "pct": 1.26,
+    "market": "HK"
+   },
+   {
+    "seq": 15,
+    "code": "COHR",
+    "name": "Coherent Corp",
+    "pct": 1.24,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "688519",
+    "name": "南亚新材",
+    "pct": 1.23,
+    "market": "CN"
+   },
+   {
+    "seq": 17,
+    "code": "02476",
+    "name": "胜宏科技",
+    "pct": 1.23,
+    "market": "HK"
+   },
+   {
+    "seq": 18,
+    "code": "300502",
+    "name": "新易盛",
+    "pct": 1.22,
+    "market": "CN"
+   },
+   {
+    "seq": 19,
+    "code": "03200",
+    "name": "大族数控",
+    "pct": 1.22,
+    "market": "HK"
+   },
+   {
+    "seq": 20,
+    "code": "06166",
+    "name": "剑桥科技",
+    "pct": 1.22,
     "market": "HK"
    }
   ]
