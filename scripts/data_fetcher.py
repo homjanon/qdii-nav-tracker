@@ -155,8 +155,11 @@ def fallback_chain(fetchers, label="", verbose=True):
 
 # ============ 持仓 ============
 
-def fetch_f10(code, topline=10, year="", month=""):
-    """F10 持仓接口（HTTP/1.1 直连，稳定）"""
+HOLDINGS_TOP_N = 20  # 2026-09-05 升级：十大→二十大（覆盖率 47.8%→68.8%，NNLS 维度 21 < 60 窗口安全）
+
+def fetch_f10(code, topline=20, year="", month=""):
+    """F10 持仓接口（HTTP/1.1 直连，稳定）
+    默认取前 20 大（HOLDINGS_TOP_N=20，2026-09-05 升级：原十大覆盖率 ~48% → 二十大 ~69%）"""
     params = {"type": "jjcc", "code": code, "topline": topline}
     if year:
         params["year"], params["month"] = year, month
@@ -183,10 +186,74 @@ def parse_holdings(html):
             continue
         code = re.sub(r"<[^>]+>", "", tds[1]).strip()
         name = re.sub(r"<[^>]+>", "", tds[2]).strip()
-        pct = float(re.sub(r"<[^>]+>", "", tds[6]).strip().replace("%", ""))
+        pct_txt = re.sub(r"<[^>]+>", "", tds[6]).strip().replace("%", "").replace(",", "")
+        try:
+            pct = float(pct_txt)
+        except ValueError:
+            # 2026-09-05 容错：占比为 '---'/空 等占位（部分基金披露格式），该行占比按 0 处理
+            pct = 0.0
         out.append({"seq": int(seq), "code": code, "name": name, "pct": pct,
                     "market": classify_market(code)})
     return out
+
+def fetch_f10_all(code, year="2026", month="6"):
+    """拉取某期全部股票持仓（topline=1000，覆盖 021277 805 只等全量）
+    返回解析后的全持仓列表（纯标的+占比，不含行情）"""
+    html = fetch_f10(code, topline=1000, year=year, month=month)
+    if not html:
+        return []
+    return parse_holdings(html)
+
+# 全持仓静态缓存（中报/年报披露后抓一次，非每日行情）：output/holdings_full.json
+HOLDINGS_FULL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", "holdings_full.json")
+HOLDINGS_FULL_MAX_AGE_DAYS = 120  # 披露期（8月底中报/3月底年报）才刷新，120 天足够
+
+def _load_full_cache():
+    try:
+        if os.path.exists(HOLDINGS_FULL_PATH):
+            with open(HOLDINGS_FULL_PATH, encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+def _save_full_cache(cache):
+    try:
+        os.makedirs(os.path.dirname(HOLDINGS_FULL_PATH), exist_ok=True)
+        with open(HOLDINGS_FULL_PATH, "w", encoding="utf-8") as f:
+            json.dump(cache, f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass
+
+def get_holdings_full(code, force=False):
+    """获取某基金全部持仓（静态，披露期缓存；force=True 强制刷新）
+    返回 (holdings, source)：source='live' / 'cache' / 'none'
+    holdings = [{seq, code, name, pct, market}, ...] 全量
+    """
+    cache = _load_full_cache()
+    entry = cache.get(code)
+
+    # 缓存有效（未过期 且 非强制）→ 直接用
+    if not force and entry and entry.get("holdings"):
+        try:
+            ts = datetime.datetime.strptime(entry["ts"], "%Y-%m-%d %H:%M:%S")
+            age_days = (datetime.datetime.now() - ts).days
+            if age_days <= HOLDINGS_FULL_MAX_AGE_DAYS:
+                return entry["holdings"], "cache"
+        except Exception:
+            return entry["holdings"], "cache"
+
+    # 拉实时全持仓（中报 2026/6；失败退缓存兜底）
+    h = fetch_f10_all(code)
+    if h:
+        cache[code] = {"ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+                       "year": "2026", "month": "6", "holdings": h,
+                       "count": len(h)}
+        _save_full_cache(cache)
+        return h, "live"
+    if entry and entry.get("holdings"):
+        return entry["holdings"], "cache"
+    return [], "none"
 
 # 持仓缓存（F10 偶发超时兜底）：output/holdings_cache.json
 # key = f"{code}-{year}-{month}（默认最新期 year='' month='' → key 带 current 标记）"
@@ -211,14 +278,14 @@ def _save_holdings_cache(cache):
         pass
 
 def get_holdings(code, year="", month=""):
-    """获取某期十大持仓（F10 实时 → 失败读缓存兜底）
+    """获取某期二十大持仓（F10 实时 → 失败读缓存兜底，2026-09-05 升级 10→20）
     返回 (holdings, source)：source='live' 实时 / 'cache' 缓存
     """
     cache_key = f"{code}|{year or 'current'}|{month or ''}"
     cache = _load_holdings_cache()
 
     # 实时获取
-    html = fetch_f10(code, 10, year, month)
+    html = fetch_f10(code, HOLDINGS_TOP_N, year, month)
     if html:
         h = parse_holdings(html)
         if h:
