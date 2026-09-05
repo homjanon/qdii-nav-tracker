@@ -212,7 +212,6 @@ def refresh_full_holdings(force=False):
     返回 dict：{"report_date": "...", "funds": {code: {...}}}
     """
     report_date = "2026-06-30"  # 当前中报截止日（Q2 2026）；年报期需更新
-    cache = dfet._load_full_cache()
     funds_out = {}
     any_live = False
     for code in FUNDS:
@@ -220,7 +219,9 @@ def refresh_full_holdings(force=False):
             h, src = dfet.get_holdings_full(code, force=force)
             if not h:
                 continue
-            entry = cache.get(code) or {}
+            # 2026-09-05 修复：get_holdings_full 内部会更新缓存文件，
+            # 需重新读取才能拿到最新 ts（原实现在循环前快照一次 → 大部分基金 ts 为空）
+            entry = (dfet._load_full_cache().get(code)) or {}
             funds_out[code] = {"holdings": h, "ts": entry.get("ts", ""),
                                "count": len(h), "source": src}
             if src == "live":
