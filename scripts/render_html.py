@@ -122,7 +122,7 @@ def load_history(path):
                         pass
     return rows
 
-def render(report, history, out_path):
+def render(report, history, out_path, full_holdings=None):
     date = report.get("date", "")
     gen = report.get("generated_at", "")
     funds = report.get("funds", {})
@@ -345,7 +345,7 @@ def render(report, history, out_path):
                "<th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead>"
                f"<tbody>{''.join(q_rows)}</tbody></table>")
 
-    # ---- 疑似调仓折叠（展示全部十大持仓，无变化标0）----
+    # ---- 疑似调仓折叠（展示二十大持仓，无变化标0；2026-09-05 升级 10→20）----
     adj_details = []
     for code, r in funds.items():
         if "error" in r:
@@ -379,11 +379,33 @@ def render(report, history, out_path):
                         f"<td>{diff:+.1f}% {flag}</td><td>{ret_cell}</td></tr>")
         adj_details.append(f"""
         <details>
-          <summary>{FUND_NAMES.get(code, code)}（{code}）— 十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项</summary>
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— 二十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项</summary>
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th><th>最新涨跌幅</th></tr></thead>
           <tbody>{''.join(rows)}</tbody></table>
+          <div style="margin-top:6px;text-align:right"><a href="#full-holdings-{esc(code)}" style="color:var(--accent);font-size:12px;text-decoration:none">📄 查看全部半年报持仓 →</a></div>
         </details>""")
     adj_block = "\n".join(adj_details) if adj_details else "<p class='sub'>暂无数据</p>"
+
+    # ---- 全部半年报持仓（2026-09-05 新增：静态披露档案，来自 output/holdings_full.json）----
+    full_details = []
+    full_report_date = ""
+    if full_holdings:
+        full_report_date = (full_holdings.get("report_date") or "").strip()
+        for code, entry in (full_holdings.get("funds") or {}).items():
+            hs = entry.get("holdings") or []
+            ts = entry.get("ts", "")
+            total = sum((x.get("pct") or 0) for x in hs)
+            full_rows = []
+            for x in sorted(hs, key=lambda v: v.get("seq", 0)):
+                full_rows.append(f"<tr><td>{x.get('seq','')}</td><td>{esc(x.get('code',''))}</td>"
+                                 f"<td>{esc(x.get('name',''))}</td><td>{x.get('pct',0):.2f}%</td></tr>")
+            full_details.append(f"""
+        <details id="full-holdings-{esc(code)}">
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— 全部持仓 {len(hs)} 项 · 累计 {total:.1f}% · 抓取 {esc(ts)}</summary>
+          <table style="margin-top:8px"><thead><tr><th>序号</th><th>代码</th><th>名称</th><th>占净值%</th></tr></thead>
+          <tbody>{''.join(full_rows)}</tbody></table>
+        </details>""")
+    full_block = "\n".join(full_details) if full_details else "<p class='sub'>暂无全持仓数据（待披露期抓取）</p>"
 
     # ---- 组装 ----
     now = datetime.datetime.now(CST).strftime("%Y-%m-%d %H:%M")
@@ -398,7 +420,7 @@ def render(report, history, out_path):
 <body>
 <div class="wrap">
 <header>
-  <div><h1>QDII 净值跟踪</h1><div class="sub">十大持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
+  <div><h1>QDII 净值跟踪</h1><div class="sub">二十大持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
   <div class="sub">报告日 {esc(date)}<br>更新 {esc(gen)}</div>
 </header>
 
@@ -433,7 +455,7 @@ def render(report, history, out_path):
 <div class="card">
   <h2>美股含量总览</h2>
   <div class="legend">
-    <span><i style="background:var(--accent)"></i>披露美股占比 %（十大）</span>
+    <span><i style="background:var(--accent)"></i>披露美股占比 %（二十大）</span>
     <span class="sub">NDX β 见右侧标签，>1 表示对纳指放大暴露</span>
   </div>
   <div class="chart-box"><canvas id="usChart" role="img" aria-label="美股含量对比条形图">美股含量对比</canvas></div>
@@ -455,6 +477,14 @@ def render(report, history, out_path):
 <div class="card">
   <h2>疑似调仓（滚动NNLS vs 披露）</h2>
   {adj_block}
+</div>
+
+<div class="card">
+  <h2>全部半年报持仓 <span class="badge">静态披露档案{f" · {esc(full_report_date)}" if full_report_date else ""}</span></h2>
+  <div class="legend">
+    <span class="sub">中报/年报披露的全部股票持仓（标的+占比，不含行情）· 从上方"查看全部半年报持仓 →"可快速跳转</span>
+  </div>
+  {full_block}
 </div>
 
 <footer class="sub" style="text-align:center;margin:24px 0 8px;">
@@ -534,11 +564,16 @@ def main():
     ap.add_argument("--json", required=True)
     ap.add_argument("--history", default="")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--holdings-full", default="", help="output/holdings_full.json（全部半年报持仓，可选）")
     a = ap.parse_args()
     with open(a.json, encoding="utf-8") as f:
         report = json.load(f)
     history = load_history(a.history) if a.history else []
-    render(report, history, a.out)
+    full_h = None
+    if a.holdings_full and os.path.exists(a.holdings_full):
+        with open(a.holdings_full, encoding="utf-8") as f:
+            full_h = json.load(f)
+    render(report, history, a.out, full_h)
 
 if __name__ == "__main__":
     main()
