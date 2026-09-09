@@ -99,6 +99,7 @@ GitHub Pages 发布（main 分支 /docs 目录）
 | USD/CNH 汇率 | 中行牌价 currency_boc_safe | 东财 push2his（curl_cffi）→ yfinance |
 | NDX / INX / HSI 指数 | **NDX: yfinance（^NDX，首选，2026-08-22 起：新浪清晨滞后导致背离误判，已修复）**；INX/HSI: akshare 新浪 | yfinance（兜底） |
 | 美股交易日历 | pandas-market-calendars（NYSE） | weekday 近似 |
+| 中国基金净值日历 | pandas-market-calendars（XSHG，2026-09-09 起） | QDII 净值只在 A股交易日公布：中国节假日（工作日但 A股休市，国庆/春节等）→ 当日跳过；长假回归首日（最新净值 ↔ 美股最近收盘间隔 ≥2 个美股交易日）→ 跳过当日预测（净值将一次反映多日美股累计，单日模型必大偏差），次日自动恢复 |
 
 > **A股全市场识别（2026-08-26 修复）**：`classify_market` 6 位数字统一归 CN（主板 000/600/601/603/605 + 创业板 300 + 科创板 688）——此前只认 3 开头，主板/科创板持仓（如 600183/603986/688498）被误判 SKIP 不参与预测。**日韩股亦已纳入静态权重篮子参与预测**（此前是预测盲区）。
 
