@@ -4,11 +4,13 @@
 
 流程（美股交易日北京时间 08:00 触发）：
 1. 判断美股交易日（NYSE 日历 + 时区）——非交易日跳过
-2. 对每只基金：拉最新持仓 + 净值 + 美股行情 + 汇率
-3. ⭐ 前瞻预测：用今天凌晨美股收盘数据，预测「今晚将公布」的净值涨跌（lag=0）
-4. 验证历史预测：读取 predictions.jsonl，净值已公布的补记 actual，统计命中率
-5. 滚动 NNLS 动态权重 → 输出疑似调仓清单
-6. 生成 Markdown 报告 → output/
+2. 中国节假日门控（2026-09-09）：工作日但 A股休市（国庆/春节）→ 基金不发布净值，跳过
+3. 长假回归首日保护：最新净值与美股最近收盘间隔 ≥2 个美股交易日 → 跳过当日（避免多日累计大偏差）
+4. 对每只基金：拉最新持仓 + 净值 + 美股行情 + 汇率
+5. ⭐ 前瞻预测：用今天凌晨美股收盘数据，预测「今晚将公布」的净值涨跌（lag=0）
+6. 验证历史预测：读取 predictions.jsonl，净值已公布的补记 actual，统计命中率
+7. 滚动 NNLS 动态权重 → 输出疑似调仓清单
+8. 生成 Markdown 报告 → output/
 """
 import os, sys, json, datetime, argparse
 import numpy as np
@@ -80,6 +82,39 @@ def is_us_trade_day_today():
         print(f"✗ {today}：美东昨日 {us_prev} 非交易日（周末/节假日），跳过")
     return is_trade
 
+def is_cn_nav_day(bj_date=None):
+    """判断北京日期是否为 A股交易日 = QDII 基金净值更新日（2026-09-09 加入）。
+    QDII 基金净值只在 A股交易日公布（基金公司按中国工作日运营）；中国长假
+    （国庆/春节等，A股休市但美股照常交易）期间基金不更新净值，美股多日涨跌
+    会积压到节后首个净值日一次反映。此前门控只看美股日历 → 长假期间每天
+    空跑并产生永久悬挂的无效预测记录。
+    """
+    if bj_date is None:
+        bj_date = bj_now().strftime("%Y-%m-%d")
+    try:
+        import pandas_market_calendars as mcal
+        xshg = mcal.get_calendar("XSHG")
+        sched = xshg.schedule(start_date=bj_date, end_date=bj_date)
+        return len(sched) > 0
+    except Exception:
+        # 兜底：周末判休市，其余放行（保守不拦正常日）
+        return datetime.datetime.strptime(bj_date, "%Y-%m-%d").weekday() < 5
+
+def us_holiday_gap_days(last_date, us_last):
+    """基金最新净值日 last_date 与美股最近收盘日 us_last 之间的美股交易日数。
+    ≥2 说明两者间积压了多个美股交易日（长假回归首日）：今晚净值将一次反映
+    多日美股累计涨跌，单日预测模型必大偏差 → 应跳过当日预测。
+    普通周末/单日美股休市该值 ≤1，不拦截。返回 int；日历异常返回 0（放行）。
+    """
+    try:
+        import pandas_market_calendars as mcal
+        nyse = mcal.get_calendar("NYSE")
+        start = (pd.Timestamp(last_date) + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+        sched = nyse.schedule(start_date=start, end_date=str(us_last))
+        return len(sched)
+    except Exception:
+        return 0
+
 def load_history():
     """读取预测历史（JSONL）"""
     rows = []
@@ -116,6 +151,28 @@ def main():
             print("今天非美股交易日（或美股未收盘），跳过自动运行")
             return 0
         print("✓ 美股交易日，执行分析")
+        # 中国节假日门控（2026-09-09）：工作日但 A股休市（国庆/春节等）→ 基金不发布净值，
+        # 不产生"等不到净值"的悬挂预测。周末由上方美股门控处理，此处只拦工作日节假日。
+        wd = datetime.datetime.strptime(today, "%Y-%m-%d").weekday()
+        if wd < 5 and not is_cn_nav_day(today):
+            print(f"✗ {today} 中国节假日（A股休市），QDII 基金不更新净值，跳过自动运行")
+            return 0
+        # 长假回归首日保护（2026-09-09）：基金最新净值与美股最近收盘间隔 ≥2 个美股交易日
+        # → 今晚净值将一次反映多日美股累计涨跌（如国庆后 10/8 = 美股 5 天累计），
+        #   单日预测必大偏差 → 跳过当天（历史验证由次日正常补跑）。
+        try:
+            nav_probe = dfet.get_nav(FUNDS[0])
+            if nav_probe is not None and len(nav_probe) > 0:
+                last_date = pd.Timestamp(nav_probe["date"].iloc[-1])
+                us_last = dfet.us_last_trade_date()
+                gap = us_holiday_gap_days(last_date, us_last)
+                if gap >= 2:
+                    print(f"✗ 长假回归首日：基金最新净值 {last_date.date()} ↔ 美股最近收盘 "
+                          f"{us_last} 间隔 {gap} 个美股交易日，今晚净值含多日累计涨跌，"
+                          f"跳过当日预测（避免大偏差，历史验证次日补跑）")
+                    return 0
+        except Exception as e:
+            print(f"  [长假检测跳过] {repr(e)[:80]}")
 
     history = load_history()
 
