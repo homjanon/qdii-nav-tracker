@@ -11007,5 +11007,342 @@
    }
   ],
   "count": 209
+ },
+ "159509": {
+  "ts": "2026-09-18 22:03:15",
+  "year": "2026",
+  "month": "6",
+  "holdings": [
+   {
+    "seq": 1,
+    "code": "NVDA",
+    "name": "英伟达",
+    "pct": 13.01,
+    "market": "US"
+   },
+   {
+    "seq": 2,
+    "code": "AAPL",
+    "name": "苹果",
+    "pct": 12.73,
+    "market": "US"
+   },
+   {
+    "seq": 3,
+    "code": "MSFT",
+    "name": "微软",
+    "pct": 9.52,
+    "market": "US"
+   },
+   {
+    "seq": 4,
+    "code": "GOOGL",
+    "name": "谷歌-A",
+    "pct": 6.69,
+    "market": "US"
+   },
+   {
+    "seq": 5,
+    "code": "GOOG",
+    "name": "谷歌-C",
+    "pct": 6.2,
+    "market": "US"
+   },
+   {
+    "seq": 6,
+    "code": "AVGO",
+    "name": "博通",
+    "pct": 6.15,
+    "market": "US"
+   },
+   {
+    "seq": 7,
+    "code": "MU",
+    "name": "美光科技",
+    "pct": 5.66,
+    "market": "US"
+   },
+   {
+    "seq": 8,
+    "code": "META",
+    "name": "Meta Platforms Inc-A",
+    "pct": 5.38,
+    "market": "US"
+   },
+   {
+    "seq": 9,
+    "code": "AMD",
+    "name": "超威半导体",
+    "pct": 4.12,
+    "market": "US"
+   },
+   {
+    "seq": 10,
+    "code": "INTC",
+    "name": "英特尔",
+    "pct": 3.05,
+    "market": "US"
+   },
+   {
+    "seq": 11,
+    "code": "AMAT",
+    "name": "应用材料",
+    "pct": 2.5,
+    "market": "US"
+   },
+   {
+    "seq": 12,
+    "code": "LRCX",
+    "name": "拉姆研究",
+    "pct": 2.36,
+    "market": "US"
+   },
+   {
+    "seq": 13,
+    "code": "KLAC",
+    "name": "科磊",
+    "pct": 1.71,
+    "market": "US"
+   },
+   {
+    "seq": 14,
+    "code": "SNDK",
+    "name": "闪迪",
+    "pct": 1.46,
+    "market": "US"
+   },
+   {
+    "seq": 15,
+    "code": "PANW",
+    "name": "派拓网络",
+    "pct": 1.21,
+    "market": "US"
+   },
+   {
+    "seq": 16,
+    "code": "TXN",
+    "name": "德州仪器",
+    "pct": 1.18,
+    "market": "US"
+   },
+   {
+    "seq": 17,
+    "code": "PLTR",
+    "name": "Palantir Technologies Inc-A",
+    "pct": 1.17,
+    "market": "US"
+   },
+   {
+    "seq": 18,
+    "code": "MRVL",
+    "name": "迈威尔科技",
+    "pct": 1.13,
+    "market": "US"
+   },
+   {
+    "seq": 19,
+    "code": "WDC",
+    "name": "西部数据",
+    "pct": 0.96,
+    "market": "US"
+   },
+   {
+    "seq": 20,
+    "code": "STX",
+    "name": "希捷科技",
+    "pct": 0.94,
+    "market": "US"
+   },
+   {
+    "seq": 21,
+    "code": "QCOM",
+    "name": "高通",
+    "pct": 0.85,
+    "market": "US"
+   },
+   {
+    "seq": 22,
+    "code": "CRWD",
+    "name": "CrowdStrike Holdings Inc-A",
+    "pct": 0.85,
+    "market": "US"
+   },
+   {
+    "seq": 23,
+    "code": "ADI",
+    "name": "亚德诺",
+    "pct": 0.84,
+    "market": "US"
+   },
+   {
+    "seq": 24,
+    "code": "ASML",
+    "name": "阿斯麦",
+    "pct": 0.79,
+    "market": "US"
+   },
+   {
+    "seq": 25,
+    "code": "APP",
+    "name": "Applovin Corp-A",
+    "pct": 0.69,
+    "market": "US"
+   },
+   {
+    "seq": 26,
+    "code": "ARM",
+    "name": "Arm Holdings plc ADR",
+    "pct": 0.65,
+    "market": "US"
+   },
+   {
+    "seq": 27,
+    "code": "SHOP",
+    "name": "Shopify Inc-A",
+    "pct": 0.61,
+    "market": "US"
+   },
+   {
+    "seq": 28,
+    "code": "FTNT",
+    "name": "防特网",
+    "pct": 0.49,
+    "market": "US"
+   },
+   {
+    "seq": 29,
+    "code": "CDNS",
+    "name": "铿腾电子",
+    "pct": 0.45,
+    "market": "US"
+   },
+   {
+    "seq": 30,
+    "code": "DDOG",
+    "name": "Datadog Inc-A",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 31,
+    "code": "SNPS",
+    "name": "新思科技",
+    "pct": 0.37,
+    "market": "US"
+   },
+   {
+    "seq": 32,
+    "code": "ADBE",
+    "name": "奥多比",
+    "pct": 0.36,
+    "market": "US"
+   },
+   {
+    "seq": 33,
+    "code": "ALAB",
+    "name": "Astera Labs Inc",
+    "pct": 0.36,
+    "market": "US"
+   },
+   {
+    "seq": 34,
+    "code": "DASH",
+    "name": "DoorDash Inc-A",
+    "pct": 0.33,
+    "market": "US"
+   },
+   {
+    "seq": 35,
+    "code": "TER",
+    "name": "泰瑞达",
+    "pct": 0.33,
+    "market": "US"
+   },
+   {
+    "seq": 36,
+    "code": "INTU",
+    "name": "财捷",
+    "pct": 0.31,
+    "market": "US"
+   },
+   {
+    "seq": 37,
+    "code": "NXPI",
+    "name": "恩智浦半导体",
+    "pct": 0.31,
+    "market": "US"
+   },
+   {
+    "seq": 38,
+    "code": "MPWR",
+    "name": "Monolithic Power Systems Inc",
+    "pct": 0.3,
+    "market": "US"
+   },
+   {
+    "seq": 39,
+    "code": "NBIS",
+    "name": "Nebius Group NV-A",
+    "pct": 0.26,
+    "market": "US"
+   },
+   {
+    "seq": 40,
+    "code": "PDD",
+    "name": "拼多多",
+    "pct": 0.22,
+    "market": "US"
+   },
+   {
+    "seq": 41,
+    "code": "MCHP",
+    "name": "微芯科技",
+    "pct": 0.22,
+    "market": "US"
+   },
+   {
+    "seq": 42,
+    "code": "CRWV",
+    "name": "CoreWeave Inc-A",
+    "pct": 0.19,
+    "market": "US"
+   },
+   {
+    "seq": 43,
+    "code": "ADSK",
+    "name": "欧特克",
+    "pct": 0.18,
+    "market": "US"
+   },
+   {
+    "seq": 44,
+    "code": "ROP",
+    "name": "儒博实业",
+    "pct": 0.15,
+    "market": "US"
+   },
+   {
+    "seq": 45,
+    "code": "TRI",
+    "name": "汤森路透",
+    "pct": 0.14,
+    "market": "US"
+   },
+   {
+    "seq": 46,
+    "code": "MSTR",
+    "name": "Strategy Inc-A",
+    "pct": 0.13,
+    "market": "US"
+   },
+   {
+    "seq": 47,
+    "code": "WDAY",
+    "name": "Workday Inc-A",
+    "pct": 0.11,
+    "market": "US"
+   }
+  ],
+  "count": 47
  }
 }
