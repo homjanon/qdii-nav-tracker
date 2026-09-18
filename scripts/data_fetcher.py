@@ -196,6 +196,48 @@ def parse_holdings(html):
                     "market": classify_market(code)})
     return out
 
+# ============ 持仓报告期校验（2026-09-18 加入）============
+# 背景：ETF 联接基金 / FOF 等特殊基金的 F10「股票投资明细」可能长期停更
+#   （实例 017093 景顺纳科C：数据停在 2023Q3，解析出的 20 条为跨期混合垃圾，
+#    且 analyze_fund 的"空持仓保护"不触发 → 会静默产出错误预测）。
+# 规则：解析 F10 最新报告期，与"当前应已披露期（留 4 个月缓冲）"比较，
+#   落后超过 HOLDING_STALE_QUARTERS 个季度 → 判定过期，跳过预测并告警。
+HOLDING_STALE_QUARTERS = 2
+
+def parse_report_period(html):
+    """从 F10 HTML 解析最新报告期 → (year, quarter)；解析不到返回 None。
+    形如 '2026年2季度股票投资明细'（页面按最新期在前排序）。"""
+    m = re.search(r"(20\d{2})年(\d)季度", html or "")
+    if not m:
+        return None
+    return int(m.group(1)), int(m.group(2))
+
+def _expected_period(d=None, lag_months=4):
+    """当前日期下最保守的"应已披露"报告期（往前留 lag_months 个月缓冲）"""
+    d = d or datetime.date.today()
+    y, m = d.year, d.month - lag_months
+    while m <= 0:
+        m += 12
+        y -= 1
+    return y, (m - 1) // 3 + 1
+
+def is_period_stale(period, max_lag=HOLDING_STALE_QUARTERS):
+    """报告期是否过期（比"应已披露期"落后超过 max_lag 个季度）。
+    period 为 None（解析不到）时返回 False（保守放行，兼容无期次标记的返回）。"""
+    if not period:
+        return False
+    exp = _expected_period()
+    lag = (exp[0] * 4 + exp[1]) - (period[0] * 4 + period[1])
+    return lag > max_lag
+
+def get_holdings_period(code):
+    """获取 F10 最新报告期（轻量请求 topline=5）→ (year, quarter) 或 None"""
+    try:
+        html = fetch_f10(code, 5)
+        return parse_report_period(html)
+    except Exception:
+        return None
+
 def fetch_f10_all(code, year="2026", month="6"):
     """拉取某期全部股票持仓（topline=1000，覆盖 021277 805 只等全量）
     返回解析后的全持仓列表（纯标的+占比，不含行情）"""
