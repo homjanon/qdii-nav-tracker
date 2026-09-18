@@ -32,7 +32,9 @@ DEFAULT_FUND_NAMES = {"002891": "华夏移动互联", "008254": "华宝致远C",
 
 def load_funds_config():
     """从 config/funds.json 读取基金清单；文件缺失/格式错误时回退内置默认（向后兼容）。
-    ⚠️ 2026-08-26 恢复：8/20 曾因本地旧代码覆盖导致此函数被回滚（config 在云端但无人消费）"""
+    ⚠️ 2026-08-26 恢复：8/20 曾因本地旧代码覆盖导致此函数被回滚（config 在云端但无人消费）
+    2026-09-18：新增 holdings_proxy 读取（ETF 联接基金等特殊类型 → 持仓取目标 ETF）
+    返回 (funds, names, proxies)；proxies: {code: 目标ETF代码}（无代理则为空 dict）"""
     cfg_path = os.path.join(BASE_DIR, "..", "config", "funds.json")
     try:
         with open(cfg_path, encoding="utf-8") as f:
@@ -40,17 +42,20 @@ def load_funds_config():
         items = cfg.get("funds") or []
         funds = [str(x["code"]) for x in items if x.get("code")]
         names = {str(x["code"]): str(x.get("name", "")) for x in items if x.get("code")}
+        proxies = {str(x["code"]): str(x["holdings_proxy"]) for x in items
+                   if x.get("code") and x.get("holdings_proxy")}
         if funds:
-            print(f"[funds] 已从 config/funds.json 加载 {len(funds)} 只基金")
-            return funds, names
+            print(f"[funds] 已从 config/funds.json 加载 {len(funds)} 只基金"
+                  + (f"（其中 {len(proxies)} 只走持仓代理）" if proxies else ""))
+            return funds, names, proxies
         print(f"[funds] config/funds.json 为空，回退内置默认")
     except FileNotFoundError:
         print(f"[funds] 未找到 config/funds.json，回退内置默认（{len(DEFAULT_FUNDS)} 只）")
     except Exception as e:
         print(f"[funds] 读取 config/funds.json 失败（{e}），回退内置默认")
-    return DEFAULT_FUNDS, DEFAULT_FUND_NAMES
+    return DEFAULT_FUNDS, DEFAULT_FUND_NAMES, {}
 
-FUNDS, FUND_NAMES = load_funds_config()
+FUNDS, FUND_NAMES, FUND_PROXIES = load_funds_config()
 OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
 HIST_FILE = os.path.join(OUTPUT_DIR, "predictions.jsonl")
 
@@ -179,7 +184,7 @@ def main():
     results = {}
     for code in FUNDS:
         try:
-            r = ana.analyze_fund(code)
+            r = ana.analyze_fund(code, holdings_proxy=FUND_PROXIES.get(code))
             results[code] = r
         except Exception as e:
             print(f"  [{code}] 失败: {repr(e)[:150]}")
@@ -273,14 +278,17 @@ def refresh_full_holdings(force=False):
     any_live = False
     for code in FUNDS:
         try:
-            h, src = dfet.get_holdings_full(code, force=force)
+            # holdings_proxy（2026-09-18）：ETF 联接基金全持仓取自目标 ETF（穿透披露）
+            src_code = FUND_PROXIES.get(code, code)
+            h, src = dfet.get_holdings_full(src_code, force=force)
             if not h:
                 continue
             # 2026-09-05 修复：get_holdings_full 内部会更新缓存文件，
             # 需重新读取才能拿到最新 ts（原实现在循环前快照一次 → 大部分基金 ts 为空）
-            entry = (dfet._load_full_cache().get(code)) or {}
+            entry = (dfet._load_full_cache().get(src_code)) or {}
             funds_out[code] = {"holdings": h, "ts": entry.get("ts", ""),
-                               "count": len(h), "source": src}
+                               "count": len(h), "source": src,
+                               "holdings_proxy": src_code if src_code != code else None}
             if src == "live":
                 any_live = True
         except Exception as e:
