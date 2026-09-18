@@ -237,14 +237,29 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
         out["pred_range_high"] = float(last_nav * (1 + b_static + mae_static / 100))
     return out
 
-def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
-    """单只基金全流程分析"""
+def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdings_proxy=None):
+    """单只基金全流程分析
+
+    holdings_proxy（2026-09-18 加入）：持仓代理代码。ETF 联接基金自身的 F10
+      「股票投资明细」可能长期停更（真实持仓是持有的目标 ETF 份额），此时用
+      其跟踪的目标 ETF（如 017093 → 159509）的当期持仓作为代理做分析；
+      **净值仍用基金自身**。代理标的为完全复制型 ETF，持仓即目标指数成分。
+    """
+    hold_code = holdings_proxy or code
     # 1. 持仓（Q1 当期 + Q2 当期）——get_holdings 返回 (holdings, source)，F10 失败时用缓存兜底
-    h_q1, src_q1 = dfet.get_holdings(code, year_q1, month_q1)
-    h_q2, src_q2 = dfet.get_holdings(code)
+    h_q1, src_q1 = dfet.get_holdings(hold_code, year_q1, month_q1)
+    h_q2, src_q2 = dfet.get_holdings(hold_code)
     if not h_q2:
         print(f"[{code}] Q2 持仓获取失败（实时+缓存均不可用）")
-        return {"code": code, "error": "Q2 持仓获取失败"}
+        return {"code": code, "error": "Q2 持仓获取失败", "holdings_proxy": holdings_proxy}
+    # 期次校验（2026-09-18）：持仓数据过期（如联接基金自身 F10 停更）→ 跳过预测并告警
+    period = dfet.get_holdings_period(hold_code)
+    if dfet.is_period_stale(period):
+        pa = f"{period[0]}Q{period[1]}" if period else "未知"
+        print(f"[{code}] ⚠️ 持仓数据过期（{pa}，来源 {hold_code}），跳过预测（避免静默错误）")
+        return {"code": code, "error": f"持仓数据过期（{pa}）", "holdings_proxy": holdings_proxy}
+    if period:
+        print(f"[{code}] 持仓期次: {period[0]}Q{period[1]}" + (f"（代理自 {hold_code}）" if holdings_proxy else ""))
     q2_total = sum(x["pct"] for x in h_q2)
     us_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "US")
     hk_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "HK")
@@ -310,6 +325,8 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01"):
     return {"code": code, "q2_total": round(q2_total, 1), "us_pct": round(us_q2, 1),
             "hk_pct": round(hk_q2, 1), "price_n": len(price_map),
             "holdings": h_q2, "holdings_source": {"q2": src_q2, "q1": src_q1},
+            "holdings_proxy": holdings_proxy,
+            "holdings_period": f"{period[0]}Q{period[1]}" if period else None,
             "static": stat_static, "roll": stat_roll,
             "nnls_weight": {k: round(v, 4) for k, v in last_w.items()} if last_w else None,
             "ndx_beta": beta6, "skipped": [h["code"] for h in all_h if h["market"] == "SKIP"],
