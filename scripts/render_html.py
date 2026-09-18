@@ -385,9 +385,11 @@ def render(report, history, out_path, full_holdings=None):
                 ret_cell = "-"
             rows.append(f"<tr><td>{esc(c)}</td><td>{esc(nm)}</td><td>{d:.1f}%</td><td>{wt*100:.1f}%</td>"
                         f"<td>{diff:+.1f}% {flag}</td><td>{ret_cell}</td></tr>")
+        proxy = r.get("holdings_proxy")
+        tag = f" · 持仓代理自 {esc(proxy)}（穿透）" if proxy else ""
         adj_details.append(f"""
         <details>
-          <summary>{FUND_NAMES.get(code, code)}（{code}）— 二十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项</summary>
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— 二十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项{tag}</summary>
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th><th>最新涨跌幅</th></tr></thead>
           <tbody>{''.join(rows)}</tbody></table>
           <div style="margin-top:6px;text-align:right"><a href="#full-holdings-{esc(code)}" style="color:var(--accent);font-size:12px;text-decoration:none">📄 查看全部半年报持仓 →</a></div>
@@ -407,9 +409,11 @@ def render(report, history, out_path, full_holdings=None):
             for x in sorted(hs, key=lambda v: v.get("seq", 0)):
                 full_rows.append(f"<tr><td>{x.get('seq','')}</td><td>{esc(x.get('code',''))}</td>"
                                  f"<td>{esc(x.get('name',''))}</td><td>{x.get('pct',0):.2f}%</td></tr>")
+            proxy2 = entry.get("holdings_proxy")
+            tag2 = f" · 持仓代理自 {esc(proxy2)}（穿透）" if proxy2 else ""
             full_details.append(f"""
         <details id="full-holdings-{esc(code)}">
-          <summary>{FUND_NAMES.get(code, code)}（{code}）— 全部持仓 {len(hs)} 项 · 累计 {total:.1f}% · 抓取 {esc(ts)}</summary>
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— 全部持仓 {len(hs)} 项 · 累计 {total:.1f}% · 抓取 {esc(ts)}{tag2}</summary>
           <table style="margin-top:8px"><thead><tr><th>序号</th><th>代码</th><th>名称</th><th>占净值%</th></tr></thead>
           <tbody>{''.join(full_rows)}</tbody></table>
         </details>""")
