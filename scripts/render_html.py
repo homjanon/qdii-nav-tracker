@@ -51,6 +51,7 @@ box-shadow:var(--shadow);margin-bottom:18px;}
 .card h2{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
 .ndx-badge{font-size:11px;font-weight:600;margin-left:auto;padding:3px 10px;border-radius:99px;background:#f8fafc;border:1px solid var(--line);color:var(--sub);display:flex;align-items:center;gap:5px;}
 .ndx-badge b{color:var(--ink);font-size:12px;}
+.ndx-badge.dq-warn{background:#fff7ed;border-color:#fed7aa;color:#c2410c;}
 .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#eef2ff;color:var(--accent);}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
 .fund-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fafbfe;}
@@ -207,6 +208,8 @@ def render(report, history, out_path, full_holdings=None):
     pred_block = "\n".join(cards_html) if cards_html else "<p class='sub'>暂无预测数据</p>"
 
     # NDX 当日收盘（右上角对照：点位 + 涨跌幅；2026-08-26 加入）
+    # 2026-09-24：涨跌幅来自行情接口自带值（见 data_fetcher.index_quote），
+    #   不再由日线序列相减（序列缺口会把多日累计当单日）
     ndx_html = ""
     ndx = report.get("ndx")
     if ndx and ndx.get("close"):
@@ -214,9 +217,26 @@ def render(report, history, out_path, full_holdings=None):
         _cls = "up" if (_pct or 0) > 0 else ("down" if (_pct or 0) < 0 else "")
         _arrow = "▲" if (_pct or 0) > 0 else ("▼" if (_pct or 0) < 0 else "—")
         _pct_s = f"{_pct:+.2f}%" if _pct is not None else "-"
-        ndx_html = (f'<span class="ndx-badge" title="纳指100 当日收盘，用于对照背离提示">'
+        _src = ndx.get("source") or ""
+        _tip = "纳指100 当日收盘，用于对照背离提示"
+        if _src:
+            _tip += f"（数据源：{_src}）"
+        if _pct is None:
+            _tip += "；涨跌幅暂不可得——行情源异常时宁可不显示，也不拿有缺口的序列相减"
+        ndx_html = (f'<span class="ndx-badge" title="{esc(_tip)}">'
                     f'NDX {esc(ndx.get("date",""))} <b>{ndx["close"]:,.0f}</b> '
                     f'<span class="{_cls}">{_arrow} {_pct_s}</span></span>')
+
+    # 数据质量告警（2026-09-24）：存在「未修复缺口」→ 页面可见提示（防静默出错）
+    _dq = report.get("data_quality") or {}
+    _dqc = _dq.get("counts") or {}
+    _n_unres = _dqc.get("unresolved") or 0
+    if _n_unres:
+        _u_txt = "、".join((g.get("symbol", "") + "@" + g.get("date", ""))
+                          for g in (_dq.get("unresolved") or [])[:5])
+        _u_tip = "存在未修复的数据缺口：" + _u_txt + "；相关基金当日已跳过预测"
+        ndx_html += (f'<span class="ndx-badge dq-warn" title="{esc(_u_tip)}">'
+                     f'⚠️ 数据缺口 {_n_unres}</span>')
 
     # ---- 历史验证 ----
     v_n = verify.get("n", 0)
