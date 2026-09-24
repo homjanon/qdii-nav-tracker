@@ -253,17 +253,25 @@ def main():
     # 数据源使用汇总（可观测性，2026-08-21）
     print("数据源汇总:", dfet.src_summary())
     # 缺口告警汇总（2026-09-24）：防静默复发
-    c = dq["counts"]
-    print(f"数据质量: 缺口 found={c['found']} repaired={c['repaired']} unresolved={c['unresolved']}")
-    if c["repaired"]:
-        _rep = [g["symbol"] + "@" + g["date"] for g in dq["repaired"][:8]]
-        print("  ✓ 已补齐:", _rep)
-    if c["unresolved"]:
-        _unres = [g["symbol"] + "@" + g["date"] for g in dq["unresolved"][:8]]
-        print("  ⛔ 未修复（相关基金当日已跳过预测）:", _unres)
-    _blocked = [f["code"] for f in results if f.get("predict_blocked")]
-    if _blocked:
-        print(f"⛔ 因数据缺口跳过当日预测的基金（{len(_blocked)}/{len(results)}）:", _blocked)
+    # ⚠️ 整块必须包 try/except：报告已写好，此处若抛异常会让整个 step 退出码非 0
+    #    → workflow 的「Commit outputs」步骤被跳过 → 本次结果全丢（2026-09-24 已踩过）
+    try:
+        _dq_c = dq.get("counts") or {}
+        print(f"数据质量: 缺口 found={_dq_c.get('found', 0)}"
+              f" repaired={_dq_c.get('repaired', 0)} unresolved={_dq_c.get('unresolved', 0)}")
+        if _dq_c.get("repaired"):
+            print("  ✓ 已补齐:", [g.get("symbol", "") + "@" + g.get("date", "")
+                                 for g in (dq.get("repaired") or [])[:8]])
+        if _dq_c.get("unresolved"):
+            print("  ⛔ 未修复（相关基金当日已跳过预测）:",
+                  [g.get("symbol", "") + "@" + g.get("date", "")
+                   for g in (dq.get("unresolved") or [])[:8]])
+        _blocked = [k for k, v in (results or {}).items()
+                    if isinstance(v, dict) and v.get("predict_blocked")]
+        if _blocked:
+            print(f"⛔ 因数据缺口跳过当日预测的基金（{len(_blocked)}/{len(results)}）:", _blocked)
+    except Exception as e:
+        print(f"⚠️ 数据质量汇总打印失败（不影响本次结果）: {repr(e)[:150]}")
     return 0
 
 def _json_default(o):
