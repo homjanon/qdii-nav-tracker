@@ -6,4 +6,8 @@ requests
 curl_cffi
 tenacity
 pandas-market-calendars
-yfinance
+# 2026-09-24 锁版本：此前未锁 → CI 每次装最新，行为漂移无预警。
+# 本版本实测支持 history(keepna=True)（保留 Yahoo 整行空值的日K，
+# 供 data_fetcher._repair_missing_days 检测/补齐交易日缺口）。
+# 升级前务必回归：交易日缺口补齐相关单测 + 一次全量 run_daily（本地留档见工作区 _tmp/qdii_gap_tests_20260924/）
+yfinance==1.5.1
