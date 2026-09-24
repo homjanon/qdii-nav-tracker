@@ -91,7 +91,7 @@ GitHub Pages 发布（main 分支 /docs 目录）
 | **指数当日涨跌幅（页面徽章）** | **腾讯行情自带涨跌幅（usNDX）** | 东财 push2his（100.NDX100 / 100.SPX）→ 新浪 → 已通过相邻交易日校验的 yfinance 日线 |
 | 美股交易日历 | pandas-market-calendars（NYSE） | weekday 近似 |
 | 中国基金净值日历 | pandas-market-calendars（XSHG） | QDII 净值只在 A股交易日公布：中国节假日（工作日但 A股休市，国庆/春节等）→ 当日跳过；长假回归首日（最新净值 ↔ 美股最近收盘间隔 ≥2 个美股交易日）→ 跳过当日预测（净值将一次反映多日美股累计，单日模型必大偏差），次日自动恢复 |
-| **交易日缺口补齐** | 东财 push2his（curl_cffi 直连） | 新浪日线 → 腾讯快照（仅最近一日）；全失败 → NaN 占位 + 该基金当日跳过预测并告警 |
+| **交易日缺口补齐** | 新浪日线（云端最稳） | 东财 push2his（curl_cffi）→ 腾讯快照（仅最近一日）；同一源连续 3 次补不到即**熔断**（本次运行不再尝试）；全失败 → NaN 占位 + 该基金当日跳过预测并告警 |
 
 > **A股全市场识别**：`classify_market` 6 位数字统一归 CN（主板 000/600/601/603/605 + 创业板 300 + 科创板 688）——曾只认 3 开头，主板/科创板持仓（如 600183/603986/688498）被误判 SKIP 不参与预测。**日韩股亦已纳入静态权重篮子参与预测**（此前是预测盲区）。
 
@@ -104,13 +104,20 @@ GitHub Pages 发布（main 分支 /docs 目录）
 `data_fetcher._repair_missing_days()` 对**以 yfinance 为主源的市场（美股/日韩）**做交易日完整性校验：
 
 1. 用市场日历（NYSE/JPX/XKRX）算出序列覆盖区间内应有而缺失的交易日，以及值为 NaN 的空行；
-2. 按 **东财 → 新浪 → 腾讯快照** 顺序补齐真实收盘（同一源只请求一次，批量补多天）；
-3. 补不到 → 以 **NaN 占位**（保留日期），并登记 `unresolved`；
-4. `analysis.predict_next()` 在预测前检查依赖标的近 4 天是否有未修复缺口 → 有则**跳过该基金当日预测并告警**（宁可不出预测，也不出错预测）。
+2. 按 **新浪 → 东财 → 腾讯快照** 顺序补齐真实收盘（同一源只请求一次，批量补多天）；
+3. **源级熔断**：同一源连续 3 次补不到 → 本次运行不再尝试该源（写入报告 `data_quality.sources_disabled`）；
+4. 补不到 → 以 **NaN 占位**（保留日期），并登记 `unresolved`；
+5. `analysis.predict_next()` 在预测前检查依赖标的近 4 天是否有未修复缺口 → 有则**跳过该基金当日预测并告警**（宁可不出预测，也不出错预测）。
 
-报告新增 `data_quality` 字段（`counts` / `repaired` / `unresolved`），运行日志与页面徽章（⚠️ 数据缺口 N）同步暴露。
+报告新增 `data_quality` 字段（`counts` / `repaired` / `unresolved` / `sources_disabled`），运行日志与页面徽章（⚠️ 数据缺口 N）同步暴露。
+
+> **源顺序为何是"新浪优先"**：云端实测 新浪补缺口 11/11 成功，东财 push2his 仅 11/46（GitHub runner 出口 IP 被限流）。
+> 把东财放首位会让每次失败都带重试+休眠，实测把分析步骤从 ~153s 拖到 ~479s。两者补的都是同一交易日的真实收盘，**互换顺序不改变结果**。
 
 > **港股/A股不做补齐**：主源是新浪，历史完整，不引入改动风险。
+
+> **净值（NAV）进程内缓存**：同一只基金的净值在一次运行里被 4 处调用（探针/分析/30日走势/摘要），
+> 实测 12 只共 37 次网络请求（仅需 12 次）。`get_nav` 现按 code 缓存、返回副本 → 降到 12 次，结果不变。
 
 ### 基金清单与特殊类型
 
@@ -183,7 +190,27 @@ GitHub Pages 发布（main 分支 /docs 目录）
 `f"{d['k']}"` 合法，但 `f"{[f'{g['symbol']}' for g in x]}"` 在 3.11 直接 `SyntaxError`
 （PEP 701 才放宽，3.12+）。写嵌套表达式前先赋给临时变量。
 
-### 6. GitHub API 403 `Request forbidden by administrative rules`（缺 User-Agent）
+### 6. 给 CI 加"网络兜底链"会显著拖慢 Actions —— 必须配熔断
+
+新增缺口补齐后，分析步骤从 **153s 涨到 479s（3.1 倍）**。原因是 GitHub runner 出口 IP 对东财
+push2his 大量限流（实测 11 成功 / 35 失败），而每次失败都带 2 次重试 + 休眠，且每只美股还要
+依次试 3 个市场前缀（105/106/107）。
+
+**教训**：往 CI 里加任何"失败再换源"的链，都必须同时加 **源级熔断**（连续 N 次补不到就本次运行不再尝试）
++ **优先放云端稳定的源**。**加机制前先量一次耗时**，否则功能对了、额度与时间白烧。
+
+### 7. run_daily 在报告写完之后抛异常 → workflow 的「Commit outputs」被跳过 → 结果全丢
+
+`run_daily.py` 先写 `daily_report.json` / `summary.md`，再打印数据质量汇总。
+一次改动里汇总打印遍历了 `results`（**它是 dict，不是 list**，`for x in results` 拿到的是字符串键）
+→ `AttributeError` → step 退出码 1 → 后续 `Render static HTML` 与 `Commit outputs` **全部被跳过**，
+报告写在了 runner 临时盘上、什么都没提交。日志里还能看到 `DONE -> output/daily_report.json`，
+极易误判为"跑成功了"。
+
+**教训**：报告落盘之后的任何收尾代码（打印、统计、告警）都必须 `try/except` 包住——
+它不该有能力让整次运行前功尽弃。判断 Action 是否真正成功，要**看步骤结论，而不是看日志里的 DONE**。
+
+### 8. GitHub API 403 `Request forbidden by administrative rules`（缺 User-Agent）
 
 Cloudflare Worker 调 `api.github.com` 时，GitHub REST API **强制要求 `User-Agent` header**，
 缺失会被 403 拒绝（错误信息藏在响应体里，光看状态码很容易误判成 token 权限问题）。
