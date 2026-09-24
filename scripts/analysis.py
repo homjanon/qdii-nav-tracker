@@ -180,6 +180,19 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
     # 静态披露权重预测
     w = _weights(holdings)
     wsum = sum(w.values())
+
+    # 缺口门控（2026-09-24）：依赖标的在最近 4 天内存在「未修复缺口」→ 当日预测输入不可信，跳过
+    # 场景：Yahoo 返回整行空值K线，且 东财/新浪/腾讯 全部取不到该日 → 上游以 NaN 占位，
+    #       此时任何预测都建立在错误/缺失的因子收益上（宁可不出预测，也不出错的）
+    _deps = {c for c, wt in w.items() if wt and wt > 0}
+    _deps.update({c for c in (nnls_weight or {}) if c != "FX"})
+    _deps.add("指数 .NDX")
+    _gaps = dfet.unresolved_gaps(_deps, since=next_d - pd.Timedelta(days=4))
+    if _gaps:
+        _detail = ", ".join(f"{g['symbol']}@{g['date']}" for g in _gaps[:6])
+        print(f"    ⛔ [缺口门控] 依赖标的近 4 天存在未修复缺口 → 跳过当日预测（{_detail}）")
+        return {"blocked": True, "reason": f"数据缺口未修复: {_detail}",
+                "next_date": next_d, "us_last": us_last}
     b_static = 0.0
     contributors = []
     for code, wgt in w.items():
@@ -316,7 +329,13 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdin
     pred_next = predict_next(nav, h_q2, price_map, fx_df,
                              nnls_weight=last_w, mae_static=mae_static, us_last=us_last,
                              ndx_df=ndx_df)
-    if pred_next is not None:
+    blocked_reason = None
+    if pred_next is not None and pred_next.get("blocked"):
+        # 缺口门控命中（2026-09-24）：当日不出预测，原因写入报告供页面/日志暴露
+        blocked_reason = pred_next.get("reason")
+        print(f"[{code}] ⛔ 跳过当日预测：{blocked_reason}")
+        pred_next = None
+    elif pred_next is not None:
         print(f"[{code}] 预测 {pred_next['next_date'].date()}(US基准{us_last}): "
               f"静态{pred_next['pred_static']*100:+.2f}% 滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}%")
     else:
@@ -330,4 +349,4 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdin
             "static": stat_static, "roll": stat_roll,
             "nnls_weight": {k: round(v, 4) for k, v in last_w.items()} if last_w else None,
             "ndx_beta": beta6, "skipped": [h["code"] for h in all_h if h["market"] == "SKIP"],
-            "us_last": str(us_last), "predict": pred_next}
+            "us_last": str(us_last), "predict": pred_next, "predict_blocked": blocked_reason}
