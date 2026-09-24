@@ -588,21 +588,22 @@ def _tencent_snapshot_df(code, market):
     return _retry_call(_fetch, label=f"腾讯快照 {code}", attempts=2, wait=1.0)
 
 def get_price_df(code, market, allow_snapshot=True):
-    """个股日线：
-    - US/HK/CN: 新浪主源（完整历史）→ 腾讯快照兜底（仅当日，预测够用）
-    - JP/KR:     东财 push2his 主（历史K线）→ yfinance 备 → 腾讯快照兜底（当日）
+    """个股日线（主源 → 备源，均失败再退腾讯快照兜底）：
+    - US:    yfinance（6mo，含当天实时）→ akshare 新浪（全历史）
+    - JP/KR: yfinance（.T/.KS）→ 东财 push2his（176/177）
+    - HK/CN: akshare 新浪（stock_hk_daily / stock_zh_a_daily）
     返回 DataFrame(date, close)；快照模式返回的只有最近两日。
     """
     if code in _CACHE:
         return _CACHE[code]
 
     if market == "US":
-        # 美股：yfinance 主（含当天实时，2026-08-19 起首选）→ 新浪日线兜底
+        # 美股：yfinance 主（含当天实时）→ 新浪日线兜底
         df = fallback_chain([("yf", lambda: _yf_us_daily(code)),
                              ("sina", lambda: _sina_price(code, market))],
                             label=f"美股{code}")
     elif market in ("JP", "KR"):
-        # 日韩股：yfinance 首选（2026-08-21 提升，云端稳定 .T/.KS）→ 东财备源 → 腾讯快照兜底
+        # 日韩股：yfinance 首选（云端稳定 .T/.KS）→ 东财备源 → 腾讯快照兜底
         df = fallback_chain([("yf", lambda: _yf_jpkr(code, market)),
                              ("em", lambda: _em_jpkr(code, market))],
                             label=f"日韩{code}")
@@ -613,14 +614,15 @@ def get_price_df(code, market, allow_snapshot=True):
         df = df[["date", "close"]].copy()
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values("date").drop_duplicates("date")
-        # 缺口补齐（2026-09-24）：以 yfinance 为主源的市场（US/JP/KR）；源顺序 新浪 → 东财 → 腾讯快照
-        # （顺序依据同上：云端 新浪 11/11 稳定，东财多在限流）
+        # 缺口补齐（2026-09-24）：只对「以 yfinance 为主源」的市场（US/JP/KR）
+        #   US:    新浪 → 腾讯（日线，权威后缀）→ 东财（105/106/107）
+        #   JP/KR: 东财 → 腾讯快照（注意：新浪源不覆盖日韩，不能放进这条链）
         if market == "US":
             _fx = [("新浪", lambda: _sina_series(code, "US")),
-                   ("东财", lambda: _em_us_stock_series(code)),
-                   ("腾讯", lambda: _tencent_series(code, "US"))]
+                   ("腾讯", lambda: _tencent_series(code, "US")),
+                   ("东财", lambda: _em_us_stock_series(code))]
         elif market in ("JP", "KR"):
-            _fx = [("新浪", lambda: _sina_series(code, market)),
+            _fx = [("东财", lambda: _em_jpkr(code, market)),
                    ("腾讯", lambda: _tencent_series(code, market))]
         else:
             _fx = None
@@ -772,13 +774,14 @@ def get_index(symbol):
         return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
-    # 缺口补齐（2026-09-24）：新浪 → 东财 → 腾讯快照
-    # 顺序依据（云端实测）：新浪补缺口 11/11 成功；东财 push2his 仅 11/46（runner IP 被限流），
-    #   放在首位会大量失败重试、把分析步骤从 ~153s 拖到 ~479s。两者补的都是同一交易日的真实收盘。
+    # 缺口补齐（2026-09-24）：新浪 → 腾讯 → 东财
+    # 顺序依据（云端实测）：新浪补缺口 22/22 成功；腾讯日线实测 20/20 命中（可补历史缺口）；
+    #   东财 push2his 仅 11/46（runner IP 被限流），每次失败带重试+休眠，是最慢的一环 → 放最后。
+    #   三者补的都是同一交易日的真实收盘，顺序不影响结果。
     df, _ = _repair_missing_days(df, "US", f"指数 {symbol}", [
         ("新浪", lambda: _sina_series(symbol, "US")),
-        ("东财", lambda: _em_index_series(symbol)),
         ("腾讯", lambda: _tencent_series(symbol, "US", symbol=symbol)),
+        ("东财", lambda: _em_index_series(symbol)),
     ])
     _CACHE[key] = df
     return df
@@ -943,10 +946,98 @@ def _sina_series(code, market):
 
 
 _TX_INDEX_CODE = {".NDX": "usNDX", "^NDX": "usNDX", ".INX": "usINX", "^GSPC": "usINX"}
+# 腾讯美股日线（2026-09-24 新增）
+# ⚠️ 关键坑：美股个股**必须带交易所后缀**，否则腾讯只返回 1~2 条废数据（看似成功、实则无用）。
+#   后缀不能猜——实测 usCIEN 正确码是 CIEN.N（NYSE），若猜成 .OQ，返回的是混入 2014 年
+#   数据的错误序列，会静默写入错误收盘。**权威做法：先取快照 [2] 字段（如 'CIEN.N'）再请求日线**。
+TX_KLINE_URL = "https://web.ifzq.gtimg.cn/appstock/app/usfqkline/get"
+TX_KLINE_MIN_ROWS = 5   # 少于该条数视为无有效日线
+
+
+def _tx_snapshot_fields(q):
+    """腾讯快照原始字段（[2]=权威代码含后缀、[3]=最新价、[4]=昨收、[32]=涨跌幅%）"""
+    def _fetch():
+        r = requests_mod.get(TX_URL + q, headers=HEADERS_TX, timeout=15)
+        r.encoding = "gbk"
+        txt = (r.text or "").strip()
+        if "=" not in txt:
+            return None
+        parts = txt.split("=", 1)[1].strip().strip('"').split("~")
+        return parts if len(parts) >= 33 else None
+
+    return _retry_call(_fetch, attempts=2, wait=1.0, label="腾讯快照", verbose=False)
+
+
+def _tx_kline_fetch(q, lmt=60):
+    """腾讯日线接口（web.ifzq.gtimg.cn）→ {date: close}；条数不足返回 None"""
+    def _fetch():
+        r = requests_mod.get(TX_KLINE_URL, params={"param": f"{q},day,,,{lmt},qfq"},
+                             headers=HEADERS_TX, timeout=15)
+        j = json.loads((r.text or "").strip())
+        node = (j.get("data") or {}).get(q) or {}
+        arr = None
+        for k in ("qfqday", "day", "hfqday"):
+            if isinstance(node.get(k), list) and node[k]:
+                arr = node[k]
+                break
+        if not arr or len(arr) < TX_KLINE_MIN_ROWS:
+            return None
+        out = {}
+        for row in arr:
+            try:
+                # 行格式: [日期, 开, 收, 高, 低, 量, ...] → [0]=日期 [2]=收盘
+                out[pd.Timestamp(row[0]).date()] = float(row[2])
+            except Exception:
+                continue
+        return out or None
+
+    return _retry_call(_fetch, attempts=1, wait=0.5, label="腾讯补缺口", verbose=False)
+
+
+def _tencent_kline_series(code, market, symbol=None):
+    """腾讯日线补齐（可补历史缺口，含缺口日）
+
+    先取快照 [2] 拿**权威代码**（含交易所后缀，如 ASML.OQ / CIEN.N）再请求日线；
+    指数直接用 usNDX（无需后缀）。后缀绝不猜测——猜错会静默写入错误标的的收盘。
+    """
+    if market != "US":
+        return None
+    idx_q = _TX_INDEX_CODE.get(symbol or "")
+    if idx_q:
+        return _tx_kline_fetch(idx_q)
+    parts = _tx_snapshot_fields("us" + code)
+    if not parts:
+        return None
+    raw = (parts[2] or "").strip()
+    if not raw or "." not in raw:
+        return None
+    return _tx_kline_fetch("us" + raw)
 
 
 def _tencent_series(code, market, symbol=None):
-    """腾讯快照 → {date: close}（只能提供「最新一日」+「前一交易日」两个点，作最后兜底）"""
+    """腾讯：日线（可补历史缺口）→ 快照（仅能补最近一日，作最后兜底）
+
+    覆盖范围（实测）：美股个股/指数可补任意历史缺口；日韩只能用快照补最近一日。
+    ⚠️ 新浪源不覆盖日韩（_sina_price 仅 US/HK/CN），日韩的补齐链必须用 东财/腾讯。
+    """
+    s = _tencent_kline_series(code, market, symbol=symbol)
+    if s:
+        return s
+
+    if market in ("JP", "KR"):
+        snap = _tencent_jpkr_snapshot(code, market)
+        if snap is None or len(snap) == 0:
+            return None
+        out = {}
+        for _, row in snap.iterrows():
+            try:
+                v = float(row["close"])
+                if v > 0:
+                    out[pd.Timestamp(row["date"]).date()] = v
+            except Exception:
+                continue
+        return out or None
+
     q = _TX_INDEX_CODE.get(symbol or "") or (("us" + code) if market == "US" else None)
     if not q:
         return None
@@ -1114,8 +1205,8 @@ def index_quote(symbol):
         if out and out.get("close"):
             return out
 
-    for name, fn in (("东财", lambda: _em_index_series(symbol)),
-                     ("新浪", lambda: _sina_series(symbol, "US"))):
+    for name, fn in (("新浪", lambda: _sina_series(symbol, "US")),
+                     ("东财", lambda: _em_index_series(symbol))):
         if not _src_usable(name):
             continue
         try:
