@@ -431,7 +431,7 @@ def _yf_us_daily(code):
 
     def _fetch():
         tk = yf.Ticker(code)
-        hist = tk.history(period="6mo", auto_adjust=True)
+        hist = _yf_history(tk, auto_adjust=True)
         if hist is None or hist.empty:
             return None
         return pd.DataFrame({
@@ -499,7 +499,7 @@ def _yf_jpkr(code, market):
 
     def _fetch():
         t = yf.Ticker(sym)
-        hist = t.history(period="6mo", auto_adjust=False)
+        hist = _yf_history(t, auto_adjust=False)
         if hist is None or len(hist) == 0:
             return None
         df = hist.reset_index()[["Date", "Close"]].rename(
@@ -596,6 +596,18 @@ def get_price_df(code, market, allow_snapshot=True):
         df = df[["date", "close"]].copy()
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values("date").drop_duplicates("date")
+        # 缺口补齐（2026-09-24）：以 yfinance 为主源的市场（US/JP/KR）走 东财 → 新浪 → 腾讯快照
+        if market == "US":
+            _fx = [("东财", lambda: _em_us_stock_series(code)),
+                   ("新浪", lambda: _sina_series(code, "US")),
+                   ("腾讯", lambda: _tencent_series(code, "US"))]
+        elif market in ("JP", "KR"):
+            _fx = [("新浪", lambda: _sina_series(code, market)),
+                   ("腾讯", lambda: _tencent_series(code, market))]
+        else:
+            _fx = None
+        if _fx:
+            df, _ = _repair_missing_days(df, market, code, _fx)
         _CACHE[code] = df
         return df
 
@@ -685,17 +697,39 @@ def get_usdcnh():
 
 # ============ 指数 ============
 
+def _yf_history(tk, period="6mo", auto_adjust=True):
+    """yfinance history() 统一入口（2026-09-24）。
+
+    keepna=True 是关键：Yahoo 偶发返回「整行空值」的日K（实例 2026-09-22 的 ^NDX / ASML），
+    yfinance 默认 keepna=False 会把这类行**静默丢弃** → 序列出现交易日缺口 →
+    下游「相邻两行 = 相邻交易日」的假设失效（事故：NDX 显示 -0.04%，实为 -0.85%；
+    ASML 算出 +1.95%，实为 -0.19%，方向都反了）。
+    保留空行后交由 _repair_missing_days 补齐 / 置 NaN。
+
+    兼容处理：若 yfinance 版本过老不认识 keepna 参数 → 自动降级（不阻断主流程）。
+    """
+    try:
+        return tk.history(period=period, auto_adjust=auto_adjust, keepna=True)
+    except TypeError:
+        return tk.history(period=period, auto_adjust=auto_adjust)
+
+
 def _yf_index(symbol):
     """美股指数（yfinance，首选，2026-08-22 起）：
     与美股个股同源同步（新浪清晨滞后一天 → 背离误判，已修复）
-    symbol: '.NDX'→'^NDX'、'.INX'→'^GSPC'；period='6mo' 足够 β 回归（~130 交易日）"""
+    symbol: '.NDX'→'^NDX'、'.INX'→'^GSPC'；period='6mo' 足够 β 回归（~130 交易日）
+
+    ⚠️ keepna=True（2026-09-24 起，关键）：Yahoo 偶发返回「整行空值」的日K（实例：
+    2026-09-22 的 ^NDX / ASML 全 None）。yfinance 默认 keepna=False 会把这类行
+    **静默丢弃** → 序列出现交易日缺口 → 下游「相邻两行=相邻交易日」的假设失效
+    （事故：NDX 显示 -0.04%，实为 -0.85%）。保留空行后由 _repair_missing_days 补齐。"""
     if not _HAS_YF:
         return None
     ysym = {"^NDX": "^NDX", ".NDX": "^NDX", ".INX": "^GSPC", "^GSPC": "^GSPC"}.get(symbol, symbol)
 
     def _fetch():
         tk = yf.Ticker(ysym)
-        hist = tk.history(period="6mo", auto_adjust=True)
+        hist = _yf_history(tk, auto_adjust=True)
         if hist is None or hist.empty:
             return None
         return pd.DataFrame({
@@ -720,6 +754,12 @@ def get_index(symbol):
         return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
+    # 缺口补齐（2026-09-24）：东财 → 新浪 → 腾讯快照
+    df, _ = _repair_missing_days(df, "US", f"指数 {symbol}", [
+        ("东财", lambda: _em_index_series(symbol)),
+        ("新浪", lambda: _sina_series(symbol, "US")),
+        ("腾讯", lambda: _tencent_series(symbol, "US", symbol=symbol)),
+    ])
     _CACHE[key] = df
     return df
 
@@ -740,20 +780,373 @@ def get_hs_index():
     _CACHE["__HSI__"] = df
     return df
 
+# ============ 价格序列缺口检测与补齐（2026-09-24）============
+# 背景：Yahoo 偶发返回「整行空值」的日K（实例：2026-09-22 的 ^NDX / ASML 全 None），
+#   yfinance 默认 keepna=False 会**静默丢弃**该行 → 序列出现交易日缺口 →
+#   任何「相邻两行 = 相邻交易日」的假设（close[-1]/close[-2]、pct_change）都会
+#   把多日累计当单日。事故：NDX 显示 -0.04%（实为 -0.85%）；ASML 算出 +1.95%（实为 -0.19%，方向都反了）。
+# 处置：① yfinance 全部改 keepna=True（空行不再无声消失）
+#   ② 本模块用市场交易日历检测缺口 → 按 东财 → 新浪 → 腾讯快照 顺序补齐
+#   ③ 补到的记 repaired；全都取不到 → 记 unresolved，上层跳过该标的当日预测并告警
+
+DATA_QUALITY = {"found": [], "repaired": [], "unresolved": []}
+
+# 只对「最近 N 个自然日」内的缺口做联网补齐（足够当日预测+页面展示，避免历史长尾拖慢）
+GAP_WINDOW_DAYS = 35
+# 单标的近期缺口上限：超过视为「日历不匹配 / 长期停牌」，不做占位，仅告警
+GAP_MAX_PER_SYMBOL = 12
+# 需要做缺口补齐的市场：以 yfinance 为主源的市场（HK/CN 主源是新浪，历史完整，不动）
+REPAIR_MARKETS = {"US", "JP", "KR"}
+
+_TRADING_DAY_CACHE = {}
+_MKT_CAL_NAME = {"US": "NYSE", "HK": "XHKG", "CN": "XSHG", "JP": "JPX", "KR": "XKRX"}
+
+
+def trading_day_set(market, lookback_days=420):
+    """某市场近 N 天的交易日集合 set[datetime.date]；不支持的市场返回 None（调用方据此跳过检查）"""
+    key = (market, lookback_days)
+    if key in _TRADING_DAY_CACHE:
+        return _TRADING_DAY_CACHE[key]
+    name = _MKT_CAL_NAME.get(market)
+    out = None
+    if name:
+        try:
+            import pandas_market_calendars as mcal
+            cal = mcal.get_calendar(name)
+            end = datetime.date.today() + datetime.timedelta(days=1)
+            start = end - datetime.timedelta(days=lookback_days)
+            days = cal.valid_days(start_date=str(start), end_date=str(end))
+            out = {pd.Timestamp(d).date() for d in days}
+        except Exception as e:
+            print(f"    ⚠ [缺口检测] 日历 {name} 不可用: {repr(e)[:80]}")
+    _TRADING_DAY_CACHE[key] = out
+    return out
+
+
+def _em_kline_series(secid, lmt=45):
+    """东财 push2his 日线 → {date: close}（需 curl_cffi；境内源不可走代理）"""
+    def _fetch():
+        url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+        params = {"secid": secid, "fields1": "f1,f2,f3,f4,f5,f6",
+                  "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
+                  "klt": "101", "fqt": "1", "end": "20500101", "lmt": str(lmt)}
+        if _HAS_CFFI:
+            r = cffi_requests.get(url, params=params, headers=HEADERS_EM,
+                                  impersonate="chrome", timeout=20)
+        else:
+            r = requests_mod.get(url, params=params, headers=HEADERS_EM, timeout=20)
+        data = (r.json() or {}).get("data") or {}
+        out = {}
+        for line in (data.get("klines") or []):
+            p = line.split(",")
+            try:
+                out[pd.Timestamp(p[0]).date()] = float(p[2])
+            except Exception:
+                continue
+        return out or None
+
+    return _retry_call(_fetch, attempts=2, wait=1.0, label="东财补缺口", verbose=False)
+
+
+def _em_us_stock_series(code, lmt=45):
+    """美股个股东财日线：市场号 105=NASDAQ / 106=NYSE / 107=AMEX，依次尝试"""
+    for mkt in (105, 106, 107):
+        s = _em_kline_series(f"{mkt}.{code}", lmt=lmt)
+        if s:
+            return s
+    return None
+
+
+# ⚠️ 地雷：东财 100.NDX = 纳斯达克**综合**指数；纳指100 必须用 100.NDX100
+_EM_INDEX_SECID = {".NDX": "100.NDX100", "^NDX": "100.NDX100",
+                   ".INX": "100.SPX", "^GSPC": "100.SPX",
+                   ".DJI": "100.DJIA", "^DJI": "100.DJIA"}
+
+
+def _em_index_series(symbol, lmt=45):
+    secid = _EM_INDEX_SECID.get(symbol)
+    return _em_kline_series(secid, lmt=lmt) if secid else None
+
+
+def _sina_series(code, market):
+    """新浪日线 → {date: close}（美股/指数为全历史，是缺口补齐的主力兜底）"""
+    def _fetch():
+        if code.startswith(".") or code.startswith("^"):
+            df = ak.index_us_stock_sina(symbol=code)
+        else:
+            df = _sina_price(code, market)
+        if df is None or len(df) == 0:
+            return None
+        cols = {str(c).lower(): c for c in df.columns}
+        dc, cc = cols.get("date"), cols.get("close")
+        if not dc or not cc:
+            return None
+        dd = pd.to_datetime(df[dc], errors="coerce")
+        out = {}
+        for t, v in zip(dd, df[cc]):
+            if pd.isna(t) or pd.isna(v):
+                continue
+            try:
+                out[pd.Timestamp(t).date()] = float(v)
+            except Exception:
+                continue
+        return out or None
+
+    return _retry_call(_fetch, attempts=2, wait=1.0, label="新浪补缺口", verbose=False)
+
+
+_TX_INDEX_CODE = {".NDX": "usNDX", "^NDX": "usNDX", ".INX": "usINX", "^GSPC": "usINX"}
+
+
+def _tencent_series(code, market, symbol=None):
+    """腾讯快照 → {date: close}（只能提供「最新一日」+「前一交易日」两个点，作最后兜底）"""
+    q = _TX_INDEX_CODE.get(symbol or "") or (("us" + code) if market == "US" else None)
+    if not q:
+        return None
+
+    def _fetch():
+        r = requests_mod.get(TX_URL + q, headers=HEADERS_TX, timeout=15)
+        r.encoding = "gbk"
+        txt = (r.text or "").strip()
+        if "=" not in txt:
+            return None
+        parts = txt.split("=", 1)[1].strip().strip('"').split("~")
+        if len(parts) < 33:
+            return None
+        cur, prev = float(parts[3]), float(parts[4])
+        m = re.search(r"(20\d{2}-\d{2}-\d{2})", txt)
+        if not m:
+            return None
+        d1 = pd.Timestamp(m.group(1)).date()
+        out = {d1: cur}
+        cal = trading_day_set(market)
+        if cal:
+            prevs = sorted(x for x in cal if x < d1)
+            if prevs:
+                out[prevs[-1]] = prev
+        return out or None
+
+    return _retry_call(_fetch, attempts=2, wait=1.0, label="腾讯补缺口", verbose=False)
+
+
+def _repair_missing_days(df, market, key, fetchers):
+    """检测并补齐价格序列的交易日缺口。
+
+    参数：
+      df       DataFrame(date, close)
+      market   US/JP/KR（其它市场直接原样返回）
+      key      记录用标识（如 'ASML' / '指数 .NDX'）
+      fetchers [(源名, callable() -> {date: close} | None), ...] 按序补齐
+    返回 (df, unresolved_dates)：最近窗口内每个交易日都有一行；
+      补不到的以 close=NaN **占位** —— 让下游拿到 NaN，而不是伪造的两日累计。
+    """
+    if df is None or len(df) == 0 or market not in REPAIR_MARKETS:
+        return df, []
+    cal = trading_day_set(market)
+    if not cal:
+        return df, []
+
+    d = df.copy()
+    d["date"] = pd.to_datetime(d["date"]).dt.normalize()
+    d = d.drop_duplicates("date", keep="last").sort_values("date")
+    dmin, dmax = d["date"].min().date(), d["date"].max().date()
+    have = set(d["date"].dt.date)
+
+    win_start = datetime.date.today() - datetime.timedelta(days=GAP_WINDOW_DAYS)
+    # ⚠️ 必须与序列自身起点 dmin 求交：序列覆盖范围之外的日期不算缺口
+    # （否则"新上市/序列较短"的标的会被误判为大量缺口）
+    win_lo = max(win_start, dmin)
+    need = sorted({x for x in cal if win_lo <= x <= dmax and x not in have}
+                  | set(d.loc[d["close"].isna(), "date"].dt.date))
+    if not need:
+        hist_missing = sorted(x for x in cal if dmin <= x <= dmax and x not in have)
+        if hist_missing:
+            for x in hist_missing:
+                DATA_QUALITY["found"].append({"symbol": key, "date": str(x), "scope": "history"})
+            print(f"    ⚠ [缺口] {key} 历史区间缺 {len(hist_missing)} 个交易日（超出补齐窗口，仅记录）")
+        return d.reset_index(drop=True), []
+
+    for x in need:
+        DATA_QUALITY["found"].append({"symbol": key, "date": str(x), "scope": "recent"})
+
+    if len(need) > GAP_MAX_PER_SYMBOL:
+        print(f"    ⚠ [缺口] {key} 近期缺 {len(need)} 天（>{GAP_MAX_PER_SYMBOL}）"
+              f"→ 疑日历不匹配/长期停牌，不占位也不补齐，仅登记告警")
+        for x in need:
+            DATA_QUALITY["unresolved"].append({"symbol": key, "date": str(x), "scope": "capped"})
+        return d.reset_index(drop=True), need
+
+    # ---- 依次尝试备用源（同一个源只请求一次，批量补多天）----
+    got = {}
+    for name, fn in fetchers:
+        still = [x for x in need if x not in got]
+        if not still:
+            break
+        try:
+            series = fn()
+        except Exception as e:
+            print(f"    ✗ [缺口补齐 {key}/{name}] {repr(e)[:70]}")
+            continue
+        if not series:
+            continue
+        before = len(got)
+        for x in still:
+            v = series.get(x)
+            if v is not None and pd.notna(v) and float(v) > 0:
+                got[x] = float(v)
+        if len(got) > before:
+            print(f"    ✓ [缺口补齐 {key}/{name}] 补到 {len([x for x in need if x in got])}/{len(need)} 天")
+
+    # ---- 回填 ----
+    if got:
+        d = d[~d["date"].dt.date.isin(set(got))]
+        add = pd.DataFrame({"date": pd.to_datetime(sorted(got)), "close": [got[x] for x in sorted(got)]})
+        d = pd.concat([d, add], ignore_index=True)
+        for x in sorted(got):
+            DATA_QUALITY["repaired"].append({"symbol": key, "date": str(x)})
+
+    unresolved = [x for x in need if x not in got]
+    if unresolved:
+        have_now = set(d["date"].dt.date)
+        ph = [x for x in unresolved if x not in have_now]
+        if ph:
+            d = pd.concat([d, pd.DataFrame({"date": pd.to_datetime(ph),
+                                            "close": [float("nan")] * len(ph)})], ignore_index=True)
+        for x in unresolved:
+            DATA_QUALITY["unresolved"].append({"symbol": key, "date": str(x)})
+        print(f"    ⚠ [缺口] {key} 未补齐 {len(unresolved)} 天：{[str(x) for x in unresolved]}"
+              f" → 该因子当日不可用（上层将跳过相关预测）")
+
+    d = d[["date", "close"]].sort_values("date").drop_duplicates("date", keep="last").reset_index(drop=True)
+    return d, unresolved
+
+
+def unresolved_gaps(symbols=None, since=None):
+    """未修复缺口查询（供 analysis 决定是否跳过当日预测）"""
+    out = []
+    for g in DATA_QUALITY["unresolved"]:
+        if symbols and g["symbol"] not in symbols:
+            continue
+        if since:
+            try:
+                if pd.Timestamp(g["date"]).date() < pd.Timestamp(since).date():
+                    continue
+            except Exception:
+                pass
+        out.append(g)
+    return out
+
+
+def index_quote(symbol):
+    """指数「当日点位 + 当日涨跌幅%」——**直接取行情接口自带的涨跌幅**，
+    不再用日线序列最后两根相减（序列可能因 Yahoo 空行出现缺口 → 会把多日累计当单日，
+    事故：NDX 显示 -0.04%，实为 -0.85%）。
+    源优先级：腾讯快照（自带涨跌幅%）→ 东财 → 新浪。返回 {date, close, pct, src} 或 None。
+    """
+    q = _TX_INDEX_CODE.get(symbol)
+    if q:
+        def _tx():
+            r = requests_mod.get(TX_URL + q, headers=HEADERS_TX, timeout=15)
+            r.encoding = "gbk"
+            txt = (r.text or "").strip()
+            if "=" not in txt:
+                return None
+            parts = txt.split("=", 1)[1].strip().strip('"').split("~")
+            if len(parts) < 33:
+                return None
+            cur, pctv = float(parts[3]), float(parts[32])
+            m = re.search(r"(20\d{2}-\d{2}-\d{2})", txt)
+            return {"date": m.group(1) if m else "", "close": cur, "pct": pctv, "src": "腾讯"}
+
+        out = _retry_call(_tx, attempts=2, wait=1.0, label="指数行情", verbose=False)
+        if out and out.get("close"):
+            return out
+
+    for name, fn in (("东财", lambda: _em_index_series(symbol)),
+                     ("新浪", lambda: _sina_series(symbol, "US"))):
+        try:
+            s = fn()
+        except Exception as e:
+            print(f"    ✗ [指数行情 {symbol}/{name}] {repr(e)[:70]}")
+            continue
+        if not s or len(s) < 2:
+            continue
+        ds = sorted(s)
+        d1, d2 = ds[-1], ds[-2]
+        # 相邻交易日校验：d2 必须是 d1 的前一个交易日，否则说明有缺口 → 不用（防多日累计当单日）
+        cal = trading_day_set("US")
+        if cal:
+            prevs = sorted(x for x in cal if x < d1)
+            if not prevs or prevs[-1] != d2:
+                continue
+        if not (s[d2] and s[d2] > 0):
+            continue
+        return {"date": str(d1), "close": float(s[d1]),
+                "pct": (float(s[d1]) / float(s[d2]) - 1) * 100, "src": name}
+
+    # 最后兜底：用「已补齐」的日线序列相减，但**必须通过相邻交易日校验**
+    df = get_index(symbol)
+    if df is not None and len(df) >= 2:
+        d1 = pd.Timestamp(df["date"].iloc[-1])
+        d2 = pd.Timestamp(df["date"].iloc[-2])
+        lc, pc = float(df["close"].iloc[-1]), float(df["close"].iloc[-2])
+        cal = trading_day_set("US")
+        ok_adj = True
+        if cal:
+            prevs = sorted(x for x in cal if x < d1.date())
+            ok_adj = bool(prevs) and prevs[-1] == d2.date()
+        if ok_adj and pd.notna(lc) and pd.notna(pc) and pc > 0:
+            return {"date": str(d1.date()), "close": lc, "pct": (lc / pc - 1) * 100, "src": "yf(已校验)"}
+        print(f"    ⚠ [指数行情 {symbol}] 日线最后两根非相邻交易日（{d2.date()} → {d1.date()}）→ 不出涨跌幅")
+    return None
+
+
+def data_quality_summary():
+    """报告用：缺口统计 + 明细（各最多列 20 条）"""
+    def _dedup(lst):
+        seen, out = set(), []
+        for g in lst:
+            k = (g.get("symbol"), g.get("date"))
+            if k in seen:
+                continue
+            seen.add(k)
+            out.append(g)
+        return out
+
+    found, repaired, unresolved = (_dedup(DATA_QUALITY["found"]),
+                                   _dedup(DATA_QUALITY["repaired"]),
+                                   _dedup(DATA_QUALITY["unresolved"]))
+    return {
+        "counts": {"found": len(found), "repaired": len(repaired), "unresolved": len(unresolved)},
+        "repaired": repaired[:20],
+        "unresolved": unresolved[:20],
+    }
+
+
 # ============ 收益对齐 ============
 
 def asof_ret(prices, nav_dates, lag=0):
-    """对每个净值日期 D，取美股 '交易日 <= D-lag' 的最新收盘计算当日收益"""
-    p = prices.copy()
+    """对每个净值日期 D，取美股 '交易日 <= D-lag' 的最新收盘计算当日收益
+
+    2026-09-24 加固（缺口防线）：**不再预先 dropna 掉 NaN 收益行**。
+    原因：若序列存在未修复缺口（close=NaN 占位），pct_change 会给出 NaN；
+    旧实现把它 drop 后，searchsorted 会静默回退到**更早一个交易日**的收益
+    → 返回一个"看起来正常但实际不对应目标日"的值（正是本次 NDX/ASML 事故的模式）。
+    现在 NaN 行保留在索引里 → 命中即返回 NaN，上层据此跳过预测，**宁可无数据不给错数据**。
+    """
+    if prices is None or len(prices) == 0:
+        return np.array([np.nan] * len(nav_dates))
+    p = prices[["date", "close"]].copy()
+    p["date"] = pd.to_datetime(p["date"])
+    p = p.drop_duplicates("date", keep="last").sort_values("date")
     p["ret"] = p["close"].pct_change()
-    p = p.dropna(subset=["ret"]).set_index("date")["ret"].sort_index()
-    p = p[~p.index.duplicated(keep="last")]
-    idx = p.index
+    s = p.set_index("date")["ret"].sort_index()
+    idx = s.index
     out = []
     for d in nav_dates:
-        key = d - pd.Timedelta(days=lag)
+        key = pd.Timestamp(d) - pd.Timedelta(days=lag)
         pos = idx.searchsorted(key, side="right") - 1
-        out.append(p.iloc[pos] if pos >= 0 else np.nan)
+        out.append(s.iloc[pos] if pos >= 0 else np.nan)
     return np.array(out)
 
 def latest_ret(prices, asof_date):
