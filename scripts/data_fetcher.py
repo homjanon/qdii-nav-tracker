@@ -384,21 +384,38 @@ def _ak_nav(code):
     df["growth"] = pd.to_numeric(df["growth"], errors="coerce")
     return df
 
+_NAV_CACHE = {}
+
+
 def get_nav(code, start_date=None):
     """基金净值（akshare 主 → 东财 lsjz 备）
-    2026-08-21 提升 akshare 首选：云端(GitHub Actions IP) lsjz 持续被东财限流(30次全失败)，akshare 稳定✓"""
-    df = fallback_chain([("akshare", lambda: _ak_nav(code)),
-                         ("em_lsjz", lambda: _em_lsjz(code))], label=f"净值{code}")
-    if df is None or len(df) == 0:
+
+    2026-08-21 提升 akshare 首选：云端(GitHub Actions IP) lsjz 持续被东财限流(30次全失败)，akshare 稳定✓
+    2026-09-24 加进程内缓存：同一只基金在一次运行里被 4 处调用
+      （run_daily 的 nav_probe 探测 / analysis 分析 / 30日走势 / 摘要），
+      实测 12 只基金共 37 次网络请求（仅需 12 次）。净值当日不变 → 缓存安全；
+      返回**副本**，调用方改写不会相互影响。
+    """
+    if code not in _NAV_CACHE:
+        df = fallback_chain([("akshare", lambda: _ak_nav(code)),
+                             ("em_lsjz", lambda: _em_lsjz(code))], label=f"净值{code}")
+        if df is None or len(df) == 0:
+            _NAV_CACHE[code] = None
+        else:
+            d = df.rename(columns={c: c for c in df.columns})
+            if "date" not in d.columns:
+                _NAV_CACHE[code] = None
+            else:
+                d = d.copy()
+                d["date"] = pd.to_datetime(d["date"])
+                _NAV_CACHE[code] = d.sort_values("date").drop_duplicates("date").reset_index(drop=True)
+    df = _NAV_CACHE[code]
+    if df is None:
         return None
-    df = df.rename(columns={c: c for c in df.columns})
-    if "date" not in df.columns:
-        return None
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.sort_values("date").drop_duplicates("date").reset_index(drop=True)
+    out = df.copy()
     if start_date:
-        df = df[df["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
-    return df
+        out = out[out["date"] >= pd.Timestamp(start_date)].reset_index(drop=True)
+    return out
 
 def get_fund_purchase(codes):
     """场外基金申购限额（东财 fund_purchase_em，akshare）。
@@ -596,10 +613,11 @@ def get_price_df(code, market, allow_snapshot=True):
         df = df[["date", "close"]].copy()
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values("date").drop_duplicates("date")
-        # 缺口补齐（2026-09-24）：以 yfinance 为主源的市场（US/JP/KR）走 东财 → 新浪 → 腾讯快照
+        # 缺口补齐（2026-09-24）：以 yfinance 为主源的市场（US/JP/KR）；源顺序 新浪 → 东财 → 腾讯快照
+        # （顺序依据同上：云端 新浪 11/11 稳定，东财多在限流）
         if market == "US":
-            _fx = [("东财", lambda: _em_us_stock_series(code)),
-                   ("新浪", lambda: _sina_series(code, "US")),
+            _fx = [("新浪", lambda: _sina_series(code, "US")),
+                   ("东财", lambda: _em_us_stock_series(code)),
                    ("腾讯", lambda: _tencent_series(code, "US"))]
         elif market in ("JP", "KR"):
             _fx = [("新浪", lambda: _sina_series(code, market)),
@@ -754,10 +772,12 @@ def get_index(symbol):
         return None
     df["date"] = pd.to_datetime(df["date"])
     df = df[["date", "close"]].sort_values("date").drop_duplicates("date")
-    # 缺口补齐（2026-09-24）：东财 → 新浪 → 腾讯快照
+    # 缺口补齐（2026-09-24）：新浪 → 东财 → 腾讯快照
+    # 顺序依据（云端实测）：新浪补缺口 11/11 成功；东财 push2his 仅 11/46（runner IP 被限流），
+    #   放在首位会大量失败重试、把分析步骤从 ~153s 拖到 ~479s。两者补的都是同一交易日的真实收盘。
     df, _ = _repair_missing_days(df, "US", f"指数 {symbol}", [
-        ("东财", lambda: _em_index_series(symbol)),
         ("新浪", lambda: _sina_series(symbol, "US")),
+        ("东财", lambda: _em_index_series(symbol)),
         ("腾讯", lambda: _tencent_series(symbol, "US", symbol=symbol)),
     ])
     _CACHE[key] = df
@@ -800,6 +820,31 @@ REPAIR_MARKETS = {"US", "JP", "KR"}
 
 _TRADING_DAY_CACHE = {}
 _MKT_CAL_NAME = {"US": "NYSE", "HK": "XHKG", "CN": "XSHG", "JP": "JPX", "KR": "XKRX"}
+
+# 源级熔断（2026-09-24）：同一补齐源连续 N 次补不到 → 本次运行不再尝试该源。
+# 动机（云端实测）：GitHub runner 上 东财 push2his 仅 11 成功 / 35 失败，每次失败都含
+#   2 次重试 + 休眠，把分析步骤从 ~153s 拖到 ~479s。
+# 语义安全：熔断只影响「用哪个源补齐缺失交易日」，不改变补齐后的数值口径
+#   （都是同一交易日的真实收盘），因此运行结果不变。
+_SRC_FAIL_STREAK = {}
+_SRC_DISABLED = set()
+_SRC_BREAK_AFTER = 3
+
+
+def _src_usable(name):
+    return name not in _SRC_DISABLED
+
+
+def _src_mark(name, got_something):
+    """记录某补齐源本次是否补到了数据；连续失败达阈值则熔断"""
+    if got_something:
+        _SRC_FAIL_STREAK[name] = 0
+        return
+    n = _SRC_FAIL_STREAK.get(name, 0) + 1
+    _SRC_FAIL_STREAK[name] = n
+    if n >= _SRC_BREAK_AFTER and name not in _SRC_DISABLED:
+        _SRC_DISABLED.add(name)
+        print(f"    ⚠ [熔断] 补齐源「{name}」连续 {n} 次未补到 → 本次运行不再尝试该源")
 
 
 def trading_day_set(market, lookback_days=420):
@@ -850,6 +895,8 @@ def _em_kline_series(secid, lmt=45):
 
 def _em_us_stock_series(code, lmt=45):
     """美股个股东财日线：市场号 105=NASDAQ / 106=NYSE / 107=AMEX，依次尝试"""
+    if not _src_usable("东财"):
+        return None
     for mkt in (105, 106, 107):
         s = _em_kline_series(f"{mkt}.{code}", lmt=lmt)
         if s:
@@ -976,24 +1023,29 @@ def _repair_missing_days(df, market, key, fetchers):
             DATA_QUALITY["unresolved"].append({"symbol": key, "date": str(x), "scope": "capped"})
         return d.reset_index(drop=True), need
 
-    # ---- 依次尝试备用源（同一个源只请求一次，批量补多天）----
+    # ---- 依次尝试备用源（同一个源只请求一次，批量补多天；已熔断的源直接跳过）----
     got = {}
     for name, fn in fetchers:
         still = [x for x in need if x not in got]
         if not still:
             break
+        if not _src_usable(name):
+            continue
         try:
             series = fn()
         except Exception as e:
             print(f"    ✗ [缺口补齐 {key}/{name}] {repr(e)[:70]}")
+            _src_mark(name, False)
             continue
         if not series:
+            _src_mark(name, False)
             continue
         before = len(got)
         for x in still:
             v = series.get(x)
             if v is not None and pd.notna(v) and float(v) > 0:
                 got[x] = float(v)
+        _src_mark(name, len(got) > before)
         if len(got) > before:
             print(f"    ✓ [缺口补齐 {key}/{name}] 补到 {len([x for x in need if x in got])}/{len(need)} 天")
 
@@ -1064,6 +1116,8 @@ def index_quote(symbol):
 
     for name, fn in (("东财", lambda: _em_index_series(symbol)),
                      ("新浪", lambda: _sina_series(symbol, "US"))):
+        if not _src_usable(name):
+            continue
         try:
             s = fn()
         except Exception as e:
@@ -1120,6 +1174,7 @@ def data_quality_summary():
         "counts": {"found": len(found), "repaired": len(repaired), "unresolved": len(unresolved)},
         "repaired": repaired[:20],
         "unresolved": unresolved[:20],
+        "sources_disabled": sorted(_SRC_DISABLED),
     }
 
 
