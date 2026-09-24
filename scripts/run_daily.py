@@ -222,24 +222,28 @@ def main():
             pass
 
     # NDX 当日收盘（网页右上角对照用：点位 + 当日涨跌幅；2026-08-26 加入）
+    # 2026-09-24 修复：涨跌幅改为**直接取行情接口自带值**（腾讯→东财→新浪→已校验的日线），
+    #   不再用"日线最后两根相减"——序列缺口会把多日累计当单日（事故：NDX -0.04% 实为 -0.85%）
     ndx_info = None
     try:
-        ndx_df = dfet.get_index(".NDX")
-        if ndx_df is not None and len(ndx_df) >= 2:
-            last_close = float(ndx_df["close"].iloc[-1])
-            prev_close = float(ndx_df["close"].iloc[-2])
-            ndx_info = {
-                "date": str(ndx_df["date"].iloc[-1].date()),
-                "close": round(last_close, 2),
-                "pct": round((last_close / prev_close - 1) * 100, 2),
-            }
-    except Exception:
-        pass
+        q = dfet.index_quote(".NDX")
+        if q and q.get("close"):
+            ndx_info = {"date": q.get("date", ""), "close": round(float(q["close"]), 2),
+                        "pct": round(float(q["pct"]), 2) if q.get("pct") is not None else None,
+                        "source": q.get("src", "")}
+            print(f"NDX 行情: {ndx_info['date']} close={ndx_info['close']} "
+                  f"pct={ndx_info['pct']}%（源: {ndx_info['source']}）")
+        else:
+            print("⚠️ NDX 行情接口全部失败 → 本次不显示 NDX 涨跌幅（避免用缺口序列相减出错）")
+    except Exception as e:
+        print(f"⚠️ NDX 行情获取异常: {repr(e)[:120]}")
 
     # 保存当日结果
+    # data_quality（2026-09-24）：价格序列缺口检测/补齐/未修复的汇总，供页面与日志暴露
+    dq = dfet.data_quality_summary()
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
               "funds": results, "verify": verify_report, "purchase": purchase,
-              "trend": trend, "ndx": ndx_info}
+              "trend": trend, "ndx": ndx_info, "data_quality": dq}
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
 
@@ -248,6 +252,18 @@ def main():
     print("DONE ->", os.path.join(args.out, "daily_report.json"))
     # 数据源使用汇总（可观测性，2026-08-21）
     print("数据源汇总:", dfet.src_summary())
+    # 缺口告警汇总（2026-09-24）：防静默复发
+    c = dq["counts"]
+    print(f"数据质量: 缺口 found={c['found']} repaired={c['repaired']} unresolved={c['unresolved']}")
+    if c["repaired"]:
+        _rep = [g["symbol"] + "@" + g["date"] for g in dq["repaired"][:8]]
+        print("  ✓ 已补齐:", _rep)
+    if c["unresolved"]:
+        _unres = [g["symbol"] + "@" + g["date"] for g in dq["unresolved"][:8]]
+        print("  ⛔ 未修复（相关基金当日已跳过预测）:", _unres)
+    _blocked = [f["code"] for f in results if f.get("predict_blocked")]
+    if _blocked:
+        print(f"⛔ 因数据缺口跳过当日预测的基金（{len(_blocked)}/{len(results)}）:", _blocked)
     return 0
 
 def _json_default(o):
