@@ -259,14 +259,15 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdin
       **净值仍用基金自身**。代理标的为完全复制型 ETF，持仓即目标指数成分。
     """
     hold_code = holdings_proxy or code
-    # 1. 持仓（Q1 当期 + Q2 当期）——get_holdings 返回 (holdings, source)，F10 失败时用缓存兜底
-    h_q1, src_q1 = dfet.get_holdings(hold_code, year_q1, month_q1)
-    h_q2, src_q2 = dfet.get_holdings(hold_code)
+    # 1. 持仓（当期 + 上一期）——get_holdings 返回 (holdings, source, period)
+    #    source: live 实时 / cache-fresh 缓存复用（未到重新校验期，0 请求）/ cache 失败兜底
+    h_q1, src_q1, _p1 = dfet.get_holdings(hold_code, year_q1, month_q1)
+    h_q2, src_q2, period = dfet.get_holdings(hold_code)
     if not h_q2:
         print(f"[{code}] Q2 持仓获取失败（实时+缓存均不可用）")
         return {"code": code, "error": "Q2 持仓获取失败", "holdings_proxy": holdings_proxy}
     # 期次校验（2026-09-18）：持仓数据过期（如联接基金自身 F10 停更）→ 跳过预测并告警
-    period = dfet.get_holdings_period(hold_code)
+    # 报告期由 get_holdings 一并返回（2026-09-25 合并），不再单独发一次 F10 请求
     if dfet.is_period_stale(period):
         pa = f"{period[0]}Q{period[1]}" if period else "未知"
         print(f"[{code}] ⚠️ 持仓数据过期（{pa}，来源 {hold_code}），跳过预测（避免静默错误）")
@@ -276,7 +277,8 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdin
     q2_total = sum(x["pct"] for x in h_q2)
     us_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "US")
     hk_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "HK")
-    src_note = f" 持仓来源: Q2={'缓存' if src_q2=='cache' else '实时'} Q1={'缓存' if src_q1=='cache' else '实时'}"
+    _srctxt = {"live": "实时", "cache-fresh": "缓存复用", "cache": "缓存兜底", "none": "无"}
+    src_note = " 持仓来源: 当期=%s 上期=%s" % (_srctxt.get(src_q2, src_q2), _srctxt.get(src_q1, src_q1))
     print(f"[{code}] Q2二十大 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%){src_note}")
 
     # 2. 行情（Q1+Q2 并集）
