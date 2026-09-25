@@ -83,12 +83,17 @@ def classify_market(code):
     return "SKIP"
 
 # 数据源使用统计（可观测性汇总，2026-08-21）
-SRC_STATS = {}  # {源名: {"ok": N, "fail": M}}
+SRC_STATS = {}  # {源名: {"ok": N, "fail": M, "sec": 累计秒}}
 
-def _src_record(label, ok):
-    """记录数据源使用情况。label 传「源名」即可（如 'yf'/'sina'/'em'/'boc'）"""
-    s = SRC_STATS.setdefault(label, {"ok": 0, "fail": 0})
+def _src_record(label, ok, dur=0.0):
+    """记录数据源使用情况。label 传「源名」即可（如 'yf'/'sina'/'em'/'boc'）
+    dur：本次调用耗时（秒）—— 2026-09-25 加入，用于定位网络耗时分布"""
+    s = SRC_STATS.setdefault(label, {"ok": 0, "fail": 0, "sec": 0.0})
     s["ok" if ok else "fail"] += 1
+    try:
+        s["sec"] = float(s.get("sec") or 0.0) + float(dur or 0.0)
+    except Exception:
+        pass
 
 def _src_key(label):
     """从各种 label 提取纯源名（用于 _retry_call 统计）：
@@ -99,13 +104,14 @@ def _src_key(label):
     return key
 
 def src_summary():
-    """数据源使用汇总：{'yf': ✓12/✗3, 'sina': ✓5, ...}"""
+    """数据源使用汇总（按累计耗时降序）：'yf=✓113成功/0失败/128.3s ...'（2026-09-25 加耗时）"""
     if not SRC_STATS:
         return "（无数据源调用）"
+    items = sorted(SRC_STATS.items(), key=lambda kv: -(float(kv[1].get("sec") or 0.0)))
     parts = []
-    for k, v in sorted(SRC_STATS.items()):
+    for k, v in items:
         mark = "✓" if v["fail"] == 0 else "✗"
-        parts.append(f"{k}={mark}{v['ok']}成功/{v['fail']}失败")
+        parts.append("%s=%s%d成功/%d失败/%.1fs" % (k, mark, v["ok"], v["fail"], float(v.get("sec") or 0.0)))
     return " ".join(parts)
 
 def _retry_call(fn, *args, attempts=3, wait=2.0, label="", verbose=False):
@@ -113,12 +119,14 @@ def _retry_call(fn, *args, attempts=3, wait=2.0, label="", verbose=False):
     verbose=True 时成功/空也打印（数据源可观测性，2026-08-21）：
       ✓ [label] 成功 (N条) / ⚠ [label] 空数据 / ✗ [label] 失败: 原因"""
     last_err = None
+    _t_all = time.time()
     for i in range(attempts):
+        _t0 = time.time()
         try:
             r = fn(*args)
             if r is not None and (not isinstance(r, pd.DataFrame) or len(r) > 0):
                 if label:
-                    _src_record(_src_key(label), True)
+                    _src_record(_src_key(label), True, time.time() - _t0)
                 if verbose:
                     n = len(r) if isinstance(r, pd.DataFrame) else "?"
                     print(f"    ✓ [{label}] 成功 ({n}条)")
@@ -129,7 +137,7 @@ def _retry_call(fn, *args, attempts=3, wait=2.0, label="", verbose=False):
             last_err = e
             time.sleep(wait * (i + 1))
     if label:
-        _src_record(_src_key(label), False)
+        _src_record(_src_key(label), False, time.time() - _t_all)
         print(f"    ✗ [{label}] 失败: {repr(last_err)[:120]}")
     return None
 
@@ -138,18 +146,19 @@ def fallback_chain(fetchers, label="", verbose=True):
     每次尝试都打印数据源结果（数据源可观测性，2026-08-21）：
       ✓ [label/source] 成功 (N条) / ⚠ 空数据 / ✗ 失败: 原因"""
     for name, fn in fetchers:
+        _t0 = time.time()
         try:
             r = fn()
             if r is not None and (not isinstance(r, pd.DataFrame) or len(r) > 0):
                 n = len(r) if isinstance(r, pd.DataFrame) else "?"
-                _src_record(name, True)  # 源名（yf/sina/em/akshare 等），不含个股代码
+                _src_record(name, True, time.time() - _t0)  # 源名（yf/sina/em/akshare 等），不含个股代码
                 if verbose:
                     print(f"    ✓ [{label}/{name}] 成功 ({n}条)")
                 return r
             if verbose:
                 print(f"    ⚠ [{label}/{name}] 空数据")
         except Exception as e:
-            _src_record(name, False)  # 源名（yf/sina/em/akshare 等）
+            _src_record(name, False, time.time() - _t0)  # 源名（yf/sina/em/akshare 等）
             print(f"    ✗ [{label}/{name}] 失败: {repr(e)[:100]}")
     return None
 
@@ -304,7 +313,37 @@ def get_holdings_full(code, force=False):
 # 持仓缓存（F10 偶发超时兜底）：output/holdings_cache.json
 # key = f"{code}-{year}-{month}（默认最新期 year='' month='' → key 带 current 标记）"
 HOLDINGS_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", "holdings_cache.json")
-HOLDINGS_CACHE_MAX_AGE_DAYS = 90  # 持仓披露季度更新，90 天缓存足够
+HOLDINGS_CACHE_MAX_AGE_DAYS = 90  # 实时失败时的兜底有效期（持仓按季度披露，90 天足够）
+# 缓存优先（2026-09-25）：QDII 二十大持仓只在披露期（季报/中报/年报）变化，静默期内
+#   每天实时拉是纯浪费。距上次实时校验 ≥ 本天数才重新联网核对期次。
+#   安全性：期次落后 >2 个季度才判过期（HOLDING_STALE_QUARTERS=2），7 天延迟完全无害。
+HOLDINGS_REVALIDATE_DAYS = 7
+
+
+def _period_to_str(period):
+    """(2026, 2) → '2026Q2'；None/异常 → None"""
+    try:
+        return "%dQ%d" % (int(period[0]), int(period[1]))
+    except Exception:
+        return None
+
+
+def _period_from_str(s):
+    """'2026Q2' → (2026, 2)；解析失败 → None"""
+    try:
+        y, q = str(s).split("Q")
+        return int(y), int(q)
+    except Exception:
+        return None
+
+
+def _entry_age_days(entry):
+    """缓存条目距今天数；时间戳缺失/异常返回 None"""
+    try:
+        ts = datetime.datetime.strptime(entry["ts"], "%Y-%m-%d %H:%M:%S")
+        return (datetime.datetime.now() - ts).days
+    except Exception:
+        return None
 
 def _load_holdings_cache():
     try:
@@ -324,36 +363,46 @@ def _save_holdings_cache(cache):
         pass
 
 def get_holdings(code, year="", month=""):
-    """获取某期二十大持仓（F10 实时 → 失败读缓存兜底，2026-09-05 升级 10→20）
-    返回 (holdings, source)：source='live' 实时 / 'cache' 缓存
-    """
-    cache_key = f"{code}|{year or 'current'}|{month or ''}"
-    cache = _load_holdings_cache()
+    """获取某期二十大持仓，并顺带返回报告期。返回 (holdings, source, period)
+      source: 'live' 实时 / 'cache-fresh' 缓存复用（未到重新校验期）/ 'cache' 失败兜底 / 'none'
+      period: (year, quarter) 或 None
 
-    # 实时获取
+    2026-09-05 升级 10→20；2026-09-25 两处改造：
+      ① 报告期合并 —— 期次与持仓在同一份 HTML 里，原先由 get_holdings_period() 单独
+         发一次轻量请求（每基金每天多 1 次，12 只共 12 次/天），现改为就地解析。
+      ② 缓存优先 —— 原先「每次实时拉、失败才读缓存」，改为「缓存未过期直接用」：
+         距上次实时校验 < HOLDINGS_REVALIDATE_DAYS 天且缓存带报告期 → 0 请求；
+         到期/旧缓存无 period/无缓存 → 实时拉并回写（旧缓存自动迁移）。
+    """
+    cache_key = "%s|%s|%s" % (code, year or "current", month or "")
+    cache = _load_holdings_cache()
+    entry = cache.get(cache_key)
+
+    # ① 缓存优先：未到重新校验期、且带报告期 → 直接复用（0 网络请求）
+    if entry and entry.get("holdings") and entry.get("period"):
+        age = _entry_age_days(entry)
+        if age is not None and age < HOLDINGS_REVALIDATE_DAYS:
+            return entry["holdings"], "cache-fresh", _period_from_str(entry.get("period"))
+
+    # ② 实时获取（同时解析报告期，替代原先独立的一次请求）
     html = fetch_f10(code, HOLDINGS_TOP_N, year, month)
     if html:
         h = parse_holdings(html)
         if h:
-            # 成功 → 更新缓存（含时间戳）
+            period = _period_to_str(parse_report_period(html))
             cache[cache_key] = {"ts": time.strftime("%Y-%m-%d %H:%M:%S"),
-                                "year": year, "month": month, "holdings": h}
+                                "year": year, "month": month,
+                                "period": period, "holdings": h}
             _save_holdings_cache(cache)
-            return h, "live"
+            return h, "live", _period_from_str(period)
 
-    # 实时失败 → 缓存兜底
-    entry = cache.get(cache_key)
+    # ③ 实时失败 → 缓存兜底（沿用 HOLDINGS_CACHE_MAX_AGE_DAYS 有效期）
     if entry and entry.get("holdings"):
-        # 检查缓存时效（默认最新期缓存 90 天内有效）
-        try:
-            ts = datetime.datetime.strptime(entry["ts"], "%Y-%m-%d %H:%M:%S")
-            age_days = (datetime.datetime.now() - ts).days
-            if age_days <= HOLDINGS_CACHE_MAX_AGE_DAYS:
-                print(f"    !! {code} F10 实时失败，使用持仓缓存（{entry['ts']}，{age_days}天前）")
-                return entry["holdings"], "cache"
-        except Exception:
-            return entry["holdings"], "cache"
-    return [], "none"
+        age = _entry_age_days(entry)
+        if age is None or age <= HOLDINGS_CACHE_MAX_AGE_DAYS:
+            print("    !! %s F10 实时失败，使用持仓缓存（%s）" % (code, entry.get("ts")))
+            return entry["holdings"], "cache", _period_from_str(entry.get("period"))
+    return [], "none", None
 
 # ============ 净值（双源：东财 lsjz 直连主 → akshare 备）============
 
@@ -812,7 +861,7 @@ def get_hs_index():
 #   ② 本模块用市场交易日历检测缺口 → 按 东财 → 新浪 → 腾讯快照 顺序补齐
 #   ③ 补到的记 repaired；全都取不到 → 记 unresolved，上层跳过该标的当日预测并告警
 
-DATA_QUALITY = {"found": [], "repaired": [], "unresolved": []}
+DATA_QUALITY = {"found": [], "repaired": [], "unresolved": [], "from_cache": []}
 
 # 只对「最近 N 个自然日」内的缺口做联网补齐（足够当日预测+页面展示，避免历史长尾拖慢）
 GAP_WINDOW_DAYS = 35
@@ -820,6 +869,78 @@ GAP_WINDOW_DAYS = 35
 GAP_MAX_PER_SYMBOL = 12
 # 需要做缺口补齐的市场：以 yfinance 为主源的市场（HK/CN 主源是新浪，历史完整，不动）
 REPAIR_MARKETS = {"US", "JP", "KR"}
+
+# ---- 缺口补齐结果持久化缓存（2026-09-25）----
+# 历史交易日的收盘价**不可变** → 补一次即可永久复用。
+# 动机：Yahoo 的整行空值（如 2026-09-22 共 22 个标的同时中招）若不落盘，每次运行都会
+#   重新向 新浪/腾讯/东财 请求同一批历史值（GAP_WINDOW_DAYS=35 → 约 35 天反复重补；
+#   实测 data_quality 连续多次都是 found=26 / repaired=22，补的标的清单完全一致）。
+#   落盘后，第二次起降为 **0 请求**；同时避免「35 天窗口过后 NaN 永久留在序列里」。
+GAP_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
+                              "output", ".gap_repair_cache.json")
+GAP_CACHE_MAX_ENTRIES = 8000  # 上限保护（缺口罕见，正常远低于此）
+
+
+def _load_gap_cache():
+    try:
+        if os.path.exists(GAP_CACHE_PATH):
+            with open(GAP_CACHE_PATH, encoding="utf-8") as f:
+                d = json.load(f)
+            return d if isinstance(d, dict) else {}
+    except Exception:
+        pass
+    return {}
+
+
+def _save_gap_cache(data):
+    try:
+        os.makedirs(os.path.dirname(GAP_CACHE_PATH), exist_ok=True)
+        with open(GAP_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+# 用「容器 + dirty 标记」避免函数内 global 赋值
+_GAP_CACHE = {"data": _load_gap_cache(), "dirty": False}
+
+
+def gap_cache_get(key, dt):
+    """取某标的某交易日的历史收盘（命中返回 float，未命中 None）"""
+    v = _GAP_CACHE["data"].get("%s|%s" % (key, dt))
+    try:
+        return float(v) if v is not None else None
+    except Exception:
+        return None
+
+
+def gap_cache_put(key, dt, val):
+    """写入缓存。只应由补齐流程调用——写入值是真实日线源给出的**已结算**交易日收盘"""
+    try:
+        _GAP_CACHE["data"]["%s|%s" % (key, dt)] = float(val)
+        _GAP_CACHE["dirty"] = True
+    except Exception:
+        pass
+
+
+def gap_cache_stats():
+    return {"entries": len(_GAP_CACHE["data"]), "dirty": bool(_GAP_CACHE["dirty"])}
+
+
+def gap_cache_flush():
+    """落盘（run_daily 在分析结束后调用一次；失败不影响主流程）。返回落地条目数"""
+    data = _GAP_CACHE["data"]
+    if not _GAP_CACHE["dirty"]:
+        return len(data)
+    if len(data) > GAP_CACHE_MAX_ENTRIES:
+        # 超限：按日期倒序保留最新的（键格式 'SYMBOL|YYYY-MM-DD'）
+        keep = sorted(data.items(), key=lambda kv: str(kv[0]).rsplit("|", 1)[-1], reverse=True)
+        data = dict(keep[:GAP_CACHE_MAX_ENTRIES])
+        _GAP_CACHE["data"] = data
+    _save_gap_cache(data)
+    _GAP_CACHE["dirty"] = False
+    return len(data)
+
 
 _TRADING_DAY_CACHE = {}
 _MKT_CAL_NAME = {"US": "NYSE", "HK": "XHKG", "CN": "XSHG", "JP": "JPX", "KR": "XKRX"}
@@ -1114,8 +1235,16 @@ def _repair_missing_days(df, market, key, fetchers):
             DATA_QUALITY["unresolved"].append({"symbol": key, "date": str(x), "scope": "capped"})
         return d.reset_index(drop=True), need
 
-    # ---- 依次尝试备用源（同一个源只请求一次，批量补多天；已熔断的源直接跳过）----
+    # ---- ① 先套持久化缓存（历史交易日的收盘价不可变 → 0 网络请求）----
     got = {}
+    _new_got = set()
+    for x in need:
+        v = gap_cache_get(key, x)
+        if v is not None and v > 0:
+            got[x] = v
+            DATA_QUALITY["from_cache"].append({"symbol": key, "date": str(x), "src": "cache"})
+
+    # ---- ② 未命中的才走备用源（同一个源只请求一次，批量补多天；已熔断的源直接跳过）----
     for name, fn in fetchers:
         still = [x for x in need if x not in got]
         if not still:
@@ -1136,17 +1265,20 @@ def _repair_missing_days(df, market, key, fetchers):
             v = series.get(x)
             if v is not None and pd.notna(v) and float(v) > 0:
                 got[x] = float(v)
+                _new_got.add(x)
         _src_mark(name, len(got) > before)
         if len(got) > before:
             print(f"    ✓ [缺口补齐 {key}/{name}] 补到 {len([x for x in need if x in got])}/{len(need)} 天")
 
-    # ---- 回填 ----
+    # ---- ③ 回填（缓存命中 + 本次新补），并把新补值落盘复用 ----
     if got:
         d = d[~d["date"].dt.date.isin(set(got))]
         add = pd.DataFrame({"date": pd.to_datetime(sorted(got)), "close": [got[x] for x in sorted(got)]})
         d = pd.concat([d, add], ignore_index=True)
         for x in sorted(got):
-            DATA_QUALITY["repaired"].append({"symbol": key, "date": str(x)})
+            if x in _new_got:
+                DATA_QUALITY["repaired"].append({"symbol": key, "date": str(x)})
+                gap_cache_put(key, x, got[x])  # 历史收盘不可变 → 永久复用
 
     unresolved = [x for x in need if x not in got]
     if unresolved:
@@ -1261,11 +1393,14 @@ def data_quality_summary():
     found, repaired, unresolved = (_dedup(DATA_QUALITY["found"]),
                                    _dedup(DATA_QUALITY["repaired"]),
                                    _dedup(DATA_QUALITY["unresolved"]))
+    from_cache = _dedup(DATA_QUALITY.get("from_cache") or [])
     return {
-        "counts": {"found": len(found), "repaired": len(repaired), "unresolved": len(unresolved)},
+        "counts": {"found": len(found), "repaired": len(repaired),
+                   "from_cache": len(from_cache), "unresolved": len(unresolved)},
         "repaired": repaired[:20],
         "unresolved": unresolved[:20],
         "sources_disabled": sorted(_SRC_DISABLED),
+        "gap_cache_entries": len(_GAP_CACHE["data"]),
     }
 
 
