@@ -95,6 +95,10 @@ def _src_record(label, ok, dur=0.0):
     except Exception:
         pass
 
+def _src_total():
+    """已记账总次数（ok + fail）—— 判断内层 _retry_call 是否已记账，防双重计数"""
+    return sum(v.get("ok", 0) + v.get("fail", 0) for v in SRC_STATS.values())
+
 def _src_key(label):
     """从各种 label 提取纯源名（用于 _retry_call 统计）：
     'yf_MU'→'yf'、'东财lsjz 022184'→'东财lsjz'、'中行牌价'→'中行牌价'、'指数 .NDX'→'指数'"""
@@ -144,21 +148,28 @@ def _retry_call(fn, *args, attempts=3, wait=2.0, label="", verbose=False):
 def fallback_chain(fetchers, label="", verbose=True):
     """多源降级链：依次尝试，返回首个非 None 结果
     每次尝试都打印数据源结果（数据源可观测性，2026-08-21）：
-      ✓ [label/source] 成功 (N条) / ⚠ 空数据 / ✗ 失败: 原因"""
+      ✓ [label/source] 成功 (N条) / ⚠ 空数据 / ✗ 失败: 原因
+
+    2026-09-25 修复「双重记账」：链内 fetcher 多已走 _retry_call（其内部已记账），
+    外层再记一次会让 SRC_STATS 计数与耗时约 ×2（实例：中行牌价 =✓2成功/19.4s，
+    实为 1 次/9.7s；yf=113 实为 ~57）。故此处仅在「内层未记账」时补记。"""
     for name, fn in fetchers:
         _t0 = time.time()
+        _before = _src_total()
         try:
             r = fn()
             if r is not None and (not isinstance(r, pd.DataFrame) or len(r) > 0):
                 n = len(r) if isinstance(r, pd.DataFrame) else "?"
-                _src_record(name, True, time.time() - _t0)  # 源名（yf/sina/em/akshare 等），不含个股代码
+                if _src_total() == _before:  # 内层未记账 → 补记源名（yf/sina/em/akshare 等）
+                    _src_record(name, True, time.time() - _t0)
                 if verbose:
                     print(f"    ✓ [{label}/{name}] 成功 ({n}条)")
                 return r
             if verbose:
                 print(f"    ⚠ [{label}/{name}] 空数据")
         except Exception as e:
-            _src_record(name, False, time.time() - _t0)  # 源名（yf/sina/em/akshare 等）
+            if _src_total() == _before:
+                _src_record(name, False, time.time() - _t0)
             print(f"    ✗ [{label}/{name}] 失败: {repr(e)[:100]}")
     return None
 
@@ -238,14 +249,6 @@ def is_period_stale(period, max_lag=HOLDING_STALE_QUARTERS):
     exp = _expected_period()
     lag = (exp[0] * 4 + exp[1]) - (period[0] * 4 + period[1])
     return lag > max_lag
-
-def get_holdings_period(code):
-    """获取 F10 最新报告期（轻量请求 topline=5）→ (year, quarter) 或 None"""
-    try:
-        html = fetch_f10(code, 5)
-        return parse_report_period(html)
-    except Exception:
-        return None
 
 def fetch_f10_all(code, year="2026", month="6"):
     """拉取某期全部股票持仓（topline=1000，覆盖 021277 805 只等全量）
