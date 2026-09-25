@@ -4,7 +4,8 @@
 
 流程（美股交易日北京时间 08:00 触发）：
 1. 判断美股交易日（NYSE 日历 + 时区）——非交易日跳过
-2. 中国节假日门控（2026-09-09）：工作日但 A股休市（国庆/春节）→ 基金不发布净值，跳过
+2. 目标净值日门控：预测目标净值日（= 美股最近收盘日 us_last）非 A股交易日 → 该日基金不公布
+   净值，预测将永远无法验证 → 跳过（2026-09-25；此前误判「今天」是否 A股交易日）
 3. 长假回归首日保护：最新净值与美股最近收盘间隔 ≥2 个美股交易日 → 跳过当日（避免多日累计大偏差）
 4. 对每只基金：拉最新持仓 + 净值 + 美股行情 + 汇率
 5. ⭐ 前瞻预测：用今天凌晨美股收盘数据，预测「今晚将公布」的净值涨跌（lag=0）
@@ -156,11 +157,20 @@ def main():
             print("今天非美股交易日（或美股未收盘），跳过自动运行")
             return 0
         print("✓ 美股交易日，执行分析")
-        # 中国节假日门控（2026-09-09）：工作日但 A股休市（国庆/春节等）→ 基金不发布净值，
-        # 不产生"等不到净值"的悬挂预测。周末由上方美股门控处理，此处只拦工作日节假日。
-        wd = datetime.datetime.strptime(today, "%Y-%m-%d").weekday()
-        if wd < 5 and not is_cn_nav_day(today):
-            print(f"✗ {today} 中国节假日（A股休市），QDII 基金不更新净值，跳过自动运行")
+        # 目标净值日门控（2026-09-25 修正判据对象）：判断的不是「今天」是否 A股交易日，
+        # 而是「预测目标净值日」(= 美股最近收盘日 us_last) 是否 A股交易日。
+        #   · 只有 A股交易日才存在对应净值；否则预测记录永远等不到 actual → 悬挂
+        #   · 旧判据（判「今天」）的两个漏洞：中秋 9/25 被误杀（us_last=9/24 是 A股日，
+        #     本该预测一份可验证的净值）；周六 9/26 / 周一 9/28 反被放行（us_last=9/25
+        #     非 A股日 → 各 12 条悬挂）。周末仍由上方美股门控处理，此处无需再判星期。
+        try:
+            us_last_probe = dfet.us_last_trade_date()
+        except Exception as e:
+            print(f"  [目标净值日门控] 美股日历异常，放行（{repr(e)[:60]}）")
+            us_last_probe = None
+        if us_last_probe is not None and not is_cn_nav_day(str(us_last_probe)):
+            print(f"✗ 预测目标净值日 {us_last_probe} 非 A股交易日（QDII 基金当日不公布净值），"
+                  f"预测将永远无法验证 → 跳过自动运行")
             return 0
         # 长假回归首日保护（2026-09-09）：基金最新净值与美股最近收盘间隔 ≥2 个美股交易日
         # → 今晚净值将一次反映多日美股累计涨跌（如国庆后 10/8 = 美股 5 天累计），
@@ -341,6 +351,11 @@ def append_predictions(history, results, today):
             continue
         p = r["predict"]
         pred_date = str(p["next_date"].date())
+        # 防御断言（2026-09-25）：目标净值日必须是 A股交易日 —— 否则永远不会有对应净值，
+        # 落库即成「等不到 actual」的悬挂记录。即便门控将来再被改坏，也不会再产生这类记录。
+        if not is_cn_nav_day(pred_date):
+            print(f"  ⛔ [防御] {code} pred_date={pred_date} 非 A股交易日 → 不落预测记录")
+            continue
         # 清理同 (code, pred_date) 的重复旧记录（只保留第一条）
         dups = [i for i, h in enumerate(history)
                 if h.get("code") == code and h.get("pred_date") == pred_date]
