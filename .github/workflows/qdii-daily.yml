@@ -78,7 +78,10 @@ jobs:
 
       - name: Run QDII nav analysis
         if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
-        run: python scripts/run_daily.py --out output
+        # PYTHONUNBUFFERED：关闭 stdout 块缓冲 → 日志时间戳真实（2026-09-25 加，便于性能定位）
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u scripts/run_daily.py --out output
 
       - name: Render static HTML
         if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
