@@ -13,6 +13,9 @@
 7. 滚动 NNLS 动态权重 → 输出疑似调仓清单
 8. 生成 Markdown 报告 → output/
 """
+import time as _time
+_PROC_T0 = _time.time()   # 进程计时起点（2026-09-25 阶段耗时埋点；放在最前，含 import 开销）
+
 import os, sys, json, datetime, argparse
 import numpy as np
 import pandas as pd
@@ -20,6 +23,17 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import data_fetcher as dfet
 import analysis as ana
+
+_LAST_MARK = _PROC_T0
+
+def mark(label):
+    """阶段耗时埋点（2026-09-25）：距上次埋点增量 + 自进程启动累计。
+    目的：GitHub Actions 日志的 stdout 是块缓冲，时间戳被挤压成少数几个 flush 点，
+    无法据此定位瓶颈 —— 用显式埋点取代（配合 workflow 的 PYTHONUNBUFFERED=1）。"""
+    global _LAST_MARK
+    now = _time.time()
+    print(f"    ⏱ {label}: +{now - _LAST_MARK:.1f}s（累计 {now - _PROC_T0:.1f}s）", flush=True)
+    _LAST_MARK = now
 
 # 关注的 QDII 基金（A/C 份额已合并选择）
 # 配置化（2026-08-16 起，2026-08-26 恢复）：优先读仓库 config/funds.json（维护面板可编辑），缺失回退内置默认
@@ -142,6 +156,7 @@ def save_history(rows):
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 def main():
+    mark("启动+import")
     ap = argparse.ArgumentParser()
     ap.add_argument("--force", action="store_true", help="忽略交易日判断强制运行（测试用）")
     ap.add_argument("--out", default=OUTPUT_DIR)
@@ -188,6 +203,7 @@ def main():
                     return 0
         except Exception as e:
             print(f"  [长假检测跳过] {repr(e)[:80]}")
+    mark("门控（美股日历 + 目标净值日 + 长假gap）")
 
     history = load_history()
 
@@ -199,19 +215,30 @@ def main():
         except Exception as e:
             print(f"  [{code}] 失败: {repr(e)[:150]}")
             results[code] = {"code": code, "error": str(e)[:200]}
+        mark(f"{code} 分析")
+
+    # 缺口补齐结果落盘（2026-09-25）：历史交易日收盘价不可变 → 下轮直接复用（0 请求）
+    try:
+        _gc = dfet.gap_cache_flush()
+        print(f"    [缺口缓存] 落盘 {_gc} 条", flush=True)
+    except Exception as e:
+        print(f"    [缺口缓存] 落盘失败: {repr(e)[:80]}")
 
     # 全持仓静态档案刷新（2026-09-05 加入：中报/年报披露期抓一次，供网页"全部半年报持仓"展示）
     # get_holdings_full 内部有 120 天缓存，非披露期不会重复拉取
     full_report = refresh_full_holdings()
+    mark("全持仓档案刷新")
 
     # 验证历史预测：预测净值日已公布 → 补记 actual + 命中率
     verify_report = verify_history(history, results)
+    mark("历史验证")
 
     # 记录今日新预测（追加到历史）
     append_predictions(history, results, today)
 
     # 申购限额（东财 fund_purchase_em，2026-08-18 加入；失败返回 {} 不影响主流程）
     purchase = dfet.get_fund_purchase(set(str(c) for c in results.keys()))
+    mark("申购限额")
 
     # 30 日净值涨跌幅走势（网页对比图用：每只基金相对区间首日累计涨跌%）
     # 2026-08-21 由 60 日净值曲线改为 30 日涨跌幅，直接对比"最近30日谁涨得最好"
@@ -247,6 +274,7 @@ def main():
             print("⚠️ NDX 行情接口全部失败 → 本次不显示 NDX 涨跌幅（避免用缺口序列相减出错）")
     except Exception as e:
         print(f"⚠️ NDX 行情获取异常: {repr(e)[:120]}")
+    mark("30日走势 + NDX 行情")
 
     # 保存当日结果
     # data_quality（2026-09-24）：价格序列缺口检测/补齐/未修复的汇总，供页面与日志暴露
@@ -259,6 +287,7 @@ def main():
 
     # 生成 Markdown 摘要
     write_summary(report, args.out, history)
+    mark("报告落盘（daily_report.json + summary.md）")
     print("DONE ->", os.path.join(args.out, "daily_report.json"))
     # 数据源使用汇总（可观测性，2026-08-21）
     print("数据源汇总:", dfet.src_summary())
@@ -268,10 +297,15 @@ def main():
     try:
         _dq_c = dq.get("counts") or {}
         print(f"数据质量: 缺口 found={_dq_c.get('found', 0)}"
-              f" repaired={_dq_c.get('repaired', 0)} unresolved={_dq_c.get('unresolved', 0)}")
+              f" repaired={_dq_c.get('repaired', 0)}"
+              f" from_cache={_dq_c.get('from_cache', 0)}"
+              f" unresolved={_dq_c.get('unresolved', 0)}"
+              f" cached_entries={dq.get('gap_cache_entries', 0)}")
         if _dq_c.get("repaired"):
-            print("  ✓ 已补齐:", [g.get("symbol", "") + "@" + g.get("date", "")
-                                 for g in (dq.get("repaired") or [])[:8]])
+            print("  ✓ 本次新补:", [g.get("symbol", "") + "@" + g.get("date", "")
+                                   for g in (dq.get("repaired") or [])[:8]])
+        if _dq_c.get("from_cache"):
+            print(f"  ↩ 由缓存补齐（0 请求）: {_dq_c['from_cache']} 处")
         if _dq_c.get("unresolved"):
             print("  ⛔ 未修复（相关基金当日已跳过预测）:",
                   [g.get("symbol", "") + "@" + g.get("date", "")
@@ -282,6 +316,7 @@ def main():
             print(f"⛔ 因数据缺口跳过当日预测的基金（{len(_blocked)}/{len(results)}）:", _blocked)
     except Exception as e:
         print(f"⚠️ 数据质量汇总打印失败（不影响本次结果）: {repr(e)[:150]}")
+    mark("总计")
     return 0
 
 def _json_default(o):
