@@ -71,25 +71,30 @@ def evaluate(nav, pred):
 
 def rolling_nnls(nav, holdings, price_map, fx_df, window=60, min_n=30):
     """滚动 NNLS 动态权重：对每个净值日 t，用 [t-window, t-1] 估计权重，预测 t
-    返回: preds Series + 最新权重 dict"""
+    返回: preds Series + 最新权重 dict
+
+    2026-09-25：**汇率（FX）不再作为独立特征列进入 NNLS**。三条实测证据：
+      ① A/B 回测（3 只基金）去掉后 MAE 不变或微降：0.816→0.816 / 0.991→0.930 / 0.651→0.648；
+      ② 拟合权重极不稳定且出现经济不可能值（024239 中位 6.86、97.9% 期数 >1；
+         汇率敞口物理上限 = 100% 持仓，即权重 ≤ 1）；
+      ③ 中行牌价日收益与基金净值的相关 ≈ 0（5 只基金 0.001~0.084）→ 日频无信息量。
+    汇率仍有贡献的地方是**静态篮子**（`basket_returns` / `predict_next` 的 `wsum × fxr`）：
+    那里敞口 = 持仓比例，经济含义明确，故**保留**。
+    （`fx_df` 参数保留以兼容调用方签名，此函数内不再使用。）
+    """
     w0 = _weights(holdings)
     codes = [c for c in w0 if c in price_map]
     if not codes:
         return None, None, None
-    # 构建收益矩阵
+    # 构建收益矩阵（仅持仓成分）
     X = pd.DataFrame({"date": nav["date"]})
     for c in codes:
         X[c] = dfet.asof_ret(price_map[c], nav["date"])
-    if fx_df is not None:
-        X["FX"] = dfet.asof_ret(fx_df, nav["date"])
-    else:
-        X["FX"] = 0.0
     X = X.set_index("date")
     # 2026-09-05 健壮性：剔除整列全 NaN 的成分（数据源缺口，如日韩限流），
     # 否则 dropna() 会连带删掉全部有效行，NNLS 直接无样本
     X = X.dropna(axis=1, how="all")
-    codes = [c for c in X.columns if c != "FX"]
-    fx_codes = codes + ["FX"]
+    codes = list(X.columns)
     if not codes:
         return None, None, None  # 全部成分无数据 → NNLS 无特征可解
     Y = nav.set_index("date")["growth"] / 100
@@ -104,16 +109,15 @@ def rolling_nnls(nav, holdings, price_map, fx_df, window=60, min_n=30):
         hist = full.iloc[i - window:i]
         yh = hist.iloc[:, 0].values
         Xh = hist.iloc[:, 1:].values
-        col_mask = [True] * (len(codes) + 1)  # codes + FX
         try:
-            w_nn, _ = nnls(Xh[:, col_mask], yh)
+            w_nn, _ = nnls(Xh, yh)
         except Exception:
             continue
-        x_today = X.loc[dates[i]].values[col_mask]
+        x_today = X.loc[dates[i]].values
         if np.any(np.isnan(x_today)):
             continue
         preds[dates[i]] = float(w_nn @ x_today)
-        last_w = dict(zip(fx_codes, w_nn))
+        last_w = dict(zip(codes, w_nn))
     if not preds:
         return None, None, None
     ps = pd.Series(preds)
@@ -219,13 +223,11 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
         if not np.isnan(ndx_ret) and not np.isnan(b_static):
             diverge = np.sign(b_static) != np.sign(ndx_ret)
 
-    # 滚动 NNLS 权重预测
+    # 滚动 NNLS 权重预测（2026-09-25：权重表已不含 FX，见 rolling_nnls 说明）
     b_nnls = None
     if nnls_weight:
         b_nnls = 0.0
         for code, wgt in nnls_weight.items():
-            if code == "FX":
-                continue
             px = price_map.get(code)
             if px is None:
                 continue
@@ -233,9 +235,6 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
             if np.isnan(r):
                 continue
             b_nnls += wgt * r
-        fxw = nnls_weight.get("FX", 0.0)
-        if fx_df is not None and not np.isnan(fxr):
-            b_nnls += fxw * fxr
 
     out = {"next_date": next_d, "last_date": last_date, "last_nav": last_nav,
            "pred_static": float(b_static), "pred_nnls": float(b_nnls) if b_nnls is not None else None,
