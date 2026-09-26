@@ -130,6 +130,14 @@ def render(report, history, out_path, full_holdings=None):
     verify = report.get("verify", {})
     purchase = report.get("purchase") or {}  # {code: {"status","limit"}} 申购限额（2026-08-18 加入）
     hist_verified = [h for h in history if h.get("actual") is not None]
+    # 参考值模式（2026-09-26）：目标净值日非 A股交易日 → 该日无净值，预测仅供观看、不参与验证
+    provisional = bool(report.get("provisional"))
+    prov_banner = ("" if not provisional else
+                   '<div class="card" style="border-left:4px solid #d97706;background:#fffbeb">'
+                   '<div style="font-weight:700;color:#92400e">⚠️ 参考值模式（本日无对应净值）</div>'
+                   '<div class="sub" style="margin-top:4px">目标净值日非 A股交易日 → QDII 基金当日不公布净值，'
+                   '下列预测<b>不对应任何真实净值</b>，仅供观看参考、<b>不落库、不参与验证统计</b>。'
+                   '休市市场当日收益按 0 计（非缺失剔除），汇率按中国日历处理。</div></div>')
 
     # ---- 今晚预测卡片（保留全部基金：待验证显示预测，已公布显示预测vs实际）----
     pred_cards = []
@@ -455,6 +463,8 @@ def render(report, history, out_path, full_holdings=None):
   <div><h1>QDII 净值跟踪</h1><div class="sub">二十大持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
   <div class="sub">报告日 {esc(date)}<br>更新 {esc(gen)}</div>
 </header>
+
+{prov_banner}
 
 <div class="card">
   <h2>今晚净值预测 <span class="badge">{esc(date)}</span> {ndx_html}</h2>
