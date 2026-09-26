@@ -974,8 +974,13 @@ def _src_mark(name, got_something):
         print(f"    ⚠ [熔断] 补齐源「{name}」连续 {n} 次未补到 → 本次运行不再尝试该源")
 
 
-def trading_day_set(market, lookback_days=420):
-    """某市场近 N 天的交易日集合 set[datetime.date]；不支持的市场返回 None（调用方据此跳过检查）"""
+def trading_day_set(market, lookback_days=800):
+    """某市场近 N 天的交易日集合 set[datetime.date]；不支持的市场返回 None（调用方据此跳过检查）
+
+    2026-09-26：默认 420 → 800。420 的覆盖起点 ≈ 回测起点（2025-08-01）之后，
+    导致 basket_returns 首日被 market_open_mask 误判「休市」→ 全部成分收益被误置 0
+    （已实测复现：2025-08-01 not in set）。800 保证完整覆盖回测区间，成本可忽略。
+    """
     key = (market, lookback_days)
     if key in _TRADING_DAY_CACHE:
         return _TRADING_DAY_CACHE[key]
@@ -994,6 +999,34 @@ def trading_day_set(market, lookback_days=420):
     _TRADING_DAY_CACHE[key] = out
     return out
 
+
+def is_market_open(market, date):
+    """某市场在某日是否开市：True / False；日历不可用（不支持的市场）→ None（调用方不做休市判定）
+
+    2026-09-26 休市修正用。背景：asof_ret 的语义是「取 ≤ D 的最近交易日收益」，
+    对休市日（实例 2026-09-25 中秋 A股休市）会**静默返回前一日收益**，把旧值当当日值
+    （实测：600183 在 9/25 返回 −4.3396%，实为 9/24 的收益；中行牌价同样返回 9/24 的 +0.031%）。
+    预测路径据此把休市日的成分收益按 0 计（价格确实没变），而不是沿用旧值。
+    """
+    d = pd.Timestamp(date).date()
+    key = ("mktopen", market, d)
+    if key in _TRADING_DAY_CACHE:
+        return _TRADING_DAY_CACHE[key]
+    s = trading_day_set(market)
+    r = None if s is None else (d in s)
+    _TRADING_DAY_CACHE[key] = r
+    return r
+
+
+def market_open_mask(market, dates):
+    """一批日期中该市场是否开市 → list[bool]；日历不可用 → None（调用方跳过休市修正）
+
+    供向量化路径一次判定整列（如 basket_returns 的某标的整段收益序列）。
+    """
+    s = trading_day_set(market)
+    if s is None:
+        return None
+    return [pd.Timestamp(x).date() in s for x in dates]
 
 def _em_kline_series(secid, lmt=45):
     """东财 push2his 日线 → {date: close}（需 curl_cffi；境内源不可走代理）"""
