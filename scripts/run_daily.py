@@ -167,42 +167,59 @@ def main():
     today = now.strftime("%Y-%m-%d")
     print(f"[{today} {now.strftime('%H:%M')}] QDII 净值跟踪开始")
 
+    provisional = False   # 参考值模式（2026-09-26）：目标净值日非 A股交易日 → 该日无净值
     if not args.force:
         if not is_us_trade_day_today():
             print("今天非美股交易日（或美股未收盘），跳过自动运行")
             return 0
         print("✓ 美股交易日，执行分析")
-        # 目标净值日门控（2026-09-25 修正判据对象）：判断的不是「今天」是否 A股交易日，
-        # 而是「预测目标净值日」(= 美股最近收盘日 us_last) 是否 A股交易日。
-        #   · 只有 A股交易日才存在对应净值；否则预测记录永远等不到 actual → 悬挂
-        #   · 旧判据（判「今天」）的两个漏洞：中秋 9/25 被误杀（us_last=9/24 是 A股日，
-        #     本该预测一份可验证的净值）；周六 9/26 / 周一 9/28 反被放行（us_last=9/25
-        #     非 A股日 → 各 12 条悬挂）。周末仍由上方美股门控处理，此处无需再判星期。
-        try:
-            us_last_probe = dfet.us_last_trade_date()
-        except Exception as e:
-            print(f"  [目标净值日门控] 美股日历异常，放行（{repr(e)[:60]}）")
-            us_last_probe = None
-        if us_last_probe is not None and not is_cn_nav_day(str(us_last_probe)):
-            print(f"✗ 预测目标净值日 {us_last_probe} 非 A股交易日（QDII 基金当日不公布净值），"
-                  f"预测将永远无法验证 → 跳过自动运行")
-            return 0
+    # 目标净值日判定（2026-09-26 由"拦截"改为"标记参考值模式"）：
+    #   判据：预测目标净值日（= 美股最近收盘日 us_last）是否 A股交易日。
+    #   非 A股交易日 → 该日基金不公布净值 → 预测**不对应任何真实净值**。
+    #   处理：仍执行分析（用户要"美股交易就能看到反馈"），但打 provisional 标记：
+    #     · 不落库（append_predictions 的防御断言自动拦截）→ 不污染命中率统计
+    #     · 页面/报告标注「参考值」，休市市场按 0 计、汇率按中国日历处理
+    #   2026-09-26 补：判定移到 force 分支之外 —— 参考值是「目标日」的属性，
+    #     与是否强制运行无关；否则 --force 补跑休市日会得到无标注数字，容易误读。
+    try:
+        us_last_probe = dfet.us_last_trade_date()
+    except Exception as e:
+        print(f"  [目标净值日判定] 美股日历异常，按正常模式继续（{repr(e)[:60]}）")
+        us_last_probe = None
+    if us_last_probe is not None and not is_cn_nav_day(str(us_last_probe)):
+        provisional = True
+        print(f"⚠ 预测目标净值日 {us_last_probe} 非 A股交易日（QDII 基金当日不公布净值）"
+              f"→ 以「参考值」模式运行：结果仅供观看，不落库、不参与验证")
+    if not args.force:
         # 长假回归首日保护（2026-09-09）：基金最新净值与美股最近收盘间隔 ≥2 个美股交易日
         # → 今晚净值将一次反映多日美股累计涨跌（如国庆后 10/8 = 美股 5 天累计），
         #   单日预测必大偏差 → 跳过当天（历史验证由次日正常补跑）。
-        try:
-            nav_probe = dfet.get_nav(FUNDS[0])
-            if nav_probe is not None and len(nav_probe) > 0:
-                last_date = pd.Timestamp(nav_probe["date"].iloc[-1])
-                us_last = dfet.us_last_trade_date()
-                gap = us_holiday_gap_days(last_date, us_last)
-                if gap >= 2:
-                    print(f"✗ 长假回归首日：基金最新净值 {last_date.date()} ↔ 美股最近收盘 "
-                          f"{us_last} 间隔 {gap} 个美股交易日，今晚净值含多日累计涨跌，"
-                          f"跳过当日预测（避免大偏差，历史验证次日补跑）")
-                    return 0
-        except Exception as e:
-            print(f"  [长假检测跳过] {repr(e)[:80]}")
+        # 参考值模式（provisional）下跳过本检查：那天本就没有对应净值，"累计偏差"不构成问题，
+        #   且净值公布滞后（T+1/T+2）会让 gap 虚高（实例 9/26：最新净值 9/23 → gap=2，实际只隔 1 天）
+        if not provisional:
+            try:
+                nav_probe = dfet.get_nav(FUNDS[0])
+                if nav_probe is not None and len(nav_probe) > 0:
+                    last_date = pd.Timestamp(nav_probe["date"].iloc[-1])
+                    us_last = dfet.us_last_trade_date()
+                    gap = us_holiday_gap_days(last_date, us_last)
+                    if gap >= 2:
+                        print(f"✗ 长假回归首日：基金最新净值 {last_date.date()} ↔ 美股最近收盘 "
+                              f"{us_last} 间隔 {gap} 个美股交易日，今晚净值含多日累计涨跌，"
+                              f"跳过当日预测（避免大偏差，历史验证次日补跑）")
+                        return 0
+            except Exception as e:
+                print(f"  [长假检测跳过] {repr(e)[:80]}")
+        else:
+            try:
+                nav_probe = dfet.get_nav(FUNDS[0])
+                if nav_probe is not None and len(nav_probe) > 0:
+                    _ld = pd.Timestamp(nav_probe["date"].iloc[-1])
+                    _gap = us_holiday_gap_days(_ld, us_last_probe) if us_last_probe else 0
+                    print(f"  [参考值模式] 基金最新净值 {_ld.date()} ↔ 目标日 {us_last_probe}"
+                          f"（间隔 {_gap} 个美股交易日；含休市日，故本值不是单日口径的严格预测）")
+            except Exception:
+                pass
     mark("门控（美股日历 + 目标净值日 + 长假gap）")
 
     history = load_history()
@@ -210,7 +227,8 @@ def main():
     results = {}
     for code in FUNDS:
         try:
-            r = ana.analyze_fund(code, holdings_proxy=FUND_PROXIES.get(code))
+            r = ana.analyze_fund(code, holdings_proxy=FUND_PROXIES.get(code),
+                                 provisional=provisional)
             results[code] = r
         except Exception as e:
             print(f"  [{code}] 失败: {repr(e)[:150]}")
@@ -281,7 +299,8 @@ def main():
     dq = dfet.data_quality_summary()
     report = {"date": today, "generated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
               "funds": results, "verify": verify_report, "purchase": purchase,
-              "trend": trend, "ndx": ndx_info, "data_quality": dq}
+              "trend": trend, "ndx": ndx_info, "data_quality": dq,
+              "provisional": bool(provisional)}   # 参考值模式（目标净值日非 A股交易日）
     with open(os.path.join(args.out, "daily_report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
 
@@ -289,6 +308,9 @@ def main():
     write_summary(report, args.out, history)
     mark("报告落盘（daily_report.json + summary.md）")
     print("DONE ->", os.path.join(args.out, "daily_report.json"))
+    if provisional:
+        print("⚠ 本次为「参考值」模式：目标净值日非 A股交易日（该日基金不公布净值）"
+              "→ 预测不落库、不参与验证统计；休市市场已按 0 计、汇率按中国日历处理")
     # 数据源使用汇总（可观测性，2026-08-21）
     print("数据源汇总:", dfet.src_summary())
     # 缺口告警汇总（2026-09-24）：防静默复发
@@ -532,12 +554,17 @@ def verify_history(history, results):
 def write_summary(report, out_dir, history=None):
     """生成对比摘要 Markdown"""
     history = history or []
+    _prov = bool(report.get("provisional"))
     lines = [f"# QDII 净值跟踪日报（{report['date']}）", "",
              f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：二十大持仓静态 + 滚动NNLS动态",
              ""]
+    if _prov:
+        lines += ["> ⚠️ **参考值模式**：目标净值日非 A股交易日（QDII 基金当日不公布净值）→ "
+                  "下列预测**不对应任何真实净值**，仅供观看参考，**不落库、不参与验证统计**。"
+                  "休市市场当日收益按 0 计（非缺失剔除）、汇率按中国日历处理。", ""]
 
     # ⭐ 核心板块：今晚净值预测（保留全部基金：待验证显示预测，已公布显示预测vs实际）
-    lines.append("## ⭐ 今晚净值预测（今日凌晨美股收盘 → 对应净值日）")
+    lines.append("## ⭐ 今晚净值预测（今日凌晨美股收盘 → 对应净值日）" + ("（参考值）" if _prov else ""))
     lines.append("")
     lines.append("| 代码 | 基金 | 预测净值日 | 静态预测 | 滚动NNLS | 预测净值 | 最新净值 | 状态 |")
     lines.append("|------|------|:---:|:---:|:---:|:---:|:---:|:---:|")
