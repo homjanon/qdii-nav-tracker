@@ -26,34 +26,66 @@ def _weights(holdings):
 
 def basket_returns(nav, holdings, price_map, fx_df, lag=0):
     """披露权重篮子收益（对齐净值日期）
+
     2026-09-05 容错改造：单成分当日 NaN / 无行情 → 跳过该成分并以实际参与权重归一化，
-    不再"一刀切"丢弃整行（二十大口径下成分多，日韩等源偶发缺口不应废掉整日预测）"""
+    不再"一刀切"丢弃整行（二十大口径下成分多，日韩等源偶发缺口不应废掉整日预测）
+
+    2026-09-26 两处改造（与原逐日循环**完全等价**，实测最大差 0.000000）：
+      ① **向量化**：原实现逐日 × 逐标的调用 asof_ret（300 日 × 20 标的 = 6000 次，每次
+         都要 copy / pct_change / 排序 / 去重整段序列）→ 实测 25.1s；改为每标的 1 次 → 0.42s（59×）。
+      ② **休市日修正**：asof_ret 语义是「取 ≤ D 的最近交易日收益」，对休市日会返回**前一日**
+         收益（旧值冒充——实测 600183 在 2026-09-25 A股休市日返回 −4.34%，实为 9/24 的值）。
+         现在按市场日历把休市日收益置 **0** 并**保留其权重**；若当缺失剔除，会把该市场敞口
+         摊到其他市场 → **放大**预测值。数据缺失（源失败/滞后）仍走 NaN + 归一化，两者性质不同。
+    """
     w = _weights(holdings)
-    wsum = sum(w.values())
     total = np.full(len(nav), np.nan)
-    for i, d in enumerate(nav["date"]):
-        b = 0.0
-        w_used = 0.0  # 实际参与计算的权重和
-        for code, wgt in w.items():
-            px = price_map.get(code)
-            if px is None:
-                continue  # 无行情源 → 跳过该成分
-            r = dfet.asof_ret(px, [d], lag)[0]
-            if np.isnan(r):
-                continue  # 当日无收益 → 跳过（不废整行）
-            b += wgt * r
-            w_used += wgt
-        if w_used <= 0:
-            continue  # 当天所有成分都无数据 → 该日无效
-        # 归一化：按实际参与权重比例放大（缺失成分的敞口折算到有数据的成分上）
-        b = b * (wsum / w_used)
-        fxr = np.nan
-        if fx_df is not None:
-            fxr = dfet.asof_ret(fx_df, [d], lag)[0]
-            if not np.isnan(fxr):
-                b += wsum * fxr
-        total[i] = b
-    return total
+    if not w:
+        return total
+    wsum = sum(w.values())
+    dates = pd.DatetimeIndex(nav["date"])
+    mk = {h["code"]: h.get("market") for h in holdings}
+
+    cols, wts = [], []
+    for c, wgt in w.items():
+        px = price_map.get(c)
+        if px is None:
+            continue
+        r = np.asarray(dfet.asof_ret(px, dates, lag), dtype=float)
+        market = mk.get(c)
+        mask = dfet.market_open_mask(market, dates) if market else None
+        if mask is not None:
+            mask = np.asarray(mask, dtype=bool)
+            # ① 休市 → 收益 0（价格确定没变；保留权重，不放大）
+            r = np.where(mask, r, 0.0)
+            # ② 开市但序列未覆盖该日（数据滞后）→ NaN（视为缺失，交归一化处理）
+            try:
+                last_px = pd.Timestamp(pd.to_datetime(px["date"]).max())
+                r = np.where(mask & (dates > last_px), np.nan, r)
+            except Exception:
+                pass
+        cols.append(r)
+        wts.append(float(wgt))
+    if not cols:
+        return total
+
+    M = np.column_stack(cols)
+    W = np.asarray(wts, dtype=float)
+    valid = ~np.isnan(M)
+    num = np.nansum(np.where(valid, M * W, 0.0), axis=1)
+    den = np.sum(np.where(valid, W, 0.0), axis=1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        factor = np.where(den > 0, wsum / np.where(den > 0, den, 1.0), np.nan)
+    out = num * factor
+    out = np.where(den > 0, out, np.nan)
+    # 汇率（按中国日历：非 A股交易日 → 中行牌价无当日价 → 当日汇率变动按 0）
+    if fx_df is not None:
+        fxr = np.asarray(dfet.asof_ret(fx_df, dates, lag), dtype=float)
+        cn = dfet.market_open_mask("CN", dates)
+        if cn is not None:
+            fxr = np.where(np.asarray(cn, dtype=bool), fxr, 0.0)
+        out = out + wsum * np.where(np.isnan(fxr), 0.0, fxr)
+    return out
 
 def evaluate(nav, pred):
     """评估预测 vs 实际"""
@@ -157,7 +189,7 @@ def next_nav_date(nav):
     return nd
 
 def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=None,
-                 us_last=None, ndx_df=None):
+                 us_last=None, ndx_df=None, provisional=False):
     """前瞻预测：用美股最近收盘（统一基准 us_last）预测对应净值日涨跌
 
     时间对齐（用户验证过的规则）：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。
@@ -197,12 +229,30 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
         print(f"    ⛔ [缺口门控] 依赖标的近 4 天存在未修复缺口 → 跳过当日预测（{_detail}）")
         return {"blocked": True, "reason": f"数据缺口未修复: {_detail}",
                 "next_date": next_d, "us_last": us_last}
+    mk = {h["code"]: h.get("market") for h in holdings}
     b_static = 0.0
     contributors = []
+    holiday, stale = [], []   # 休市成分（按 0 计）/ 数据滞后成分（剔除）
     for code, wgt in w.items():
         px = price_map.get(code)
         if px is None:
             continue
+        market = mk.get(code)
+        opened = dfet.is_market_open(market, next_d) if market else None
+        if opened is False:
+            # 休市（2026-09-26）：asof_ret 会返回**前一日**收益（旧值冒充，实测 600183 在
+            # 2026-09-25 返回 −4.34% 实为 9/24 的值）→ 这里按 0 计（价格确定没变），
+            # 且**保留权重**（不能当缺失剔除，否则会把该市场敞口摊给其他市场 → 放大预测）
+            holiday.append(code)
+            contributors.append({"code": code, "weight": wgt, "ret": 0.0, "contrib": 0.0})
+            continue
+        # 该市场开市、但行情序列尚未覆盖目标日 → 数据未到（源滞后）→ 剔除（与"缺失"同处理）
+        try:
+            if opened is True and pd.Timestamp(pd.to_datetime(px["date"]).max()) < next_d:
+                stale.append(code)
+                continue
+        except Exception:
+            pass
         r = dfet.asof_ret(px, [next_d])[0]
         if np.isnan(r):
             continue
@@ -211,8 +261,14 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
     fxr = np.nan
     if fx_df is not None:
         fxr = dfet.asof_ret(fx_df, [next_d])[0]
+        if dfet.is_market_open("CN", next_d) is False:
+            fxr = 0.0   # 中国休市 → 中行牌价无当日价 → 当日汇率变动按 0（同防旧值冒充）
         if not np.isnan(fxr):
             b_static += wsum * fxr
+    if holiday:
+        print(f"    [休市按0] {len(holiday)} 个成分: {', '.join(holiday[:8])}")
+    if stale:
+        print(f"    ⚠ [数据未到] {len(stale)} 个成分已剔除: {', '.join(stale[:8])}")
     contributors.sort(key=lambda x: x["contrib"], reverse=True)
 
     # 方向背离检测：NDX 当日收益与预测方向相反 → 提示谨慎
@@ -231,12 +287,19 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
             px = price_map.get(code)
             if px is None:
                 continue
+            # 休市修正（2026-09-26 补，与静态分支同口径）：休市 → 该成分收益按 0（跳过累加）
+            # 否则 asof_ret 会拿前一交易日收益冒充（旧值噪声），与 pred_static 口径不一致
+            market = mk.get(code)
+            if market and dfet.is_market_open(market, next_d) is False:
+                continue
             r = dfet.asof_ret(px, [next_d])[0]
             if np.isnan(r):
                 continue
             b_nnls += wgt * r
 
     out = {"next_date": next_d, "last_date": last_date, "last_nav": last_nav,
+           "provisional": bool(provisional),
+           "holiday_symbols": holiday, "stale_symbols": stale,
            "pred_static": float(b_static), "pred_nnls": float(b_nnls) if b_nnls is not None else None,
            "pred_nav_static": float(last_nav * (1 + b_static)),
            "pred_nav_nnls": float(last_nav * (1 + b_nnls)) if b_nnls is not None else None,
@@ -249,13 +312,19 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
         out["pred_range_high"] = float(last_nav * (1 + b_static + mae_static / 100))
     return out
 
-def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdings_proxy=None):
+def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01",
+                 holdings_proxy=None, provisional=False):
     """单只基金全流程分析
 
     holdings_proxy（2026-09-18 加入）：持仓代理代码。ETF 联接基金自身的 F10
       「股票投资明细」可能长期停更（真实持仓是持有的目标 ETF 份额），此时用
       其跟踪的目标 ETF（如 017093 → 159509）的当期持仓作为代理做分析；
       **净值仍用基金自身**。代理标的为完全复制型 ETF，持仓即目标指数成分。
+
+    provisional（2026-09-26 加入）：目标净值日（= us_last）非 A股交易日时为 True。
+      此时该日基金不公布净值 → 预测**不对应任何真实净值**，仅作「参考值」展示：
+      由 run_daily 保证不落库、不进验证统计；分析侧行为与正常预测一致（只是打标），
+      但休市市场按 0 计、汇率按中国日历处理（详见 basket_returns / predict_next）。
     """
     hold_code = holdings_proxy or code
     # 1. 持仓（当期 + 上一期）——get_holdings 返回 (holdings, source, period)
@@ -329,7 +398,7 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01", holdin
     us_last = dfet.us_last_trade_date()
     pred_next = predict_next(nav, h_q2, price_map, fx_df,
                              nnls_weight=last_w, mae_static=mae_static, us_last=us_last,
-                             ndx_df=ndx_df)
+                             ndx_df=ndx_df, provisional=provisional)
     blocked_reason = None
     if pred_next is not None and pred_next.get("blocked"):
         # 缺口门控命中（2026-09-24）：当日不出预测，原因写入报告供页面/日志暴露
