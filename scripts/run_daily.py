@@ -173,9 +173,16 @@ def main():
             print("今天非美股交易日（或美股未收盘），跳过自动运行")
             return 0
         print("✓ 美股交易日，执行分析")
-    # 目标净值日判定（2026-09-26 由"拦截"改为"标记参考值模式"）：
-    #   判据：预测目标净值日（= 美股最近收盘日 us_last）是否 A股交易日。
-    #   非 A股交易日 → 该日基金不公布净值 → 预测**不对应任何真实净值**。
+    # 目标净值日判定（2026-09-26 由"拦截"改为"标记参考值模式"；2026-10-01 补「披露日」条件）：
+    #   判据①：预测目标净值日（= 美股最近收盘日 us_last）是否 A股交易日。
+    #     非 A股交易日 → 该日基金不公布净值 → 预测**不对应任何真实净值**。
+    #   判据②（2026-10-01 补）：该净值的**披露日**是否可达。QDII 净值 T+1 披露
+    #     （D 的净值在 D+1 晚公布），故披露日 = us_last+1。若该日是「工作日但非 A股
+    #     交易日」→ 撞上法定假期 → 披露顺延到节后 → 今日落库的预测将长期悬挂
+    #     （实例 2026-10-01：D=9/30 是 A股日，但披露日 10/1 落在国庆假期 → 净值实际
+    #     10/8 才披露 → 落库会悬挂 12 天，且 10/9、10/10 因门③跳过连验证都不执行）。
+    #     ⚠️ 不能用「今天是否 A股日」代替本判据：那会误伤**每周六**——周六同样 A股休市，
+    #     但周五净值的披露日顺延到周一属正常节奏，落库有效且周一会正常验证。
     #   处理：仍执行分析（用户要"美股交易就能看到反馈"），但打 provisional 标记：
     #     · 不落库（append_predictions 的防御断言自动拦截）→ 不污染命中率统计
     #     · 页面/报告标注「参考值」，休市市场按 0 计、汇率按中国日历处理
@@ -186,10 +193,18 @@ def main():
     except Exception as e:
         print(f"  [目标净值日判定] 美股日历异常，按正常模式继续（{repr(e)[:60]}）")
         us_last_probe = None
-    if us_last_probe is not None and not is_cn_nav_day(str(us_last_probe)):
+    _prov_reason = None
+    if us_last_probe is not None:
+        if not is_cn_nav_day(str(us_last_probe)):
+            _prov_reason = f"目标净值日 {us_last_probe} 非 A股交易日（QDII 基金当日不公布净值）"
+        else:
+            _d1 = us_last_probe + datetime.timedelta(days=1)   # 披露日（T+1）
+            if _d1.weekday() < 5 and not is_cn_nav_day(str(_d1)):
+                _prov_reason = (f"目标净值日 {us_last_probe} 的披露日 {_d1} 为法定假期"
+                                f"（QDII 净值 T+1 披露顺延至节后）")
+    if _prov_reason:
         provisional = True
-        print(f"⚠ 预测目标净值日 {us_last_probe} 非 A股交易日（QDII 基金当日不公布净值）"
-              f"→ 以「参考值」模式运行：结果仅供观看，不落库、不参与验证")
+        print(f"⚠ {_prov_reason} → 以「参考值」模式运行：结果仅供观看，不落库、不参与验证")
     if not args.force:
         # 长假回归首日保护（2026-09-09）：基金最新净值与美股最近收盘间隔 ≥2 个美股交易日
         # → 今晚净值将一次反映多日美股累计涨跌（如国庆后 10/8 = 美股 5 天累计），
