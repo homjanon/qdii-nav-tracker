@@ -267,7 +267,7 @@ def main():
     mark("历史验证")
 
     # 记录今日新预测（追加到历史）
-    append_predictions(history, results, today)
+    append_predictions(history, results, today, provisional=provisional)
 
     # 申购限额（东财 fund_purchase_em，2026-08-18 加入；失败返回 {} 不影响主流程）
     purchase = dfet.get_fund_purchase(set(str(c) for c in results.keys()))
@@ -413,16 +413,26 @@ def refresh_full_holdings(force=False):
         print(f"  [全持仓] 写文件失败: {repr(e)[:100]}")
     return report
 
-def append_predictions(history, results, today):
+def append_predictions(history, results, today, provisional=False):
     """把今日预测写入历史 JSONL（按 (code, pred_date) 去重 + 覆盖更新）
     - 已存在 (code, pred_date) → 覆盖更新为最新预测（保留 actual 等验证字段）
     - 不存在 → 追加新记录
+
+    provisional（2026-10-01 补）：参考值模式（目标净值日无净值 / 披露日顺延）→ **一律不落库**。
+      此前"参考值不落库"是**巧合成立**的：门②原判据（us_last 非 A股日）恰好等价于
+      下方防御断言的条件，故断言能自动拦截。2026-10-01 门②扩展出「披露日」判据后，
+      provisional 可在 pred_date 是 A股交易日时触发（实例：pred_date=9/30 是 A股日，
+      但披露日 10/1 落在假期）→ 断言不覆盖 → 参考值预测被误落库。
+      ⚠️ 教训：同一语义条件在两处重复实现时，改了一处必须同步另一处。
     """
     for code, r in results.items():
         if "error" in r or "predict" not in r or r["predict"] is None:
             continue
         p = r["predict"]
         pred_date = str(p["next_date"].date())
+        if provisional:
+            print(f"  ⏭ [参考值模式] {code} pred_date={pred_date} → 不落库（本次结果仅供观看）")
+            continue
         # 防御断言（2026-09-25）：目标净值日必须是 A股交易日 —— 否则永远不会有对应净值，
         # 落库即成「等不到 actual」的悬挂记录。即便门控将来再被改坏，也不会再产生这类记录。
         if not is_cn_nav_day(pred_date):
