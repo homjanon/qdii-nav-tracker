@@ -272,3 +272,39 @@ Yahoo 的空行是它侧的故障，`keepna=True` 保留后每次运行都会判
 **修复**：门②追加判据 —— 披露日 `us_last+1` 若为「**工作日**但非 A股交易日」（即撞上法定假期）→ 参考值模式（不落库）。
 
 > **通用教训**：① 判"能不能验证"要挂在**披露时点**上，而不是目标数据本身的日期——两者在假期边界会分离；② 不能用更宽泛的「今天是否 A股交易日」代替（会误伤周末：周六同样休市，但周五净值的周一批露属正常节奏，落库有效）；③ 门控 `return 0` 的位置决定它**是否会连带跳过验证**——长假保护挡住的那几天，历史预测也不会被回填，验证会被推迟到门控放行那天；④ **同一语义条件在代码两处重复实现时，改一处必须同步另一处**——本轮修复门②后，"参考值不落库"曾短暂失效：原来它靠 `append_predictions` 的防御断言（`pred_date` 非 A股日）**巧合成立**（门②原判据恰好与之等价），判据扩展后两者不再等价 → 参考值预测被误落库 12 条。正解是让 `provisional` 直接传入落库闸门，而不是依赖两个条件碰巧一致。
+
+### 15. 依赖漂移：pandas 未锁 → 3.1.0 的 inplace 弃用风暴
+
+**现象**：2026-10-23 起，每次运行日志刷 ~237 行（占日志 17%）——
+
+```
+/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/yfinance/utils.py:559: Pandas4Warning:
+The inplace keyword in DataFrame.sort_index is deprecated and will be removed in a future version (PDEP-8).
+```
+
+运行结果完全正常，只是噪音。
+
+**根因**：`requirements.txt` 锁了 yfinance/akshare，**pandas 没锁** → CI 每次 `pip install` 装最新。pandas 3.1.0（2026-10-22 发布）按 PDEP-8 弃用了「并非真正就地」的方法的 `inplace=` 参数（`drop`/`rename`/`set_index`/`sort_index`/`reset_index`/`dropna`/`sort_values` 等）。yfinance（1.5.1，且 1.6.0/1.7.0 同样）内部仍有 **11 处** `inplace` 调用（`utils.py` 第 505/509/559/576/578/595/597 行），每下载一次行情触发 4 行。**本项目 `scripts/` 自身 0 处 inplace**，警告 100% 来自上游。
+
+**为什么平时看不到 DeprecationWarning**：实测 MRO 为 `Pandas4Warning → PandasDeprecationWarning → PandasChangeWarning → DeprecationWarning`，而 DeprecationWarning 默认被忽略；但 `yfinance/__init__.py` 有一行 `filterwarnings('default', DeprecationWarning, module='^yfinance')`，pandas 又用 `stacklevel` 把告警位置算到 `yfinance/utils.py`（模块名 `yfinance.utils`）→ 命中该正则 → 变成「显示」。**yfinance 想让自己的弃用可见，顺手把 pandas 的也放了出来。**
+
+**为什么同一行印 59 次而不是 1 次**：任何 `warnings.filterwarnings()` 调用都会使全局 filters 版本 +1、清空各模块的 `__warningregistry__` → 同一位置重新打印（实测：中间变更一次过滤器，5 次调用就打 5 行）。取数链里 akshare 等存在中途 `filterwarnings` 调用。
+
+**现行机制（2026-10-27）**：
+
+| 位置 | 改动 |
+|---|---|
+| `requirements.txt` | 锁 `pandas==3.1.0` |
+| `scripts/data_fetcher.py` | `import yfinance` **之后**加 `filterwarnings("ignore", category=Pandas4Warning, message=".*inplace.*")`（`try/except AttributeError` 兜老版本） |
+
+**⚠ 静音必须放在 `import yfinance` 之后**：yfinance 的 filter 用 `insert(0)` 插到列表最前，先设置的会被压过。实测三选一只有第三条有效：
+
+| 做法 | 结果 |
+|---|---|
+| `PYTHONWARNINGS=ignore::DeprecationWarning` | ❌ 无效（被 yfinance import 时插入的 filter 压过） |
+| `-W ignore::pandas.errors.Pandas4Warning` | ❌ 直接报 `invalid module name`（-W 的 module 字段不允许带点） |
+| `import yfinance` 后 `filterwarnings(category=Pandas4Warning)` | ✅ 有效（过滤器落在 yfinance 的 default 之前，实测 0 条） |
+
+**影响评估**：`inplace=True` 在 3.1.x 仍生效（实测仍改写原对象、返回 None），预测结果无漂移（10-22/10-23 落库的 24 条预测全部 `hit=True`，误差量级正常）。真正的风险是 **pandas 4.0 会真正移除 inplace** —— 届时 yfinance 那 11 处会直接抛 `TypeError`。yfinance 1.5.1/1.6.0/1.7.0 均未迁移（逐版本比对过），所以「升级 yfinance」不能解决问题，只能靠锁 pandas 把升级变成主动决策。
+
+> **通用教训**：① 锁依赖要锁「会改行为的」（pandas/numpy），只锁「会改接口的」（yfinance）等于没锁——3.0→3.1 的小版本也可能带来行为弃用；② 第三方库的新警告是**依赖漂移的免费探针**：警告出现的那天，就是某个依赖偷偷升级的那天，要顺着它查而不是加个 ignore 了事；③ 静音的优先级规则必须按 `warnings.filters` 的实际顺序验证，「环境变量一定生效」是想当然。
