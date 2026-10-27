@@ -1,5 +1,10 @@
 akshare==1.18.64
-pandas
+# 2026-10-27 锁版本：pandas 3.1.0（10-22 发布）按 PDEP-8 弃用 inplace=，而 yfinance 内部有 11 处
+# inplace 调用（1.5.1~1.7.0 均未修）→ 每次运行刷 237 行 Pandas4Warning（占日志 17%）。
+# 此前未锁 → CI 每次装最新，10-23 起 pandas 从 3.0.6 静默跳到 3.1.0（与 09-24 锁 yfinance 同一课）。
+# 升级前必回归：一次全量 run_daily + 检查日志无 Pandas4Warning。pandas 4.0 会真正移除 inplace，
+# 届时必须先把 yfinance 升到已迁移的版本，否则取数会直接抛 TypeError。
+pandas==3.1.0
 numpy
 scipy
 requests
