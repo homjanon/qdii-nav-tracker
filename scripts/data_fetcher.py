@@ -19,7 +19,8 @@ market 识别规则（F10 返回无市场前缀）：
 - 6位 3 开头（300408 三环集团）→ A股
 - 其他（285A KIOXIA、005930 三星、000660 SK海力士）→ 无行情源，跳过
 """
-import os, re, time, json, datetime, warnings
+import os, re, time, json, datetime, warnings, signal
+from contextlib import contextmanager
 import numpy as np
 import pandas as pd
 
@@ -133,6 +134,41 @@ def src_summary():
         mark = "✓" if v["fail"] == 0 else "✗"
         parts.append("%s=%s%d成功/%d失败/%.1fs" % (k, mark, v["ok"], v["fail"], float(v.get("sec") or 0.0)))
     return " ".join(parts)
+
+@contextmanager
+def _time_limit(seconds=20, label=""):
+    """给不可控的第三方调用加硬超时（2026-10-27）
+    背景：akshare 内部 requests 调用**没有 timeout** —— 实测 CI 上一次新浪 A 股请求发出后
+    17 分钟不返回，进程被永久阻塞（_retry_call 等不到异常，无法介入），唯一出口是 workflow 的
+    60 分钟超时 → 当日无产出。Linux/macOS 用 SIGALRM；Windows 无此信号 → 退化为无超时
+    （仅影响本地调试，不阻塞 CI）。"""
+    if not hasattr(signal, "SIGALRM"):
+        yield
+        return
+
+    def _raise(signum, frame):
+        raise TimeoutError("硬超时 %ss%s" % (seconds, (" [" + label + "]") if label else ""))
+
+    try:
+        old = signal.signal(signal.SIGALRM, _raise)
+    except (ValueError, OSError):      # 非主线程无法安放信号处理器
+        yield
+        return
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old)
+
+
+def _ak_call(fn, *args, timeout=20, **kwargs):
+    """带硬超时地调用 akshare（或任意第三方函数）。超时抛 TimeoutError，
+    由上层 _retry_call / fallback_chain 捕获并降级到备用源（腾讯快照/东财）。
+    正常单次调用 0.4~2s，20s 上限只用于掐断挂死连接。"""
+    with _time_limit(timeout, getattr(fn, "__name__", "call")):
+        return fn(*args, **kwargs)
+
 
 def _retry_call(fn, *args, attempts=3, wait=2.0, label="", verbose=False):
     """统一重试包装：异常全部吞掉，失败返回 None（不抛，避免拖垮整体）
@@ -443,7 +479,7 @@ def _em_lsjz(code, page_size=500):
 def _ak_nav(code):
     """akshare 净值（备源）"""
     def _fetch():
-        return ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势", period="近1年")
+        return _ak_call(ak.fund_open_fund_info_em, symbol=code, indicator="单位净值走势", period="近1年")
     df = _retry_call(_fetch, label=f"akshare净值 {code}")
     if df is None or len(df) == 0:
         return None
@@ -491,7 +527,7 @@ def get_fund_purchase(codes):
     字段：申购状态（开放申购/限大额/暂停申购/场内交易）、日累计限定金额（元，NaN 表示不限购）。
     2026-08-18 加入（ba7dae3），2026-08-21 从被覆盖状态恢复。"""
     def _fetch():
-        df = ak.fund_purchase_em()
+        df = _ak_call(ak.fund_purchase_em)
         out = {}
         for _, r in df.iterrows():
             c = str(r["基金代码"])
@@ -529,12 +565,12 @@ def _yf_us_daily(code):
 def _sina_price(code, market):
     """akshare 新浪源日线"""
     if market == "US":
-        return ak.stock_us_daily(symbol=code)
+        return _ak_call(ak.stock_us_daily, symbol=code)
     if market == "HK":
-        return ak.stock_hk_daily(symbol=code)
+        return _ak_call(ak.stock_hk_daily, symbol=code)
     if market == "CN":
         sym = ("sh" if code.startswith("6") else "sz") + code
-        return ak.stock_zh_a_daily(symbol=sym)
+        return _ak_call(ak.stock_zh_a_daily, symbol=sym)
     return None
 
 # ============ 日韩股行情（东财 push2his 主 → yfinance 备 → 腾讯快照兜底）============
@@ -716,7 +752,7 @@ def get_price_df(code, market, allow_snapshot=True):
 def _boc_fx():
     """中行牌价（portfolio 生产验证）：美元列 ÷100 = USD/CNY，每日更新，1994 至今"""
     def _fetch():
-        df = ak.currency_boc_safe()
+        df = _ak_call(ak.currency_boc_safe)
         df = df[["日期", "美元"]].dropna()
         df = df.rename(columns={"日期": "date", "美元": "usd"})
         df["date"] = pd.to_datetime(df["date"])
@@ -835,7 +871,7 @@ def get_index(symbol):
         return _CACHE[key]
 
     df = fallback_chain([("yf", lambda: _yf_index(symbol)),
-                         ("sina", lambda: ak.index_us_stock_sina(symbol=symbol))],
+                         ("sina", lambda: _ak_call(ak.index_us_stock_sina, symbol=symbol))],
                         label=f"指数 {symbol}")
     if df is None or len(df) == 0:
         _CACHE[key] = None
@@ -860,7 +896,7 @@ def get_hs_index():
         return _CACHE["__HSI__"]
 
     def _fetch():
-        return ak.stock_hk_index_daily_sina(symbol="HSI")
+        return _ak_call(ak.stock_hk_index_daily_sina, symbol="HSI")
 
     df = _retry_call(_fetch, label="HSI", verbose=True)
     if df is None or len(df) == 0:
@@ -1095,7 +1131,7 @@ def _sina_series(code, market):
     """新浪日线 → {date: close}（美股/指数为全历史，是缺口补齐的主力兜底）"""
     def _fetch():
         if code.startswith(".") or code.startswith("^"):
-            df = ak.index_us_stock_sina(symbol=code)
+            df = _ak_call(ak.index_us_stock_sina, symbol=code)
         else:
             df = _sina_price(code, market)
         if df is None or len(df) == 0:
