@@ -19,7 +19,7 @@ market 识别规则（F10 返回无市场前缀）：
 - 6位 3 开头（300408 三环集团）→ A股
 - 其他（285A KIOXIA、005930 三星、000660 SK海力士）→ 无行情源，跳过
 """
-import os, re, time, json, datetime
+import os, re, time, json, datetime, warnings
 import numpy as np
 import pandas as pd
 
@@ -43,6 +43,22 @@ try:
     _HAS_YF = True
 except ImportError:
     _HAS_YF = False
+
+# ===== 静音 yfinance 触发的 pandas 弃用警告（2026-10-27）=====
+# 现象：CI 每次运行刷 ~237 行「Pandas4Warning: The inplace keyword in DataFrame.xxx is deprecated (PDEP-8)」。
+# 根因：pandas 3.1.0（2026-10-22 发布）按 PDEP-8 弃用 inplace=；yfinance 1.5.1~1.7.0 内部仍有
+#   11 处 inplace 调用（utils.py 505/509/559/576/578/595/597），每下载一次行情触发 4 行。
+#   本项目 scripts/ 自身 0 处 inplace —— 警告 100% 来自上游。
+# 为什么会显示：yfinance/__init__.py 对 ^yfinance 模块开启 DeprecationWarning='default'，而 pandas 用
+#   stacklevel 把告警位置算到 yfinance/utils.py（模块名 yfinance.utils）→ 恰好命中该过滤器。
+# ⚠ 顺序要求：必须在 import yfinance 之后设置。yfinance 的 filter 会插入 filters 列表最前，先设置的会被
+#   压过 —— 实测 PYTHONWARNINGS 环境变量与 -W 启动参数均无效（-W 还因 module 字段带点而报 invalid）。
+# 只压 inplace 这一类，其他弃用/警告照常暴露。功能无影响：inplace 在 3.1.x 仍生效，pandas 4.0 才真删。
+if _HAS_YF:
+    try:
+        warnings.filterwarnings("ignore", category=pd.errors.Pandas4Warning, message=".*inplace.*")
+    except AttributeError:  # pandas < 3.1 无 Pandas4Warning
+        pass
 
 import akshare as ak
 
