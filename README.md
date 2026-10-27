@@ -308,3 +308,29 @@ The inplace keyword in DataFrame.sort_index is deprecated and will be removed in
 **影响评估**：`inplace=True` 在 3.1.x 仍生效（实测仍改写原对象、返回 None），预测结果无漂移（10-22/10-23 落库的 24 条预测全部 `hit=True`，误差量级正常）。真正的风险是 **pandas 4.0 会真正移除 inplace** —— 届时 yfinance 那 11 处会直接抛 `TypeError`。yfinance 1.5.1/1.6.0/1.7.0 均未迁移（逐版本比对过），所以「升级 yfinance」不能解决问题，只能靠锁 pandas 把升级变成主动决策。
 
 > **通用教训**：① 锁依赖要锁「会改行为的」（pandas/numpy），只锁「会改接口的」（yfinance）等于没锁——3.0→3.1 的小版本也可能带来行为弃用；② 第三方库的新警告是**依赖漂移的免费探针**：警告出现的那天，就是某个依赖偷偷升级的那天，要顺着它查而不是加个 ignore 了事；③ 静音的优先级规则必须按 `warnings.filters` 的实际顺序验证，「环境变量一定生效」是想当然。
+
+### 16. 没有 timeout 的第三方调用 = 定时炸弹：一次卡死 17 分钟
+
+**现象**：2026-10-27 14:05 手动触发云端运行，卡在 `Run QDII nav analysis` **17 分钟零输出**（正常全程 93 秒），最后人工取消。
+
+**怎么查的（方法本身值得记）**：GitHub 对 `in_progress` 的 job 不提供日志（API 返回 `BlobNotFound`，CLI 报 "still in progress"），但 **cancel 之后日志立即可读** —— 排查卡死不必傻等它跑完或等到超时。
+日志最后一条业务输出是 `06:06:20 ✓ [行情300502/sina] 成功 (2584条)`，之后静默到取消。对比今早成功那次：`sina` 取数 **26 次**，这次只有 **2 次** → 卡在第 3 只（`688498`，今早日志里 300502 之后就是它）。
+
+**根因**：`akshare.stock_zh_a_daily` 内部 `requests.get(...)` **没有 timeout 参数**（用 `inspect.getsource` 核实，源码全文无 `timeout`）。CI runner 出口 IP 被新浪限流时，连接建立但服务端不返回 → 进程永久阻塞：
+
+- `_retry_call` 救不了 —— 它只能重试「已经失败的调用」，无法介入「永远不返回的调用」
+- 唯一出口是 job 级 `timeout-minutes: 60` → 干等一小时，当日无产出、还占着 runner
+
+**为什么平时不发作**：本地同一接口实测 0.4~1.8 秒正常（本地 IP 未被限流）；runner IP 每次不同，**撞上是概率问题**。今早 06:00 跑 93 秒只是运气好，配置上没有任何差异。
+
+**现行机制（2026-10-27）**：
+
+| 层 | 改动 |
+|---|---|
+| `scripts/data_fetcher.py` | 新增 `_time_limit()`（`signal.setitimer` + `SIGALRM`）与 `_ak_call()`，包装**全部 9 处** akshare 调用，**20s 硬超时** |
+| `.github/workflows/qdii-daily.yml` | `Run QDII nav analysis` 加 `timeout-minutes: 25` 兜底（正常 93s，超 25 分钟必是异常） |
+
+超时后抛 `TimeoutError` → 被 `_retry_call` 捕获 → 走降级链（腾讯快照 / 东财）。Windows 无 `SIGALRM`，自动降级为 no-op，只影响本地调试、不影响 CI。
+验证方式：`mock` 掉 `signal` 模块模拟 SIGALRM 到达，确认抛 `TimeoutError`、`setitimer` 置 20s、`finally` 清零并恢复原 handler；再本地真实调用 akshare 确认功能未受损。
+
+> **通用教训**：① 任何「可能不返回」的外部调用都必须有**硬超时**，`requests` 的 `timeout` 不能省——akshare 这类第三方库经常漏；② **超时和重试是两层不同的保护**：retry 处理「明确失败」，timeout 处理「永远不返回」，缺一个就有一类故障无解；③ 判据要落在能打断执行的那一层（信号/进程），线程池 `future.result(timeout=)` 在 `with` 退出时仍会 join，救不了；④ **「跑得快」不等于「没问题」**——93 秒与 17 分钟之间往往没有配置差异，只有概率差异。
