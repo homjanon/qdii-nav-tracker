@@ -78,6 +78,11 @@ jobs:
 
       - name: Run QDII nav analysis
         if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
+        # timeout-minutes：兜底闸门（2026-10-27）。2026-10-27 14:05 手动触发时，一次新浪 A 股
+        #   请求挂起 17 分钟不返回（akshare 内部 requests 无 timeout），进程被永久阻塞，
+        #   唯一出口是 job 级 timeout-minutes: 60。现已在 data_fetcher 加 _time_limit 硬超时（P0），
+        #   这里再加 25 分钟上限：正常全程 93s，超 25 分钟必然是异常，早失败早告警，不干等 60 分钟。
+        timeout-minutes: 25
         # PYTHONUNBUFFERED：关闭 stdout 块缓冲 → 日志时间戳真实（2026-09-25 加，便于性能定位）
         env:
           PYTHONUNBUFFERED: "1"
