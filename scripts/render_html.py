@@ -19,8 +19,8 @@ def _load_fund_names():
     """基金名称：优先读 config/funds.json（与 run_daily 配置化一致），缺失回退内置"""
     DEFAULT = {"002891": "华夏移动互联", "008254": "华宝致远C", "014002": "浦银全球智能C",
                "015202": "汇添富全球移动C", "016702": "银华海外数字C", "018147": "建信新兴C",
-               "021277": "广发全球精选C", "021842": "国富全球科技C",
-               "012922": "易方达全球C", "022184": "富国全球科技C"}
+               "021277": "广发全球精选C", "021842": "国富全球科技C", "022184": "富国全球互联网C",
+               "080006": "长盛环球行业A", "024239": "华夏全球科技C", "017093": "景顺纳科C"}
     cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "funds.json")
     try:
         with open(cfg_path, encoding="utf-8") as f:
@@ -129,7 +129,31 @@ def render(report, history, out_path, full_holdings=None):
     funds = report.get("funds", {})
     verify = report.get("verify", {})
     purchase = report.get("purchase") or {}  # {code: {"status","limit"}} 申购限额（2026-08-18 加入）
+    # 口径一致性（2026-11-03）：页面只展示「当前基金清单」的记录。
+    # 已从 config/funds.json 移出的基金（如 012922）历史记录仍留在 predictions.jsonl，
+    # 但不再出现在验证表/待验证计数里——否则会永久占着「每只基金最近 2 条」的名额，
+    # 且名称查不到而显示裸代码。统计侧由 run_daily.verify_history 同步过滤。
+    _valid_codes = set(FUND_NAMES)
+    history = [h for h in history if h.get("code") in _valid_codes]
     hist_verified = [h for h in history if h.get("actual") is not None]
+
+    # ---- 全持仓档案口径（年报/半年报）汇总，供"美股含量"结构外推使用（2026-11-03）----
+    # {code: {"total": 累计占净值%, "us": 美股占净值%, "period": 报告期,
+    #         "by_code": {标的: 占净值%}, "us_codes": {美股标的}}}
+    full_map = {}
+    if full_holdings:
+        for _c, _e in (full_holdings.get("funds") or {}).items():
+            _hs = _e.get("holdings") or []
+            if not _hs:
+                continue
+            full_map[_c] = {
+                "total": sum((x.get("pct") or 0) for x in _hs),
+                "us": sum((x.get("pct") or 0) for x in _hs if x.get("market") == "US"),
+                "by_code": {x.get("code"): (x.get("pct") or 0) for x in _hs},
+                "us_codes": {x.get("code") for x in _hs if x.get("market") == "US"},
+                "period": (_e.get("report_date")
+                           or full_holdings.get("report_date") or ""),
+            }
     # 参考值模式（2026-09-26）：目标净值日非 A股交易日 → 该日无净值，预测仅供观看、不参与验证
     provisional = bool(report.get("provisional"))
     prov_banner = ("" if not provisional else
@@ -304,14 +328,49 @@ def render(report, history, out_path, full_holdings=None):
     else:
         v_table = "<p class='sub'>暂无已公布验证记录，明日起自动累积</p>"
 
-    # ---- 美股含量图表数据 ----
+    # ---- 美股含量图表数据（2026-11-03 A+B 改造）----
+    # 背景：原先只画 us_pct = 当期披露持仓里美股"占净值比"直接相加。
+    #   季报（Q1/Q3）只披露前十大 → 分母天然偏小，系统性低估。
+    #   实测 080006 长盛环球行业A：季报十大口径 42.6%，半年报全持仓 85.8%（差 43pp）。
+    # A 轨道：us_pct（当期披露口径，作为"下限"）
+    # B 轨道：结构外推估算
+    #   share = 全持仓档案中「当期十大没覆盖到的那部分」的美股占比
+    #           = (全持仓美股 − 重叠标的在全持仓里的美股%) / (全持仓合计 − 重叠标的在全持仓里的合计%)
+    #   gap   = 当期尚未被披露覆盖的仓位 = 全持仓合计 − 当期披露合计
+    #   估算  = 当期披露美股% + gap × share
+    #   为什么不是"直接加剩余美股绝对额"（v1/v2 踩过的两个坑）：
+    #     ① 把同一只股票算两次 —— 当期十大里的 NVDA 在全持仓里也有，必须先扣重叠；
+    #     ② 混用两个时点的权重绝对值 —— 当期十大权重（Q3）比上次披露（Q2）大时，
+    #        再叠加 Q2 的剩余额会爆表（华宝致远C 曾估到 95.7%，而它全持仓总量只有 81.3%）。
+    #        改用"剩余仓位 × 剩余美股占比"后，估算值天然 ≤ 全持仓合计。
+    #   经济含义：把尚未披露覆盖的仓位，按其上次披露时的美股占比承接过来。
+    #   若基金当期大举调仓，外推会滞后（已知代价，故同时保留 A 轨道与 NDX β 交叉校验）。
     chart_labels, chart_us, chart_beta = [], [], []
+    chart_est, chart_full, chart_period = [], [], []
     for code in funds:  # 动态取基金（与"今晚净值预测"一致，2026-08-21 修复 8→10）
         r = funds.get(code)
         if not r or "error" in r:
             continue
+        _us_top = float(r.get("us_pct") or 0)
+        _tot_top = float(r.get("q2_total") or 0)
+        _f = full_map.get(code) or {}
+        _est = _us_top
+        if _f.get("by_code"):
+            _top = r.get("holdings") or []
+            _bys, _us_codes = _f["by_code"], _f["us_codes"]
+            _ov_all = sum(_bys.get(x.get("code"), 0) for x in _top)
+            _ov_us = sum(_bys.get(x.get("code"), 0) for x in _top if x.get("code") in _us_codes)
+            _rest_total = max(0.0, _f["total"] - _ov_all)
+            _rest_us = max(0.0, _f["us"] - _ov_us)
+            _share = (_rest_us / _rest_total) if _rest_total > 0 else 0.0
+            _gap = max(0.0, _f["total"] - _tot_top)
+            _est = min(100.0, _us_top + _gap * _share)
         chart_labels.append(f"{FUND_NAMES.get(code, code)}")
-        chart_us.append(r.get("us_pct", 0))
+        chart_us.append(round(_us_top, 1))
+        chart_est.append(round(_est, 1))
+        # 全持仓口径只进 tooltip（不单独画柱，避免三柱过密）
+        chart_full.append(f"{_f['us']:.1f}" if _f else "—")
+        chart_period.append(_f.get("period", "") or "—")
         chart_beta.append(round((r.get("ndx_beta") or {}).get("ndx_beta", 0), 2))
 
     # ---- 30 日涨跌幅走势对比（2026-08-21 新增；相对区间首日累计涨跌%）----
@@ -370,24 +429,41 @@ def render(report, history, out_path, full_holdings=None):
         s = r.get("static") or {}
         rr = r.get("roll") or {}
         beta = (r.get("ndx_beta") or {}).get("ndx_beta")
+        # 披露覆盖率（2026-11-03 新增）：季报只有前十大，覆盖率可能低至 20% 出头，
+        #   此时静态预测的"篮子缩放"会让预测值系统性偏小 → 用灰色提示读者降低信任度。
+        #   放在"披露美股%"单元格第二行（不新增列，避免手机端 8 列表格挤爆）。
+        _cov = float(r.get("q2_total") or 0)
+        _cov_attr = ("" if _cov >= 40
+                     else " title='披露持仓仅覆盖 %.1f%% 仓位，静态预测参考价值下降' style='color:#b45309'" % _cov)
         q_rows.append(f"<tr><td>{FUND_NAMES.get(code, code)}<br/><span class='sub'>{code}</span></td>"
-                      f"<td>{r.get('us_pct', 0):.1f}%</td>"
+                      f"<td>{r.get('us_pct', 0):.1f}%"
+                      f"<br/><span class='sub'{_cov_attr}>覆盖 {_cov:.1f}%</span></td>"
                       f"<td>{beta:.2f}</td>"
                       f"<td>{s.get('dir_acc', 0):.1f}%</td>"
                       f"<td>{s.get('mae', 0):.2f}pp</td>"
                       f"<td>{rr.get('mae', 0):.2f}pp</td>"
                       f"<td>{s.get('r2', 0):.3f}</td></tr>")
-    q_table = ("<table><thead><tr><th>基金</th><th>披露美股%</th><th>NDX β</th><th>方向准确率</th>"
+    q_table = ("<table><thead><tr><th>基金</th>"
+               "<th>披露美股%<br/><span style='font-weight:400'>（覆盖仓位）</span></th>"
+               "<th>NDX β</th><th>方向准确率</th>"
                "<th>静态MAE</th><th>滚动MAE</th><th>持仓R²</th></tr></thead>"
                f"<tbody>{''.join(q_rows)}</tbody></table>")
 
-    # ---- 疑似调仓折叠（展示二十大持仓，无变化标0；2026-09-05 升级 10→20）----
+    # ---- 疑似调仓折叠（展示当期披露持仓，无变化标0）----
+    # 2026-11-03：标题不再写死"二十大"——F10 返回最新报告期，季报（Q1/Q3）只披露前十大，
+    #   硬写"二十大"会出现"二十大持仓 10 项"的自相矛盾。改为「期次 + 档位 + 实际条数」。
     adj_details = []
     for code, r in funds.items():
         if "error" in r:
             continue
         w = r.get("nnls_weight") or {}
         holdings = r.get("holdings", [])
+        # 档位文案：季报（Q1/Q3）只有前十大；半年报/年报（Q2/Q4）才有前二十大
+        _per = str(r.get("holdings_period") or "").strip()
+        _q = int(_per[-1]) if len(_per) >= 2 and _per[-1] in "1234" else 0
+        _tier = "十大" if _q in (1, 3) else ("二十大" if _q in (2, 4) else "")
+        hold_desc = (f"{_per} {_tier}持仓 {len(holdings)} 项" if _per
+                     else f"披露持仓 {len(holdings)} 项")
         disc = {x["code"]: x["pct"] for x in holdings}
         names = {x["code"]: x["name"] for x in holdings}
         # 最新涨跌幅（来自 predict.contributors；2026-08-26 新增列）
@@ -417,14 +493,15 @@ def render(report, history, out_path, full_holdings=None):
         tag = f" · 持仓代理自 {esc(proxy)}（穿透）" if proxy else ""
         adj_details.append(f"""
         <details>
-          <summary>{FUND_NAMES.get(code, code)}（{code}）— 二十大持仓 {len(holdings)} 项 · 疑似调仓 {changed} 项{tag}</summary>
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— {hold_desc} · 疑似调仓 {changed} 项{tag}</summary>
           <table style="margin-top:8px"><thead><tr><th>代码</th><th>名称</th><th>披露%</th><th>NNLS估计%</th><th>差异</th><th>最新涨跌幅</th></tr></thead>
           <tbody>{''.join(rows)}</tbody></table>
-          <div style="margin-top:6px;text-align:right"><a href="#full-holdings-{esc(code)}" style="color:var(--accent);font-size:12px;text-decoration:none">📄 查看全部半年报持仓 →</a></div>
+          <div style="margin-top:6px;text-align:right"><a href="#full-holdings-{esc(code)}" style="color:var(--accent);font-size:12px;text-decoration:none">📄 查看全部持仓档案 →</a></div>
         </details>""")
     adj_block = "\n".join(adj_details) if adj_details else "<p class='sub'>暂无数据</p>"
 
-    # ---- 全部半年报持仓（2026-09-05 新增：静态披露档案，来自 output/holdings_full.json）----
+    # ---- 全部持仓档案（年报/半年报口径，静态披露档案，来自 output/holdings_full.json）----
+    # 2026-11-03：板块更名（季报不进这个档案）；期次由 run_daily 自动判定，逐基金可不同
     full_details = []
     full_report_date = ""
     if full_holdings:
@@ -432,6 +509,7 @@ def render(report, history, out_path, full_holdings=None):
         for code, entry in (full_holdings.get("funds") or {}).items():
             hs = entry.get("holdings") or []
             ts = entry.get("ts", "")
+            _p = (entry.get("report_date") or full_report_date or "").strip()
             total = sum((x.get("pct") or 0) for x in hs)
             full_rows = []
             for x in sorted(hs, key=lambda v: v.get("seq", 0)):
@@ -441,7 +519,7 @@ def render(report, history, out_path, full_holdings=None):
             tag2 = f" · 持仓代理自 {esc(proxy2)}（穿透）" if proxy2 else ""
             full_details.append(f"""
         <details id="full-holdings-{esc(code)}">
-          <summary>{FUND_NAMES.get(code, code)}（{code}）— 全部持仓 {len(hs)} 项 · 累计 {total:.1f}% · 抓取 {esc(ts)}{tag2}</summary>
+          <summary>{FUND_NAMES.get(code, code)}（{code}）— 全部持仓 {len(hs)} 项 · 累计 {total:.1f}% · {esc(_p) or "期次未知"} · 抓取 {esc(ts)}{tag2}</summary>
           <table style="margin-top:8px"><thead><tr><th>序号</th><th>代码</th><th>名称</th><th>占净值%</th></tr></thead>
           <tbody>{''.join(full_rows)}</tbody></table>
         </details>""")
@@ -460,7 +538,7 @@ def render(report, history, out_path, full_holdings=None):
 <body>
 <div class="wrap">
 <header>
-  <div><h1>QDII 净值跟踪</h1><div class="sub">二十大持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
+  <div><h1>QDII 净值跟踪</h1><div class="sub">披露持仓 × 美股行情 · 静态 + 滚动NNLS</div></div>
   <div class="sub">报告日 {esc(date)}<br>更新 {esc(gen)}</div>
 </header>
 
@@ -496,11 +574,13 @@ def render(report, history, out_path, full_holdings=None):
 
 <div class="card">
   <h2>美股含量总览</h2>
-  <div class="legend">
-    <span><i style="background:var(--accent)"></i>披露美股占比 %（二十大）</span>
-    <span class="sub">NDX β 见右侧标签，>1 表示对纳指放大暴露</span>
+  <div class="legend" style="flex-wrap:wrap">
+    <span><i style="background:var(--accent)"></i>估算美股含量%（结构外推）</span>
+    <span><i style="background:#f59e0b;border-radius:99px"></i>当期披露%（下限）</span>
+    <span class="sub">估算 = 当期披露美股% + 未覆盖仓位 × 全持仓档案中剩余仓位的市场构成；NDX β 见 tooltip</span>
   </div>
   <div class="chart-box"><canvas id="usChart" role="img" aria-label="美股含量对比条形图">美股含量对比</canvas></div>
+  <div class="sub" style="margin-top:8px">季报（Q1/Q3）只披露前十大，所以"当期披露%"必然低于真实美股敞口；半年报/年报披露全持仓后再由结构外推补齐。NDX β &gt; 1 表示对纳指放大暴露。</div>
 </div>
 
 <div class="card">
@@ -522,9 +602,9 @@ def render(report, history, out_path, full_holdings=None):
 </div>
 
 <div class="card">
-  <h2>全部半年报持仓 <span class="badge">静态披露档案{f" · {esc(full_report_date)}" if full_report_date else ""}</span></h2>
+  <h2>全部持仓档案 <span class="badge">年报 / 半年报{f" · {esc(full_report_date)}" if full_report_date else ""}</span></h2>
   <div class="legend">
-    <span class="sub">中报/年报披露的全部股票持仓（标的+占比，不含行情）· 从上方"查看全部半年报持仓 →"可快速跳转</span>
+    <span class="sub">年报/半年报披露的全部股票持仓（标的+占比，不含行情）· 季报只披露前十大，故不纳入本档案 · 期次按法定披露时限自动切换</span>
   </div>
   {full_block}
 </div>
@@ -535,31 +615,47 @@ def render(report, history, out_path, full_holdings=None):
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+var US_FULL = {json.dumps(chart_full, ensure_ascii=False)};
+var US_PERIOD = {json.dumps(chart_period, ensure_ascii=False)};
+var US_BETA = {json.dumps(chart_beta)};
 new Chart(document.getElementById('usChart'), {{
   type: 'bar',
   data: {{
     labels: {json.dumps(chart_labels, ensure_ascii=False)},
-    datasets: [{{
-      label: '披露美股占比',
-      data: {json.dumps(chart_us)},
-      backgroundColor: '#2563eb', borderRadius: 4,
-      barPercentage: 0.6, categoryPercentage: 0.5
-    }}]
+    datasets: [
+      {{
+        label: '估算美股含量（结构外推）',
+        data: {json.dumps(chart_est)},
+        backgroundColor: '#2563eb', borderRadius: 4,
+        barPercentage: 0.62, categoryPercentage: 0.62
+      }},
+      {{
+        label: '当期披露（下限）',
+        data: {json.dumps(chart_us)},
+        type: 'line',
+        borderColor: '#f59e0b', backgroundColor: '#f59e0b',
+        borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+        pointStyle: 'circle', tension: 0.2, fill: false
+      }}
+    ]
   }},
   options: {{
     responsive: true, maintainAspectRatio: false,
+    interaction: {{mode: 'index', intersect: false}},
     plugins: {{
-      legend: {{display: false}},
+      legend: {{position: 'bottom', labels: {{boxWidth: 10, padding: 10, font: {{size: 11}}, usePointStyle: true}}}},
       tooltip: {{
         callbacks: {{
           afterLabel: function(ctx) {{
-            return 'NDX β: ' + {json.dumps(chart_beta)}[ctx.dataIndex];
+            var i = ctx.dataIndex;
+            return ['全持仓口径: ' + US_FULL[i] + '%（' + US_PERIOD[i] + '）',
+                    'NDX β: ' + US_BETA[i]];
           }}
         }}
       }}
     }},
     scales: {{
-      y: {{beginAtZero: true, ticks: {{callback: v => v + '%'}}, grid: {{color: 'rgba(128,128,128,.12)'}}}},
+      y: {{beginAtZero: true, max: 100, ticks: {{callback: v => v + '%'}}, grid: {{color: 'rgba(128,128,128,.12)'}}}},
       x: {{grid: {{display: false}}, ticks: {{font: {{size: 11}}}}}}
     }}
   }}
@@ -606,7 +702,7 @@ def main():
     ap.add_argument("--json", required=True)
     ap.add_argument("--history", default="")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--holdings-full", default="", help="output/holdings_full.json（全部半年报持仓，可选）")
+    ap.add_argument("--holdings-full", default="", help="output/holdings_full.json（全部持仓档案，年报/半年报口径，可选）")
     a = ap.parse_args()
     with open(a.json, encoding="utf-8") as f:
         report = json.load(f)
