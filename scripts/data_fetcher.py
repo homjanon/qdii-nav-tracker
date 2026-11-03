@@ -231,7 +231,9 @@ HOLDINGS_TOP_N = 20  # 2026-09-05 升级：十大→二十大（覆盖率 47.8%�
 
 def fetch_f10(code, topline=20, year="", month=""):
     """F10 持仓接口（HTTP/1.1 直连，稳定）
-    默认取前 20 大（HOLDINGS_TOP_N=20，2026-09-05 升级：原十大覆盖率 ~48% → 二十大 ~69%）"""
+    默认取前 20 大（HOLDINGS_TOP_N=20 是**截断上限**，不是固定条数）
+    ⚠️ 实际条数由数据源的报告期决定：季报（Q1/Q3）只披露前十大 → 只会返回 10 条；
+       半年报/年报（Q2/Q4）披露全持仓 → 才可能取满 20 条。"""
     params = {"type": "jjcc", "code": code, "topline": topline}
     if year:
         params["year"], params["month"] = year, month
@@ -302,8 +304,38 @@ def is_period_stale(period, max_lag=HOLDING_STALE_QUARTERS):
     lag = (exp[0] * 4 + exp[1]) - (period[0] * 4 + period[1])
     return lag > max_lag
 
-def fetch_f10_all(code, year="2026", month="6"):
+def _full_period_candidates(d=None):
+    """「全部持仓」候选报告期（最近优先）—— 只含年报/半年报，不含季报
+
+    为什么不能直接取最新期（2026-11-03 修正）：
+      F10 jjcc 返回的是**最新报告期**，而季报（Q1/Q3）只披露前十大重仓股，
+      用季报期做「全部持仓」会得到 10 条、且与"全部"语义不符。
+      故本档案固定只取年报/半年报，期次按法定披露时限推导：
+        半年报（6/30）→ 当年 9/1 起可用（法定 8/31 前披露）
+        年报（12/31） → 次年 4/1 起可用（法定次年 3/31 前披露）
+    返回 [(year, month, "YYYY-MM-DD"), ...]，最多 3 个（供逐级回退）。
+    """
+    d = d or datetime.date.today()
+    out = []
+    for yy in (d.year, d.year - 1, d.year - 2):   # 3 年 → 至少留出 2 个回退候选
+        if d >= datetime.date(yy, 9, 1):
+            out.append((str(yy), "6", "%d-06-30" % yy))
+        if d >= datetime.date(yy + 1, 4, 1):
+            out.append((str(yy), "12", "%d-12-31" % yy))
+    out.sort(key=lambda x: x[2], reverse=True)
+    return out[:3]
+
+
+def latest_full_period(d=None):
+    """最近一个已过披露时限的年报/半年报报告期 → "YYYY-MM-DD"（无则空串）"""
+    c = _full_period_candidates(d)
+    return c[0][2] if c else ""
+
+
+def fetch_f10_all(code, year="", month=""):
     """拉取某期全部股票持仓（topline=1000，覆盖 021277 805 只等全量）
+    ⚠️ year/month 务必显式传年报/半年报期（见 _full_period_candidates）；
+       留空会退回"最新期"，季报期只有前十大 → 不是"全部持仓"。
     返回解析后的全持仓列表（纯标的+占比，不含行情）"""
     html = fetch_f10(code, topline=1000, year=year, month=month)
     if not html:
@@ -317,6 +349,10 @@ def fetch_f10_all(code, year="2026", month="6"):
 HOLDINGS_FULL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", "holdings_full.json")
 HOLDINGS_FULL_CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output", ".holdings_full_cache.json")
 HOLDINGS_FULL_MAX_AGE_DAYS = 120  # 披露期（8月底中报/3月底年报）才刷新，120 天足够
+# 负缓存（2026-11-03）：年报迟发的基金，若"应披露期"已切换但实际还没出，
+#   每天都会重试最新期再回退 → 每只基金每天多吃 1–2 次请求。
+#   记录「上次尝试的期次 + 时间」，3 天内不重复尝试同一期次。
+HOLDINGS_FULL_RETRY_DAYS = 3
 
 def _load_full_cache():
     try:
@@ -336,34 +372,60 @@ def _save_full_cache(cache):
         pass
 
 def get_holdings_full(code, force=False):
-    """获取某基金全部持仓（静态，披露期缓存；force=True 强制刷新）
-    返回 (holdings, source)：source='live' / 'cache' / 'none'
-    holdings = [{seq, code, name, pct, market}, ...] 全量
+    """获取某基金全部持仓（年报/半年报口径，静态档案；force=True 强制刷新）
+    返回 (holdings, source, period)
+      source: 'live' 实时 / 'cache' 缓存命中或兜底 / 'none' 无数据
+      period: 实际使用的报告期 "YYYY-MM-DD"（未知时空串）
+
+    2026-11-03 改造（此前 year/month/report_date 全硬编码 "2026"/"6"，
+      年报出来后不会自动更新，必须手改代码）：
+      ① 期次自动判定 —— 只取年报/半年报（季报只有前十大，不是"全部持仓"）；
+      ② 期次入缓存 —— 缓存条目带 report_date，"应披露期"变了即视为失效；
+      ③ 逐级回退 —— 年报未出/抓取失败时退到半年报，不空手而归；
+      ④ 负缓存 —— 同一期次 3 天内失败过就先用旧数据，避免天天重拉。
     """
     cache = _load_full_cache()
-    entry = cache.get(code)
+    entry = cache.get(code) or {}
+    cands = _full_period_candidates()
+    latest = cands[0][2] if cands else ""
 
-    # 缓存有效（未过期 且 非强制）→ 直接用
-    if not force and entry and entry.get("holdings"):
+    # ① 缓存命中：期次与「最近应披露期」一致 且 未超龄 且 非强制 → 0 请求
+    if not force and entry.get("holdings") and latest and entry.get("report_date") == latest:
         try:
             ts = datetime.datetime.strptime(entry["ts"], "%Y-%m-%d %H:%M:%S")
-            age_days = (datetime.datetime.now() - ts).days
-            if age_days <= HOLDINGS_FULL_MAX_AGE_DAYS:
-                return entry["holdings"], "cache"
+            if (datetime.datetime.now() - ts).days <= HOLDINGS_FULL_MAX_AGE_DAYS:
+                return entry["holdings"], "cache", entry.get("report_date", "")
         except Exception:
-            return entry["holdings"], "cache"
+            return entry["holdings"], "cache", entry.get("report_date", "")
 
-    # 拉实时全持仓（中报 2026/6；失败退缓存兜底）
-    h = fetch_f10_all(code)
-    if h:
-        cache[code] = {"ts": time.strftime("%Y-%m-%d %H:%M:%S"),
-                       "year": "2026", "month": "6", "holdings": h,
-                       "count": len(h)}
+    # ①.5 负缓存：最近 HOLDINGS_FULL_RETRY_DAYS 天内已尝试过该期次 → 先用旧数据
+    _tr = entry.get("try") or {}
+    if (not force and entry.get("holdings") and latest and _tr.get("period") == latest):
+        try:
+            ts2 = datetime.datetime.strptime(_tr.get("ts", ""), "%Y-%m-%d %H:%M:%S")
+            if (datetime.datetime.now() - ts2).days <= HOLDINGS_FULL_RETRY_DAYS:
+                return entry["holdings"], "cache", entry.get("report_date", "")
+        except Exception:
+            pass
+
+    # ② 逐级尝试候选期次（最近优先），拿到非空即用
+    for yy, mm, rd in cands:
+        h = fetch_f10_all(code, year=yy, month=mm)
+        if h:
+            cache[code] = {"ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+                           "year": yy, "month": mm, "report_date": rd,
+                           "holdings": h, "count": len(h),
+                           "try": {"period": latest, "ts": time.strftime("%Y-%m-%d %H:%M:%S")}}
+            _save_full_cache(cache)
+            return h, "live", rd
+
+    # ③ 全失败 → 旧缓存兜底，并记下负缓存时间戳（避免天天重拉）
+    if entry.get("holdings"):
+        entry["try"] = {"period": latest, "ts": time.strftime("%Y-%m-%d %H:%M:%S")}
+        cache[code] = entry
         _save_full_cache(cache)
-        return h, "live"
-    if entry and entry.get("holdings"):
-        return entry["holdings"], "cache"
-    return [], "none"
+        return entry["holdings"], "cache", entry.get("report_date", "")
+    return [], "none", ""
 
 # 持仓缓存（F10 偶发超时兜底）：output/holdings_cache.json
 # key = f"{code}-{year}-{month}（默认最新期 year='' month='' → key 带 current 标记）"
@@ -418,7 +480,7 @@ def _save_holdings_cache(cache):
         pass
 
 def get_holdings(code, year="", month=""):
-    """获取某期二十大持仓，并顺带返回报告期。返回 (holdings, source, period)
+    """获取某期披露持仓（季报=前十大 / 年报半年报=前二十大），并顺带返回报告期。返回 (holdings, source, period)
       source: 'live' 实时 / 'cache-fresh' 缓存复用（未到重新校验期）/ 'cache' 失败兜底 / 'none'
       period: (year, quarter) 或 None
 
