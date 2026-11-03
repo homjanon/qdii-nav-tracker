@@ -246,21 +246,86 @@ def fetch_f10(code, topline=20, year="", month=""):
 
     return _retry_call(_fetch, label=f"F10 {code}")
 
-def parse_holdings(html):
-    """取第一个 tbody（最新期）"""
-    m = re.search(r"<tbody>(.*?)</tbody>", html, re.S)
-    body = m.group(1) if m else html
+def _split_period_sections(html):
+    """把 F10 content 按「20XX年N季度股票投资明细」切成 [(year, quarter, section), ...]
+    页面按月倒序（最新期在前），一次返回多期。"""
+    marks = [(m.start(), int(m.group(1)), int(m.group(2)))
+             for m in re.finditer(r"(20\d{2})年(\d)季度", html or "")]
+    out = []
+    for i, (pos, y, q) in enumerate(marks):
+        end = marks[i + 1][0] if i + 1 < len(marks) else len(html)
+        out.append((y, q, html[pos:end]))
+    return out
+
+
+def _pct_col_index(section):
+    """按表头定位「占净值比例」列位（找不到返回 None）
+    两类表格列位不同，写死必然错：
+      最新期（含实时行情）9 列：序号/代码/名称/最新价/涨跌幅/相关资讯/**占净值比例**/持股数/市值 → 第 6 列
+      历史期（半年报/年报）7 列：序号/代码/名称/相关资讯/**占净值比例**/持股数/市值 → 第 4 列
+    """
+    th = re.search(r"<thead>(.*?)</thead>", section or "", re.S)
+    if not th:
+        return None
+    heads = [re.sub(r"<[^>]+>", "", x) for x in re.findall(r"<th[^>]*>(.*?)</th>", th.group(1), re.S)]
+    for i, h in enumerate(heads):
+        if "占净值比例" in h:
+            return i
+    return None
+
+
+def parse_holdings(html, year=None, quarter=None):
+    """解析持仓表 → [{seq, code, name, pct, market}, ...]
+
+    year/quarter 指定时只取该期；都不给则取第一个（最新期）。
+
+    2026-11-03 修复（此前「全部持仓档案」一直拿不到全量，静默只拿到最新期前十大）：
+      ① **必须按报告期取段** —— F10 content 一次返回多期（最新期在前），原实现无条件取
+         第一个 <tbody>，于是"请求 2026Q2 全持仓"实际拿到的是 2026Q3 前十大；
+         9 月时碰巧最新期就是 Q2，所以一直没暴露。
+      ② **列位必须按表头定位** —— 最新期表格 9 列（多出 最新价/涨跌幅），历史期只有 7 列，
+         原实现写死 tds[6] 且要求 ≥9 列 → 历史期整段 7 列全部被 skip，一条都出不来。
+    """
+    section = html
+    secs = _split_period_sections(html)
+    if secs:
+        if year and quarter:
+            hit = [s for s in secs if s[0] == int(year) and s[1] == int(quarter)]
+            section = hit[0][2] if hit else ""
+        elif quarter:
+            hit = [s for s in secs if s[1] == int(quarter)]
+            section = hit[0][2] if hit else ""
+        else:
+            section = secs[0][2]
+    if not section:
+        return []
+
+    m = re.search(r"<tbody>(.*?)</tbody>", section, re.S)
+    body = m.group(1) if m else section
+    pct_i = _pct_col_index(section)
+
     out = []
     for tr in re.findall(r"<tr>(.*?)</tr>", body, re.S):
         tds = re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)
-        if len(tds) < 9:
+        if len(tds) < 3:
             continue
         seq = re.sub(r"<[^>]+>", "", tds[0]).strip()
         if not seq.isdigit():
             continue
         code = re.sub(r"<[^>]+>", "", tds[1]).strip()
         name = re.sub(r"<[^>]+>", "", tds[2]).strip()
-        pct_txt = re.sub(r"<[^>]+>", "", tds[6]).strip().replace("%", "").replace(",", "")
+        pct_txt = ""
+        if pct_i is not None and pct_i < len(tds):
+            pct_txt = re.sub(r"<[^>]+>", "", tds[pct_i])
+        else:
+            # 兜底：表头缺失时，取第一个"纯数字 + %"的单元格。
+            # 涨跌幅带正负号（+1.23% / -1.23%），is.digit() 为 False，不会误命中。
+            for t in tds[3:]:
+                s = re.sub(r"<[^>]+>", "", t).strip()
+                if s.endswith("%") and s[:-1].replace(".", "").replace(",", "").isdigit():
+                    pct_txt = s
+                    break
+        pct_txt = pct_txt.strip().replace("%", "").replace(",", "")
         try:
             pct = float(pct_txt)
         except ValueError:
@@ -340,7 +405,13 @@ def fetch_f10_all(code, year="", month=""):
     html = fetch_f10(code, topline=1000, year=year, month=month)
     if not html:
         return []
-    return parse_holdings(html)
+    # 期次 → 季度：month 6 → Q2（半年报）、12 → Q4（年报）
+    try:
+        _y = int(year) if year else None
+        _q = int(month) // 3 if month else None
+    except (TypeError, ValueError):
+        _y, _q = None, None
+    return parse_holdings(html, year=_y, quarter=_q)
 
 # 全持仓静态缓存（中报/年报披露后抓一次，非每日行情）
 # 2026-09-05 修复：缓存文件与报告文件分离 —— 报告 holdings_full.json 是
@@ -353,6 +424,10 @@ HOLDINGS_FULL_MAX_AGE_DAYS = 120  # 披露期（8月底中报/3月底年报）�
 #   每天都会重试最新期再回退 → 每只基金每天多吃 1–2 次请求。
 #   记录「上次尝试的期次 + 时间」，3 天内不重复尝试同一期次。
 HOLDINGS_FULL_RETRY_DAYS = 3
+# 缓存版本（2026-11-03）：v1 的缓存条目来自"取第一个 tbody + 写死列位"的旧解析器，
+#   半年报/年报期实际只存到当期前十大（如 080006 存了 10 条、真值 62 条）。
+#   条目不带 v=2 即视为失效 → 一次性重拉，之后正常按期次复用。
+HOLDINGS_FULL_CACHE_V = 2
 
 def _load_full_cache():
     try:
@@ -389,8 +464,10 @@ def get_holdings_full(code, force=False):
     cands = _full_period_candidates()
     latest = cands[0][2] if cands else ""
 
-    # ① 缓存命中：期次与「最近应披露期」一致 且 未超龄 且 非强制 → 0 请求
-    if not force and entry.get("holdings") and latest and entry.get("report_date") == latest:
+    # ① 缓存命中：期次与「最近应披露期」一致 且 未超龄 且 非强制 且 解析器版本当前 → 0 请求
+    _v_ok = entry.get("v") == HOLDINGS_FULL_CACHE_V
+    if (not force and _v_ok and entry.get("holdings") and latest
+            and entry.get("report_date") == latest):
         try:
             ts = datetime.datetime.strptime(entry["ts"], "%Y-%m-%d %H:%M:%S")
             if (datetime.datetime.now() - ts).days <= HOLDINGS_FULL_MAX_AGE_DAYS:
@@ -400,7 +477,8 @@ def get_holdings_full(code, force=False):
 
     # ①.5 负缓存：最近 HOLDINGS_FULL_RETRY_DAYS 天内已尝试过该期次 → 先用旧数据
     _tr = entry.get("try") or {}
-    if (not force and entry.get("holdings") and latest and _tr.get("period") == latest):
+    if (not force and _v_ok and entry.get("holdings") and latest
+            and _tr.get("period") == latest):
         try:
             ts2 = datetime.datetime.strptime(_tr.get("ts", ""), "%Y-%m-%d %H:%M:%S")
             if (datetime.datetime.now() - ts2).days <= HOLDINGS_FULL_RETRY_DAYS:
@@ -415,6 +493,7 @@ def get_holdings_full(code, force=False):
             cache[code] = {"ts": time.strftime("%Y-%m-%d %H:%M:%S"),
                            "year": yy, "month": mm, "report_date": rd,
                            "holdings": h, "count": len(h),
+                           "v": HOLDINGS_FULL_CACHE_V,
                            "try": {"period": latest, "ts": time.strftime("%Y-%m-%d %H:%M:%S")}}
             _save_full_cache(cache)
             return h, "live", rd
@@ -1407,6 +1486,22 @@ def _repair_missing_days(df, market, key, fetchers):
             print(f"    ✗ [缺口补齐 {key}/{name}] {repr(e)[:70]}")
             _src_mark(name, False)
             continue
+        # 2026-11-03 修复：日韩的 _em_jpkr 返回的是 DataFrame（不是 {date: close} 字典），
+        # 原代码直接 `if not series:` 对 DataFrame 做布尔判断 → ValueError
+        # 「The truth value of a DataFrame is ambiguous」→ 含韩股的基金整只分析失败。
+        # 今日（11-03 08:02）因 yfinance 韩股少 1 天触发补齐路径才暴露。
+        if isinstance(series, pd.DataFrame):
+            if len(series) == 0:
+                _src_mark(name, False)
+                continue
+            try:
+                _s = series[["date", "close"]].copy()
+                _s["date"] = pd.to_datetime(_s["date"]).dt.normalize().dt.date
+                series = dict(zip(_s["date"], _s["close"]))
+            except Exception as e:
+                print(f"    ✗ [缺口补齐 {key}/{name}] 返回值无法归一化为 {{date: close}}: {repr(e)[:60]}")
+                _src_mark(name, False)
+                continue
         if not series:
             _src_mark(name, False)
             continue
