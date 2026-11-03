@@ -187,11 +187,11 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
   <h2>美股含量总览</h2>
   <div class="legend" style="flex-wrap:wrap">
     <span><i style="background:var(--accent)"></i>估算美股含量%（结构外推）</span>
-    <span><i style="background:#f59e0b;border-radius:99px"></i>当期披露%（下限）</span>
-    <span class="sub">估算 = 当期披露美股% + 未覆盖仓位 × 全持仓档案中剩余仓位的市场构成；NDX β 见 tooltip</span>
+    <span><i style="background:#f59e0b;border-radius:99px"></i>当期披露%（2026Q3 季报前十大）</span>
+    <span class="sub">估算 = 当期披露美股% + 未覆盖仓位按全持仓结构外推；NDX β 见 tooltip</span>
   </div>
   <div class="chart-box"><canvas id="usChart" role="img" aria-label="美股含量对比条形图">美股含量对比</canvas></div>
-  <div class="sub" style="margin-top:8px">季报（Q1/Q3）只披露前十大，所以"当期披露%"必然低于真实美股敞口；半年报/年报披露全持仓后再由结构外推补齐。NDX β &gt; 1 表示对纳指放大暴露。</div>
+  <div class="sub" style="margin-top:8px"><b>两个期次不同，别混看</b>：当期披露取 2026Q3 季报前十大（季报只披露前十大 → 这是<b>下限</b>）；全持仓结构取最近年报/半年报（2026-06-30）——季报不披露全持仓，所以这个期次必然滞后，仅用于补齐未披露的那部分仓位。NDX β &gt; 1 表示对纳指放大暴露。</div>
 </div>
 
 <div class="card">
@@ -380,8 +380,12 @@ summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-var US_FULL = ["63.2", "78.7", "73.3", "92.8", "87.9", "59.7", "46.7", "71.9", "17.8", "85.8", "16.7", "98.0"];
+var US_FULL = ["63.2", "78.7", "73.3", "92.8", "87.9", "59.7", "46.7", "71.9", "17.9", "85.8", "16.7", "98.0"];
 var US_PERIOD = ["2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30", "2026-06-30"];
+var US_TOPPER = ["2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3", "2026Q3"];
+var US_KIND = ["季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大", "季报前十大"];
+var US_COV = [58.1, 50.7, 48.0, 48.7, 56.8, 65.0, 37.1, 53.1, 66.2, 42.6, 22.7, 75.4];
+var US_TOP = [58.1, 50.7, 39.0, 48.7, 56.8, 46.6, 37.1, 53.1, 33.9, 42.6, 22.7, 75.4];
 var US_BETA = [2.21, 1.82, 2.02, 1.35, 1.32, 1.89, 1.34, 1.81, 1.12, 0.83, 1.7, 1.09];
 new Chart(document.getElementById('usChart'), {
   type: 'bar',
@@ -411,10 +415,21 @@ new Chart(document.getElementById('usChart'), {
       legend: {position: 'bottom', labels: {boxWidth: 10, padding: 10, font: {size: 11}, usePointStyle: true}},
       tooltip: {
         callbacks: {
+          label: function(ctx) {
+            return ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '%';
+          },
           afterLabel: function(ctx) {
             var i = ctx.dataIndex;
-            return ['全持仓口径: ' + US_FULL[i] + '%（' + US_PERIOD[i] + '）',
-                    'NDX β: ' + US_BETA[i]];
+            if (ctx.datasetIndex === 0) {
+              var d = (ctx.parsed.y - US_TOP[i]).toFixed(1);
+              return ['= 当期披露 ' + US_TOP[i] + '%（' + US_TOPPER[i] + '）',
+                      '＋ 未覆盖仓位外推 ' + d + 'pp',
+                      '外推结构取自 ' + US_PERIOD[i] + ' 全持仓（美股 ' + US_FULL[i] + '%）',
+                      'NDX β ' + US_BETA[i]];
+            }
+            return ['期次 ' + US_TOPPER[i] + ' · ' + US_KIND[i],
+                    '覆盖净值仓位 ' + US_COV[i] + '%',
+                    '季报只披露前十大 → 这是下限，不是真实敞口'];
           }
         }
       }
