@@ -347,6 +347,7 @@ def render(report, history, out_path, full_holdings=None):
     #   若基金当期大举调仓，外推会滞后（已知代价，故同时保留 A 轨道与 NDX β 交叉校验）。
     chart_labels, chart_us, chart_beta = [], [], []
     chart_est, chart_full, chart_period = [], [], []
+    chart_topper, chart_kind, chart_cov = [], [], []
     for code in funds:  # 动态取基金（与"今晚净值预测"一致，2026-08-21 修复 8→10）
         r = funds.get(code)
         if not r or "error" in r:
@@ -365,13 +366,32 @@ def render(report, history, out_path, full_holdings=None):
             _share = (_rest_us / _rest_total) if _rest_total > 0 else 0.0
             _gap = max(0.0, _f["total"] - _tot_top)
             _est = min(100.0, _us_top + _gap * _share)
+        # 当期（季报/半年报）期次与档位 —— 2026-11-03 补：原来图里只有"当期披露"却没有期次，
+        # 用户误把 tooltip 里"全持仓口径（2026-06-30）"当成了当期披露的日期。
+        _per = str(r.get("holdings_period") or "").strip()
+        _q = int(_per[-1]) if len(_per) >= 2 and _per[-1] in "1234" else 0
         chart_labels.append(f"{FUND_NAMES.get(code, code)}")
         chart_us.append(round(_us_top, 1))
         chart_est.append(round(_est, 1))
         # 全持仓口径只进 tooltip（不单独画柱，避免三柱过密）
         chart_full.append(f"{_f['us']:.1f}" if _f else "—")
         chart_period.append(_f.get("period", "") or "—")
+        chart_topper.append(_per or "—")
+        chart_kind.append("季报前十大" if _q in (1, 3)
+                          else ("年报/半年报前二十大" if _q else "披露持仓"))
+        chart_cov.append(round(_tot_top, 1))
         chart_beta.append(round((r.get("ndx_beta") or {}).get("ndx_beta", 0), 2))
+
+    # 图例用的当期报告期（各基金通常一致，取众数）
+    _tp_cnt = {}
+    for _v in chart_topper:
+        if _v and _v != "—":
+            _tp_cnt[_v] = _tp_cnt.get(_v, 0) + 1
+    top_period = sorted(_tp_cnt.items(), key=lambda kv: (-kv[1], kv[0]))[0][0] if _tp_cnt else ""
+    top_kind = ("季报前十大" if top_period[-1:] in ("1", "3")
+                else ("年报/半年报前二十大" if top_period else ""))
+    top_desc = (top_period + " " + top_kind).strip()
+    full_period_any = ((full_holdings or {}).get("report_date") or "").strip()
 
     # ---- 30 日涨跌幅走势对比（2026-08-21 新增；相对区间首日累计涨跌%）----
     # 颜色自动分配（2026-08-26 升级）：预定义 16 色调色板 + 按 code 排序稳定分配，
@@ -576,11 +596,11 @@ def render(report, history, out_path, full_holdings=None):
   <h2>美股含量总览</h2>
   <div class="legend" style="flex-wrap:wrap">
     <span><i style="background:var(--accent)"></i>估算美股含量%（结构外推）</span>
-    <span><i style="background:#f59e0b;border-radius:99px"></i>当期披露%（下限）</span>
-    <span class="sub">估算 = 当期披露美股% + 未覆盖仓位 × 全持仓档案中剩余仓位的市场构成；NDX β 见 tooltip</span>
+    <span><i style="background:#f59e0b;border-radius:99px"></i>当期披露%{f"（{esc(top_desc)}）" if top_desc else ""}</span>
+    <span class="sub">估算 = 当期披露美股% + 未覆盖仓位按全持仓结构外推；NDX β 见 tooltip</span>
   </div>
   <div class="chart-box"><canvas id="usChart" role="img" aria-label="美股含量对比条形图">美股含量对比</canvas></div>
-  <div class="sub" style="margin-top:8px">季报（Q1/Q3）只披露前十大，所以"当期披露%"必然低于真实美股敞口；半年报/年报披露全持仓后再由结构外推补齐。NDX β &gt; 1 表示对纳指放大暴露。</div>
+  <div class="sub" style="margin-top:8px"><b>两个期次不同，别混看</b>：当期披露{f"取 {esc(top_desc)}" if top_desc else "取最新报告期"}（季报只披露前十大 → 这是<b>下限</b>）；全持仓结构取最近年报/半年报{f"（{esc(full_period_any)}）" if full_period_any else ""}——季报不披露全持仓，所以这个期次必然滞后，仅用于补齐未披露的那部分仓位。NDX β &gt; 1 表示对纳指放大暴露。</div>
 </div>
 
 <div class="card">
@@ -617,6 +637,10 @@ def render(report, history, out_path, full_holdings=None):
 <script>
 var US_FULL = {json.dumps(chart_full, ensure_ascii=False)};
 var US_PERIOD = {json.dumps(chart_period, ensure_ascii=False)};
+var US_TOPPER = {json.dumps(chart_topper, ensure_ascii=False)};
+var US_KIND = {json.dumps(chart_kind, ensure_ascii=False)};
+var US_COV = {json.dumps(chart_cov)};
+var US_TOP = {json.dumps(chart_us)};
 var US_BETA = {json.dumps(chart_beta)};
 new Chart(document.getElementById('usChart'), {{
   type: 'bar',
@@ -646,10 +670,21 @@ new Chart(document.getElementById('usChart'), {{
       legend: {{position: 'bottom', labels: {{boxWidth: 10, padding: 10, font: {{size: 11}}, usePointStyle: true}}}},
       tooltip: {{
         callbacks: {{
+          label: function(ctx) {{
+            return ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '%';
+          }},
           afterLabel: function(ctx) {{
             var i = ctx.dataIndex;
-            return ['全持仓口径: ' + US_FULL[i] + '%（' + US_PERIOD[i] + '）',
-                    'NDX β: ' + US_BETA[i]];
+            if (ctx.datasetIndex === 0) {{
+              var d = (ctx.parsed.y - US_TOP[i]).toFixed(1);
+              return ['= 当期披露 ' + US_TOP[i] + '%（' + US_TOPPER[i] + '）',
+                      '＋ 未覆盖仓位外推 ' + d + 'pp',
+                      '外推结构取自 ' + US_PERIOD[i] + ' 全持仓（美股 ' + US_FULL[i] + '%）',
+                      'NDX β ' + US_BETA[i]];
+            }}
+            return ['期次 ' + US_TOPPER[i] + ' · ' + US_KIND[i],
+                    '覆盖净值仓位 ' + US_COV[i] + '%',
+                    '季报只披露前十大 → 这是下限，不是真实敞口'];
           }}
         }}
       }}
