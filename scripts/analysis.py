@@ -347,7 +347,7 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01",
     hk_q2 = sum(x["pct"] for x in h_q2 if x["market"] == "HK")
     _srctxt = {"live": "实时", "cache-fresh": "缓存复用", "cache": "缓存兜底", "none": "无"}
     src_note = " 持仓来源: 当期=%s 上期=%s" % (_srctxt.get(src_q2, src_q2), _srctxt.get(src_q1, src_q1))
-    print(f"[{code}] Q2二十大 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%){src_note}")
+    print(f"[{code}] 当期披露 {q2_total:.1f}% (美股{us_q2:.1f}% 港{hk_q2:.1f}%){src_note}")
 
     # 2. 行情（Q1+Q2 并集）
     price_map = {}
