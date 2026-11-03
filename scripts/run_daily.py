@@ -257,8 +257,8 @@ def main():
     except Exception as e:
         print(f"    [缺口缓存] 落盘失败: {repr(e)[:80]}")
 
-    # 全持仓静态档案刷新（2026-09-05 加入：中报/年报披露期抓一次，供网页"全部半年报持仓"展示）
-    # get_holdings_full 内部有 120 天缓存，非披露期不会重复拉取
+    # 全持仓静态档案刷新（年报/半年报口径；2026-11-03 改为自动判定期次）
+    # get_holdings_full 内部按期次缓存，期次未切换不会重复拉取
     full_report = refresh_full_holdings()
     mark("全持仓档案刷新")
 
@@ -375,18 +375,19 @@ def _json_default(o):
 FULL_REPORT_PATH = os.path.join(OUTPUT_DIR, "holdings_full.json")
 
 def refresh_full_holdings(force=False):
-    """刷新全部半年报持仓静态档案（2026-09-05）
-    逐基金调 get_holdings_full（内部 120 天缓存，披露期才真拉），汇总写 output/holdings_full.json
+    """刷新全部持仓静态档案（只取年报/半年报口径；2026-11-03 改为自动判定期次）
+    逐基金调 get_holdings_full（内部按期次缓存，披露期切换才真拉），汇总写 output/holdings_full.json
     返回 dict：{"report_date": "...", "funds": {code: {...}}}
     """
-    report_date = "2026-06-30"  # 当前中报截止日（Q2 2026）；年报期需更新
+    # 期次不再硬编码（原为 "2026-06-30"，年报出来必须手改代码）→ 按法定披露时限自动判定
+    report_date = dfet.latest_full_period()
     funds_out = {}
     any_live = False
     for code in FUNDS:
         try:
             # holdings_proxy（2026-09-18）：ETF 联接基金全持仓取自目标 ETF（穿透披露）
             src_code = FUND_PROXIES.get(code, code)
-            h, src = dfet.get_holdings_full(src_code, force=force)
+            h, src, pdate = dfet.get_holdings_full(src_code, force=force)
             if not h:
                 continue
             # 2026-09-05 修复：get_holdings_full 内部会更新缓存文件，
@@ -394,6 +395,7 @@ def refresh_full_holdings(force=False):
             entry = (dfet._load_full_cache().get(src_code)) or {}
             funds_out[code] = {"holdings": h, "ts": entry.get("ts", ""),
                                "count": len(h), "source": src,
+                               "report_date": pdate or entry.get("report_date", ""),
                                "holdings_proxy": src_code if src_code != code else None}
             if src == "live":
                 any_live = True
@@ -402,13 +404,21 @@ def refresh_full_holdings(force=False):
     if not funds_out:
         print("  [全持仓] 无任何基金全持仓数据")
         return None
+    # 表头期次取各基金实际拿到期次的众数（个别基金年报迟发会回退到上一期）
+    _dates = [v.get("report_date") for v in funds_out.values() if v.get("report_date")]
+    if _dates:
+        _freq = {}
+        for _d in _dates:
+            _freq[_d] = _freq.get(_d, 0) + 1
+        report_date = sorted(_freq.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
     report = {"report_date": report_date, "funds": funds_out,
               "refreshed_at": bj_now().strftime("%Y-%m-%d %H:%M:%S")}
     try:
         os.makedirs(OUTPUT_DIR, exist_ok=True)
         with open(FULL_REPORT_PATH, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=1, default=_json_default)
-        print(f"  [全持仓] 已写 {FULL_REPORT_PATH}（{len(funds_out)} 只基金，live={any_live}）")
+        print(f"  [全持仓] 已写 {FULL_REPORT_PATH}（{len(funds_out)} 只基金，"
+              f"期次 {report_date}，live={any_live}）")
     except Exception as e:
         print(f"  [全持仓] 写文件失败: {repr(e)[:100]}")
     return report
@@ -503,7 +513,14 @@ def verify_history(history, results):
 
     stats = {"n": 0, "dir_hit": 0, "mae_sum": 0.0, "mag_hit": 0, "combo_hit": 0,
              "cover_hit": 0, "bias_sum": 0.0, "sq_sum": 0.0}
+    # 口径一致性（2026-11-03）：统计只算「当前基金清单」内的记录。
+    # 已从 config/funds.json 移出的基金（如 012922 易方达全球成长C）历史记录保留在
+    # predictions.jsonl 里，但不再验证、不计入命中率——否则页面展示 12 只、统计却混入
+    # 已移除基金，口径不一致。历史记录本身**不删**（可追溯），只是不参与统计。
+    _valid_codes = set(FUNDS)
     for h in history:
+        if h.get("code") not in _valid_codes:
+            continue
         if h.get("actual") is not None:
             stats["n"] += 1
             stats["dir_hit"] += 1 if h.get("hit") else 0
@@ -560,6 +577,9 @@ def verify_history(history, results):
         band = stats["mae"] * 1.28
         cover = 0
         for h in history:
+            # ⚠️ 必须与 n 同口径（只看当前基金清单），否则分子含已移除基金、分母不含 → 覆盖率可超 100%
+            if h.get("code") not in _valid_codes:
+                continue
             if h.get("actual") is not None and h.get("err") is not None:
                 if abs(h["err"]) <= band / 100:
                     cover += 1
@@ -569,8 +589,9 @@ def verify_history(history, results):
         stats["dir_acc"], stats["mae"] = None, None
         stats["mag_acc"] = stats["combo_acc"] = stats["rmse"] = stats["bias"] = stats["cover"] = None
         stats["band"] = None
-    # 最近 5 条已验证记录
-    verified = [h for h in history if h.get("actual") is not None][-5:]
+    # 最近 5 条已验证记录（同样只看当前基金清单，避免已移除基金占位）
+    verified = [h for h in history
+                if h.get("actual") is not None and h.get("code") in _valid_codes][-5:]
     stats["recent"] = [{"code": h["code"], "pred_date": h["pred_date"],
                         "pred_static": h["pred_static"], "actual": h["actual"],
                         "hit": h["hit"], "err": h["err"]} for h in verified]
@@ -581,7 +602,7 @@ def write_summary(report, out_dir, history=None):
     history = history or []
     _prov = bool(report.get("provisional"))
     lines = [f"# QDII 净值跟踪日报（{report['date']}）", "",
-             f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：二十大持仓静态 + 滚动NNLS动态",
+             f"> 生成：{report['generated_at']} ｜ 数据：天天基金F10 + akshare ｜ 方法：披露持仓静态 + 滚动NNLS动态",
              ""]
     if _prov:
         lines += ["> ⚠️ **参考值模式**：目标净值日非 A股交易日（QDII 基金当日不公布净值）→ "
@@ -696,7 +717,7 @@ def write_summary(report, out_dir, history=None):
         lines.append(f"| USDCNH | - | {p['fx_ret']*100 if p['fx_ret'] is not None else 0.0:+.2f}% | "
                      f"{'已计入' if p['fx_ret'] is not None else '源不可用'} |")
         lines.append("")
-    lines.append("## 疑似调仓（滚动NNLS vs 披露 · 全部二十大持仓）")
+    lines.append("## 疑似调仓（滚动NNLS vs 披露 · 全部披露持仓）")
     lines.append("")
     for code, r in report["funds"].items():
         if "error" in r:
@@ -709,7 +730,7 @@ def write_summary(report, out_dir, history=None):
         disc = {x["code"]: x["pct"] for x in h_q2}
         names = {x["code"]: x["name"] for x in h_q2}
         nnls = r.get("nnls_weight") or {}
-        # 按披露权重降序展示全部二十大持仓（NNLS 未估计到的显示 0）
+        # 按披露权重降序展示全部披露持仓（NNLS 未估计到的显示 0）
         for x in sorted(h_q2, key=lambda v: v["pct"], reverse=True):
             c = x["code"]
             d = x["pct"]
