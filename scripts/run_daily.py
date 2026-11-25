@@ -49,7 +49,8 @@ def load_funds_config():
     """从 config/funds.json 读取基金清单；文件缺失/格式错误时回退内置默认（向后兼容）。
     ⚠️ 2026-08-26 恢复：8/20 曾因本地旧代码覆盖导致此函数被回滚（config 在云端但无人消费）
     2026-09-18：新增 holdings_proxy 读取（ETF 联接基金等特殊类型 → 持仓取目标 ETF）
-    返回 (funds, names, proxies)；proxies: {code: 目标ETF代码}（无代理则为空 dict）"""
+    2026-11-25：新增 channel 读取（强制走某条预测通道，用于披露法本来就是最优的基金）
+    返回 (funds, names, proxies, channels)；channels: {code: "static"/"nnls"/"beta"}（无则空）"""
     cfg_path = os.path.join(BASE_DIR, "..", "config", "funds.json")
     try:
         with open(cfg_path, encoding="utf-8") as f:
@@ -59,18 +60,23 @@ def load_funds_config():
         names = {str(x["code"]): str(x.get("name", "")) for x in items if x.get("code")}
         proxies = {str(x["code"]): str(x["holdings_proxy"]) for x in items
                    if x.get("code") and x.get("holdings_proxy")}
+        channels = {str(x["code"]): str(x["channel"]) for x in items
+                    if x.get("code") and x.get("channel")}
         if funds:
             print(f"[funds] 已从 config/funds.json 加载 {len(funds)} 只基金"
-                  + (f"（其中 {len(proxies)} 只走持仓代理）" if proxies else ""))
-            return funds, names, proxies
+                  + (f"（其中 {len(proxies)} 只走持仓代理）" if proxies else "")
+                  + (f"（{len(channels)} 只指定通道: "
+                     + ", ".join("%s→%s" % kv for kv in sorted(channels.items())) + "）"
+                     if channels else ""))
+            return funds, names, proxies, channels
         print(f"[funds] config/funds.json 为空，回退内置默认")
     except FileNotFoundError:
         print(f"[funds] 未找到 config/funds.json，回退内置默认（{len(DEFAULT_FUNDS)} 只）")
     except Exception as e:
         print(f"[funds] 读取 config/funds.json 失败（{e}），回退内置默认")
-    return DEFAULT_FUNDS, DEFAULT_FUND_NAMES, {}
+    return DEFAULT_FUNDS, DEFAULT_FUND_NAMES, {}, {}
 
-FUNDS, FUND_NAMES, FUND_PROXIES = load_funds_config()
+FUNDS, FUND_NAMES, FUND_PROXIES, FUND_CHANNELS = load_funds_config()
 OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
 HIST_FILE = os.path.join(OUTPUT_DIR, "predictions.jsonl")
 
@@ -243,7 +249,8 @@ def main():
     for code in FUNDS:
         try:
             r = ana.analyze_fund(code, holdings_proxy=FUND_PROXIES.get(code),
-                                 provisional=provisional)
+                                 provisional=provisional,
+                                 history=history, force_channel=FUND_CHANNELS.get(code))
             results[code] = r
         except Exception as e:
             print(f"  [{code}] 失败: {repr(e)[:150]}")
@@ -465,7 +472,11 @@ def append_predictions(history, results, today, provisional=False):
                 "last_nav": p["last_nav"],
                 "pred_static": p["pred_static"],
                 "pred_nnls": p["pred_nnls"],
+                "pred_beta": p.get("pred_beta"),
+                "pred_final": p.get("pred_final"),
+                "channel": p.get("channel"),
                 "pred_nav_static": p["pred_nav_static"],
+                "pred_nav_final": p.get("pred_nav_final"),
                 "actual": old.get("actual"),   # 保留已验证结果
                 "actual_nav": old.get("actual_nav"),
                 "hit": old.get("hit"),
@@ -480,7 +491,11 @@ def append_predictions(history, results, today, provisional=False):
                 "last_nav": p["last_nav"],
                 "pred_static": p["pred_static"],
                 "pred_nnls": p["pred_nnls"],
+                "pred_beta": p.get("pred_beta"),
+                "pred_final": p.get("pred_final"),
+                "channel": p.get("channel"),
                 "pred_nav_static": p["pred_nav_static"],
+                "pred_nav_final": p.get("pred_nav_final"),
                 "actual": None,       # 待净值公布后回填
                 "actual_nav": None,
                 "hit": None,          # 方向是否命中
@@ -552,8 +567,11 @@ def verify_history(history, results):
         actual = row["growth"] / 100
         h["actual"] = actual
         h["actual_nav"] = float(row["nav"])
-        h["hit"] = bool(np.sign(h["pred_static"]) == np.sign(actual))
-        h["err"] = h["pred_static"] - actual
+        # 2026-11-25：验收口径改看"实际上线的那条"（pred_final）；
+        # 老记录无 pred_final 字段 → 自动回退 pred_static（即它当年的上线值）
+        _basis = h.get("pred_final") if h.get("pred_final") is not None else h.get("pred_static")
+        h["hit"] = bool(np.sign(_basis) == np.sign(actual))
+        h["err"] = _basis - actual
         stats["n"] += 1
         stats["dir_hit"] += 1 if h["hit"] else 0
         e = h["err"]
@@ -630,8 +648,11 @@ def write_summary(report, out_dir, history=None):
             hs = r.get("holdings_source") or {}
             if hs.get("q2") == "cache":
                 src_note = " (持仓缓存)"
-            lines.append(f"| {code} | {name} | **{pred_date}** | **{p['pred_static']*100:+.2f}%** | {pn_s} | "
-                         f"**{p['pred_nav_static']:.4f}** | {p['last_nav']:.4f} | 待公布{diverge_note}{src_note} |")
+            pfin = p.get("pred_final") if p.get("pred_final") is not None else p["pred_static"]
+            chs = {"nnls": "NNLS", "static": "披露", "beta": "指数"}
+            ch_note = "［%s］" % chs.get(p.get("channel"), "")
+            lines.append(f"| {code} | {name} | **{pred_date}** | **{pfin*100:+.2f}%**{ch_note} | {pn_s} | "
+                         f"**{p.get('pred_nav_final', p['pred_nav_static']):.4f}** | {p['last_nav']:.4f} | 待公布{diverge_note}{src_note} |")
         else:
             # 已公布：从 history 找最新已验证记录显示预测 vs 实际
             recs = [h for h in history if h.get("code") == code and h.get("actual") is not None]
@@ -639,7 +660,8 @@ def write_summary(report, out_dir, history=None):
                 rec = recs[-1]
                 # 综合命中：方向对 且 |误差|≤1.0pp 才算 ✓
                 hit = "✓" if (rec.get("hit") and abs(rec.get("err") or 0) <= 0.010) else "✗"
-                lines.append(f"| {code} | {name} | {rec['pred_date']} | **{rec['pred_static']*100:+.2f}%** | "
+                _rf = rec.get("pred_final") if rec.get("pred_final") is not None else rec["pred_static"]
+                lines.append(f"| {code} | {name} | {rec['pred_date']} | **{_rf*100:+.2f}%** | "
                              f"{rec.get('pred_nnls')*100 if rec.get('pred_nnls') is not None else 0:+.2f}% | "
                              f"{rec.get('pred_nav_static', 0):.4f} | {rec.get('actual_nav', 0):.4f} | "
                              f"已公布 实际{rec['actual']*100:+.2f}% {hit} |")
