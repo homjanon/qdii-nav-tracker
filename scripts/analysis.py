@@ -180,6 +180,131 @@ def index_beta(nav, ndx_df, start_date=None):
     r2 = 1 - ((yv - yhat) ** 2).sum() / ((yv - yv.mean()) ** 2).sum()
     return {"ndx_beta": float(beta[1]), "r2": float(r2), "alpha": float(beta[0]), "n": len(m)}
 
+_NDX_RET_CACHE = {}
+
+
+def _ndx_returns(ndx_df):
+    """NDX 日收益序列（带缓存：同一份 ndx_df 只算一次，key 用长度+首尾日期）"""
+    if ndx_df is None or len(ndx_df) == 0:
+        return None
+    d0 = ndx_df.copy()
+    d0["date"] = pd.to_datetime(d0["date"])
+    d0 = d0.sort_values("date").drop_duplicates("date", keep="last")
+    key = (len(d0), str(d0["date"].iloc[0].date()), str(d0["date"].iloc[-1].date()))
+    if key in _NDX_RET_CACHE:
+        return _NDX_RET_CACHE[key]
+    d0["ret"] = d0["close"].astype(float).pct_change()
+    s = d0.dropna(subset=["ret"]).set_index("date")["ret"]
+    _NDX_RET_CACHE.clear()          # 只保留最新一份，避免进程内无限增长
+    _NDX_RET_CACHE[key] = s
+    return s
+
+
+def index_channel_pred(nav, ndx_df, target_date, window=60, min_n=40):
+    """指数回归通道：用 target 之前 window 个净值日拟合 r_nav = a + b·r_NDX，预测 target 当日
+
+    2026-11-25 新增，作为第三个候选通道。与 index_beta() 的区别：
+      index_beta() 是"近 6 月一次性 β"，只用于展示敞口；
+      本函数逐日 walk-forward 重估，产出可与持仓法同台比较误差的预测值。
+
+    对齐：训练段按 lag=0（净值日 D ↔ 交易日 ≤ D 的指数收益，asof 对齐，与全项目口径一致）；
+         预测目标日**必须恰有**该日指数收益，否则返回 None——宁可这档不用指数法，
+         也不拿前一交易日的收益冒充（踩坑 13：休市日旧值冒充）。
+    """
+    if ndx_df is None or nav is None or len(nav) == 0:
+        return None
+    x = _ndx_returns(ndx_df)
+    if x is None:
+        return None
+    tgt = pd.Timestamp(target_date)
+    if tgt not in x.index:
+        return None
+    d = nav.copy()
+    d["date"] = pd.to_datetime(d["date"])
+    d = d[d["date"] < tgt].tail(window)
+    if len(d) < min_n:
+        return None
+    xh = x.reindex(pd.DatetimeIndex(d["date"].values)).ffill().values
+    yh = pd.to_numeric(d["growth"], errors="coerce").values / 100.0
+    mask = ~(np.isnan(xh) | np.isnan(yh))
+    if int(mask.sum()) < min_n:
+        return None
+    X = np.column_stack([np.ones(int(mask.sum())), xh[mask]])
+    try:
+        b, *_ = np.linalg.lstsq(X, yh[mask], rcond=None)
+    except Exception:
+        return None
+    return float(b[0] + b[1] * x.loc[tgt])
+
+
+CHANNEL_LABEL = {"nnls": "NNLS", "static": "披露", "beta": "指数"}
+
+
+def channel_mae(nav, ndx_df, history, code, lookback=20):
+    """近 lookback 个已验证样本上，三通道各自的 MAE（小数，非 pp）
+
+    老记录没有 pred_beta 字段 → 就地用同一套 walk-forward 补算（只用该日之前的数据，
+    无未来函数）。这样上线第一天就能选通道，不需要等 20 个交易日攒样本。
+    """
+    if not history:
+        return {"n": 0}
+    recs = [h for h in history if h.get("code") == code and h.get("actual") is not None]
+    if not recs:
+        return {"n": 0}
+    recs.sort(key=lambda h: str(h.get("pred_date", "")))
+    recs = recs[-lookback:]
+    e_s, e_n, e_b = [], [], []
+    for h in recs:
+        ac = h["actual"]
+        if h.get("pred_static") is not None:
+            e_s.append(abs(h["pred_static"] - ac))
+        if h.get("pred_nnls") is not None:
+            e_n.append(abs(h["pred_nnls"] - ac))
+        pb = h.get("pred_beta")
+        if pb is None:
+            pb = index_channel_pred(nav, ndx_df, h.get("pred_date"))
+        if pb is not None:
+            e_b.append(abs(pb - ac))
+    out = {"n": len(recs)}
+    if e_s:
+        out["static"] = float(np.mean(e_s))
+    if e_n:
+        out["nnls"] = float(np.mean(e_n))
+    if e_b:
+        out["beta"] = float(np.mean(e_b))
+    return out
+
+
+def choose_channel(pred_static, pred_nnls, pred_beta, maes,
+                   force=None, margin=0.9, min_n=10):
+    """三候选选优（2026-11-25 定）：
+
+    默认 NNLS（它会自行放大权重补偿披露覆盖率缩水）；
+    披露法 / 指数法必须在近 20 个已验证样本上把 MAE 压低 10% 以上，才接管当天预测。
+    样本不足 min_n、或 NNLS 缺失时回退。
+    force：config 白名单强制通道（用于披露法本来就是最优的基金，如 021842）。
+    返回 (pred_final, channel_key)
+    """
+    avail = {"static": pred_static, "nnls": pred_nnls, "beta": pred_beta}
+    if force in avail and avail[force] is not None:
+        return float(avail[force]), force
+    if pred_nnls is None:
+        if pred_static is None:
+            return None, None
+        return float(pred_static), "static"
+    if not maes or maes.get("n", 0) < min_n or maes.get("nnls") is None:
+        return float(pred_nnls), "nnls"
+    base = maes["nnls"]
+    best_key, best_val = "nnls", base
+    for k in ("static", "beta"):
+        v = maes.get(k)
+        if v is not None and avail[k] is not None and v < best_val:
+            best_key, best_val = k, v
+    if best_key != "nnls" and best_val < base * margin:
+        return float(avail[best_key]), best_key
+    return float(pred_nnls), "nnls"
+
+
 def next_nav_date(nav):
     """下一个净值日：最新净值日期的下一个工作日（跳过周末）"""
     last = nav["date"].iloc[-1]
@@ -189,7 +314,8 @@ def next_nav_date(nav):
     return nd
 
 def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=None,
-                 us_last=None, ndx_df=None, provisional=False):
+                 us_last=None, ndx_df=None, provisional=False,
+                 history=None, code=None, force_channel=None):
     """前瞻预测：用美股最近收盘（统一基准 us_last）预测对应净值日涨跌
 
     时间对齐（用户验证过的规则）：净值日期 D 对应美股「交易日 ≤ D」最新收盘（lag=0）。
@@ -201,6 +327,9 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
 
     返回 dict 或 None（已公布时）
     """
+    # ⚠️ 下方 `for code, wgt in w.items()` 会把参数 code（基金代码）覆盖成持仓标的代码，
+    #    必须先留底，否则 channel_mae 会拿 "SPCX" 去查历史（2026-11-25 踩过）。
+    _fund_code = code
     if us_last is None:
         us_last = dfet.us_last_trade_date()
     last_row = nav.iloc[-1]
@@ -297,23 +426,35 @@ def predict_next(nav, holdings, price_map, fx_df, nnls_weight=None, mae_static=N
                 continue
             b_nnls += wgt * r
 
+    # ---- 指数通道（第三候选）与最终预测（2026-11-25 新增）----
+    b_beta = index_channel_pred(nav, ndx_df, next_d) if ndx_df is not None else None
+    _maes = channel_mae(nav, ndx_df, history, _fund_code) if (history and _fund_code) else {"n": 0}
+    b_final, ch = choose_channel(b_static, b_nnls, b_beta, _maes, force=force_channel)
+
     out = {"next_date": next_d, "last_date": last_date, "last_nav": last_nav,
            "provisional": bool(provisional),
            "holiday_symbols": holiday, "stale_symbols": stale,
            "pred_static": float(b_static), "pred_nnls": float(b_nnls) if b_nnls is not None else None,
+           "pred_beta": float(b_beta) if b_beta is not None else None,
+           "pred_final": float(b_final) if b_final is not None else float(b_static),
+           "channel": ch or "static",
+           "channel_mae": {k: (round(v, 6) if isinstance(v, float) else v) for k, v in _maes.items()},
            "pred_nav_static": float(last_nav * (1 + b_static)),
            "pred_nav_nnls": float(last_nav * (1 + b_nnls)) if b_nnls is not None else None,
+           "pred_nav_final": float(last_nav * (1 + (b_final if b_final is not None else b_static))),
            "contributors": contributors, "fx_ret": float(fxr) if not np.isnan(fxr) else None,
            "us_last": us_last, "ndx_ret": float(ndx_ret) if not np.isnan(ndx_ret) else None,
            "diverge": diverge}
     if mae_static:
+        _bf = b_final if b_final is not None else b_static
         out["mae_static"] = mae_static
-        out["pred_range_low"] = float(last_nav * (1 + b_static - mae_static / 100))
-        out["pred_range_high"] = float(last_nav * (1 + b_static + mae_static / 100))
+        out["pred_range_low"] = float(last_nav * (1 + _bf - mae_static / 100))
+        out["pred_range_high"] = float(last_nav * (1 + _bf + mae_static / 100))
     return out
 
 def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01",
-                 holdings_proxy=None, provisional=False):
+                 holdings_proxy=None, provisional=False,
+                 history=None, force_channel=None):
     """单只基金全流程分析
 
     holdings_proxy（2026-09-18 加入）：持仓代理代码。ETF 联接基金自身的 F10
@@ -398,7 +539,8 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01",
     us_last = dfet.us_last_trade_date()
     pred_next = predict_next(nav, h_q2, price_map, fx_df,
                              nnls_weight=last_w, mae_static=mae_static, us_last=us_last,
-                             ndx_df=ndx_df, provisional=provisional)
+                             ndx_df=ndx_df, provisional=provisional,
+                             history=history, code=code, force_channel=force_channel)
     blocked_reason = None
     if pred_next is not None and pred_next.get("blocked"):
         # 缺口门控命中（2026-09-24）：当日不出预测，原因写入报告供页面/日志暴露
@@ -406,8 +548,12 @@ def analyze_fund(code, year_q1=2026, month_q1=3, start_date="2025-08-01",
         print(f"[{code}] ⛔ 跳过当日预测：{blocked_reason}")
         pred_next = None
     elif pred_next is not None:
+        _pb = pred_next.get("pred_beta")
         print(f"[{code}] 预测 {pred_next['next_date'].date()}(US基准{us_last}): "
-              f"静态{pred_next['pred_static']*100:+.2f}% 滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}%")
+              f"静态{pred_next['pred_static']*100:+.2f}% "
+              f"滚动{pred_next['pred_nnls']*100 if pred_next['pred_nnls'] is not None else float('nan'):+.2f}% "
+              f"指数{_pb*100 if _pb is not None else float('nan'):+.2f}% "
+              f"→ 采用[{pred_next.get('channel')}]{pred_next.get('pred_final', 0)*100:+.2f}%")
     else:
         print(f"[{code}] 该期净值已公布（US基准 {us_last}），无新预测")
 
