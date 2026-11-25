@@ -174,10 +174,13 @@ def render(report, history, out_path, full_holdings=None):
         if p is not None:
             # 有预测：待验证
             pn = p.get("pred_nnls")
+            # 2026-11-25：主数字改用 pred_final（三通道自动选优结果），静态/指数降为小字
             pred_cards.append({
                 "code": code, "name": FUND_NAMES.get(code, code),
-                "pred": p["pred_static"], "pred_nnls": pn,
-                "pred_nav": p["pred_nav_static"], "last_nav": p["last_nav"],
+                "pred": (p.get("pred_final") if p.get("pred_final") is not None else p["pred_static"]), "pred_nnls": pn,
+                "pred_static": p["pred_static"], "pred_beta": p.get("pred_beta"),
+                "channel": p.get("channel"),
+                "pred_nav": p.get("pred_nav_final", p["pred_nav_static"]), "last_nav": p["last_nav"],
                 "next_date": str(p["next_date"])[:10],
                 "status": "pending", "actual": None, "hit": None, "err": None,
                 "diverge": diverge, "src_cache": src_cache,
@@ -190,8 +193,11 @@ def render(report, history, out_path, full_holdings=None):
                 rec = recs[-1]
                 pred_cards.append({
                     "code": code, "name": FUND_NAMES.get(code, code),
-                    "pred": rec["pred_static"], "pred_nnls": rec.get("pred_nnls"),
-                    "pred_nav": rec.get("pred_nav_static"), "last_nav": rec.get("actual_nav"),
+                    "pred": (rec.get("pred_final") if rec.get("pred_final") is not None else rec["pred_static"]), "pred_nnls": rec.get("pred_nnls"),
+                    "pred_static": rec["pred_static"], "pred_beta": rec.get("pred_beta"),
+                    "channel": rec.get("channel"),
+                    "pred_nav": rec.get("pred_nav_final", rec.get("pred_nav_static")),
+                    "last_nav": rec.get("actual_nav"),
                     "next_date": rec["pred_date"],
                     "status": "verified", "actual": rec["actual"], "hit": rec.get("hit"),
                     "err": rec.get("err"), "diverge": diverge, "src_cache": src_cache,
@@ -204,6 +210,12 @@ def render(report, history, out_path, full_holdings=None):
         cls = pred_color(c["pred"])
         arrow = "▲" if c["pred"] > 0 else ("▼" if c["pred"] < 0 else "—")
         nnls_s = fmt_pct(c["pred_nnls"]) if c["pred_nnls"] is not None else "-"
+        _ch = c.get("channel")
+        _ch_label = {"nnls": "NNLS", "static": "披露", "beta": "指数"}.get(_ch, "")
+        ch_badge = (f'<span class="badge" style="background:#f1f5f9;color:#475569;font-weight:600">{_ch_label}</span>'
+                    if _ch_label else "")
+        _pb_s = fmt_pct(c.get("pred_beta")) if c.get("pred_beta") is not None else "-"
+        ch_line = (f"静态 {fmt_pct(c.get('pred_static'))} · NNLS {nnls_s} · 指数 {_pb_s}")
         diverge_note = '<span style="color:var(--warn);font-size:11px">⚠️与大盘背离</span>' if c.get("diverge") else ""
         cache_note = '<span style="color:var(--sub);font-size:11px">持仓缓存</span>' if c.get("src_cache") else ""
         # 申购限额（东财 fund_purchase_em）：仅金额，暂停申购显示「暂停」（2026-08-18 加入）
@@ -231,9 +243,9 @@ def render(report, history, out_path, full_holdings=None):
                            f'<div class="meta"><span>实际净值 {c["last_nav"]:.4f}</span><span>{esc(c["next_date"])}公布</span></div>')
         cards_html.append(f"""
         <div class="fund-card">
-          <div class="fname">{esc(c['name'])} <span class="fcode">{c['code']}</span> {status_badge}</div>
+          <div class="fname">{esc(c['name'])} <span class="fcode">{c['code']}</span> {ch_badge} {status_badge}</div>
           <div class="pred {cls}">{arrow} {fmt_pct(c['pred'])}</div>
-          <div class="meta"><span>滚动NNLS {nnls_s}</span><span>预测净值<br/><b>{c['pred_nav']:.4f}</b></span></div>
+          <div class="meta"><span style="font-size:11px">{ch_line}</span><span>预测净值<br/><b>{c['pred_nav']:.4f}</b></span></div>
           {actual_html}
           {purchase_html}
         </div>""")
@@ -296,7 +308,7 @@ def render(report, history, out_path, full_holdings=None):
         run_date = str(hk.get("run_date", ""))[:10]
         return (f"<tr><td>{FUND_NAMES.get(v['code'], v['code'])}</td><td>{esc(run_date)}</td>"
                 f"<td>{esc(v['pred_date'])}</td>"
-                f"<td>{fmt_pct(v['pred_static'])}</td><td>{fmt_pct(v.get('actual'))}</td>"
+                f"<td>{fmt_pct(v.get('pred_final') if v.get('pred_final') is not None else v['pred_static'])}</td><td>{fmt_pct(v.get('actual'))}</td>"
                 f"<td>{mark}</td><td>{fmt_pp(v.get('err'))}</td></tr>")
 
     v_rows_show = "".join(_vrow(v) for v in verified_recent)
@@ -570,7 +582,7 @@ def render(report, history, out_path, full_holdings=None):
     <span><i style="background:var(--up)"></i>预测上涨</span>
     <span><i style="background:var(--down)"></i>预测下跌</span>
     <span style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;padding:1px 6px;border-radius:99px;background:#f0fdf4;color:#166534">已公布</span>已公布净值的显示预测 vs 实际对照</span>
-    <span class="sub">静态=披露权重 · 滚动=60日NNLS · 基于美股最新收盘（lag=0）</span>
+    <span class="sub">主数字 = <b>最终预测</b>（静态 / NNLS / 指数三通道，按近 20 日实测误差自动选优）· 基于美股最新收盘（lag=0）</span>
   </div>
   <div class="grid">{pred_block}</div>
 </div>
